@@ -5,12 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Chat_V2.Pages
-{
-    public class PrivacyModel : PageModel
-    {
-        public void OnGet()
-        {
-        }
-    }
+namespace Chat_V2.Pages {
+	public class PrivacyModel : PageModel {
+		public void OnGet() {
+		}
+	}
 }
