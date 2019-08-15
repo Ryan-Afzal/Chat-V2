@@ -17,8 +17,7 @@ namespace Chat_V2.Areas.Identity {
 					options.UseSqlServer(
 						context.Configuration.GetConnectionString("ChatContextConnection")));
 
-				services.AddIdentity<ChatUser, IdentityRole<int>>()
-					.AddDefaultTokenProviders();
+
 			});
 		}
 	}

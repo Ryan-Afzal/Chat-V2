@@ -1,24 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj": {}
+    "C:\\Users\\ryana\\Documents\\Workspace\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj": {
+    "C:\\Users\\ryana\\Documents\\Workspace\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
+        "projectUniqueName": "C:\\Users\\ryana\\Documents\\Workspace\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
         "projectName": "Chat-V2",
-        "projectPath": "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
+        "projectPath": "C:\\Users\\ryana\\Documents\\Workspace\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
         "packagesPath": "C:\\Users\\ryana\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\obj\\",
+        "outputPath": "C:\\Users\\ryana\\Documents\\Workspace\\Chat-V2\\Chat-V2\\Chat-V2\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
           "C:\\Users\\ryana\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"

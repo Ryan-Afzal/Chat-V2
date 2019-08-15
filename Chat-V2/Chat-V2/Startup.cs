@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,10 @@ namespace Chat_V2 {
 				options.Password.RequiredLength = 6;
 				options.Password.RequiredUniqueChars = 1;
 			});
+
+			services.AddDefaultIdentity<ChatUser>()
+				.AddRoles<IdentityRole<int>>()
+				.AddEntityFrameworkStores<ChatContext>();
 
 			services.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

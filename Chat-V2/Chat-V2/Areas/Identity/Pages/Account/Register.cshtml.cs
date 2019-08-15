@@ -19,11 +19,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		private readonly ILogger<RegisterModel> _logger;
 		private readonly IEmailSender _emailSender;
 
-		public RegisterModel(
-			UserManager<ChatUser> userManager,
-			SignInManager<ChatUser> signInManager,
-			ILogger<RegisterModel> logger,
-			IEmailSender emailSender) {
+		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ILogger<RegisterModel> logger, IEmailSender emailSender) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_logger = logger;
@@ -38,7 +34,6 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		public class InputModel {
 
 			[Required]
-			[EmailAddress]
 			[Display(Name = "Username")]
 			public string Username { get; set; }
 
@@ -46,6 +41,12 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 			[EmailAddress]
 			[Display(Name = "Email")]
 			public string Email { get; set; }
+
+			[Display(Name = "First Name")]
+			public string FirstName { get; set; }
+
+			[Display(Name = "Last Name")]
+			public string LastName { get; set; }
 
 			[Required]
 			[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -67,7 +68,13 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
 			returnUrl = returnUrl ?? Url.Content("~/");
 			if (ModelState.IsValid) {
-				var user = new ChatUser { UserName = Input.Username, Email = Input.Email };
+				var user = new ChatUser() {
+					UserName = Input.Username, 
+					Email = Input.Email, 
+					FirstName = Input.FirstName, 
+					LastName = Input.LastName
+				};
+
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
 					_logger.LogInformation("User created a new account with password.");
@@ -85,6 +92,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 					await _signInManager.SignInAsync(user, isPersistent: false);
 					return LocalRedirect(returnUrl);
 				}
+
 				foreach (var error in result.Errors) {
 					ModelState.AddModelError(string.Empty, error.Description);
 				}
