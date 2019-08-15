@@ -40,6 +40,14 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			[EmailAddress]
 			public string Email { get; set; }
 
+			[Required]
+			[Display(Name = "First Name")]
+			public string FirstName { get; set; }
+
+			[Required]
+			[Display(Name = "Last Name")]
+			public string LastName { get; set; }
+
 			[Phone]
 			[Display(Name = "Phone number")]
 			public string PhoneNumber { get; set; }
@@ -59,6 +67,8 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			Input = new InputModel {
 				Username = userName,
 				Email = email,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
 				PhoneNumber = phoneNumber
 			};
 

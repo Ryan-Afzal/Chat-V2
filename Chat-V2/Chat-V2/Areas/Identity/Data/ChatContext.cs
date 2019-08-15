@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat_V2.Models {
-	public class ChatContext : IdentityDbContext<ChatUser, IdentityRole<int>, int> {
+	public class ChatContext : IdentityDbContext<ChatUser, ChatRole, int> {
 		public ChatContext(DbContextOptions<ChatContext> options)
 			: base(options) {
 		}

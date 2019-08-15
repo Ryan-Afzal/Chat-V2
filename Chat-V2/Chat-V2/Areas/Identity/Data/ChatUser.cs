@@ -15,4 +15,10 @@ namespace Chat_V2.Areas.Identity.Data {
 		public string LastName { get; set; }
 
 	}
+
+	public class ChatRole : IdentityRole<int> {
+
+		
+
+	}
 }

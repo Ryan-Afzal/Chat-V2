@@ -38,7 +38,7 @@ namespace Chat_V2 {
 			});
 
 			services.AddDefaultIdentity<ChatUser>()
-				.AddRoles<IdentityRole<int>>()
+				.AddRoles<ChatRole>()
 				.AddEntityFrameworkStores<ChatContext>();
 
 			services.AddMvc()
