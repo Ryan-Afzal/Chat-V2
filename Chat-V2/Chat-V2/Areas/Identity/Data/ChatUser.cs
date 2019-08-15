@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Chat_V2.Areas.Identity.Data {
 
-	public class ChatUser : IdentityUser {
+	public class ChatUser : IdentityUser<int> {
 
 		[PersonalData]
-		public string Name { get; set; }
+		public string FirstName { get; set; }
+
+		[PersonalData]
+		public string LastName { get; set; }
 
 	}
 }
