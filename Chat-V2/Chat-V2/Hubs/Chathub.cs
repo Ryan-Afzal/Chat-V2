@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 namespace Chat_V2.Hubs {
 	public class ChatHub : Hub {
 
-		public async Task SendMessage(ChatUser user, string message) {
-			await Clients.All.SendAsync("ReceiveMessage", user, message);
+		public ChatHub() : base() {
+			
+		}
+
+		public async Task SendMessage(string userId, string message) {
+			await Clients.All.SendAsync("ReceiveMessage", userId, message);
+		}
+
+		public async Task SendMessageToUser(string userId, string message) {
+			await Clients.User(userId).SendAsync("ReceiveMessage", message);
 		}
 
 	}
