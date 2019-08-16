@@ -1,10 +1,18 @@
 ﻿@page
 @model IndexModel
+@using Microsoft.AspNetCore.Identity
+@using Chat_V2.Areas.Identity.Data
+@inject SignInManager<ChatUser> SignInManager
+@inject UserManager<ChatUser> UserManager
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to Chat V2</h1>
+    @if (SignInManager.IsSignedIn(User)) {
+        <p>Welcome @UserManager.GetUserName(User)!</p>
+    } else {
+        <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use Chat V2.</p>
+    }
 </div>
