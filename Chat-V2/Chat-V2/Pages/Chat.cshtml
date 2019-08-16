@@ -10,6 +10,7 @@
     <div class="row">
         <div class="col-6">&nbsp;</div>
         <div class="col-6">
+            <span>@Model.ChatUser.UserName: </span>
             <input type="text" id="messageInput" />
             <input type="button" id="sendButton" value="Send" />
         </div>
@@ -27,4 +28,40 @@
     </div>
 </div>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/chat.js"></script>
+<script type="text/javascript">
+    "use strict";
+
+    //SignalR connection
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+    
+    //What to do when the connection is established
+    connection.start().then(function () {
+        document.getElementById("sendButton").disabled = false;
+        console.log("connected");
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    //Disable send button until connection is established
+    document.getElementById("sendButton").disabled = true;
+
+    connection.on("ReceiveMessage", function (user, message) {
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var encodedMsg = "&lt;" + user + "&gt;: " + msg;
+        var li = document.createElement("li");
+        li.textContent = encodedMsg;
+        document.getElementById("messagesList").appendChild(li);
+    });
+
+    document.getElementById("sendButton").addEventListener("click", function (event) {
+        var user = '@(Model.ChatUser.UserName)';
+        var message = document.getElementById("messageInput").value;
+        connection.invoke("SendMessage", user, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    });
+</script>
