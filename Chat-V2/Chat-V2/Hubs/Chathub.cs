@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Hubs {
-	public class Chathub : Hub {
+	public class ChatHub : Hub {
 
 		public async Task SendMessage(ChatUser user, string message) {
 			await Clients.All.SendAsync("ReceiveMessage", user, message);
