@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Chat_V2.Hubs {
 			
 		}
 
-		public async Task SendMessage(string userId, string message) {
+		public async Task SendMessageToAll(string userId, string message) {
 			await Clients.All.SendAsync("ReceiveMessage", userId, message);
 		}
 

@@ -49,9 +49,8 @@
     document.getElementById("sendButton").disabled = true;
 
 	connection.on("ReceiveMessage", function (userId, message) {
-		var userName = '@(Model.)';
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var encodedMsg = "&lt;" + userName + "&gt;: " + msg;
+        var encodedMsg = "<" + userId + ">: " + msg;
         var li = document.createElement("li");
         li.textContent = encodedMsg;
         document.getElementById("messagesList").appendChild(li);
@@ -61,7 +60,7 @@
     document.getElementById("sendButton").addEventListener("click", function (event) {
         var user = '@(Model.ChatUser.Id)';
         var message = document.getElementById("messageInput").value;
-        connection.invoke("SendMessage", user, message).catch(function (err) {
+        connection.invoke("SendMessageToAll", user, message).catch(function (err) {
             return console.error(err.toString());
         });
         event.preventDefault();

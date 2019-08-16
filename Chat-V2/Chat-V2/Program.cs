@@ -45,13 +45,6 @@ namespace Chat_V2 {
 				"Moderator", 
 				"User"
 			};
-
-			foreach (var role in roles) {
-				var roleExist = await roleManager.RoleExistsAsync(role);
-				if (!roleExist) {
-					var roleResult = await roleManager.CreateAsync(new ChatRole(role));
-				}
-			}
 		}
 	}
 }

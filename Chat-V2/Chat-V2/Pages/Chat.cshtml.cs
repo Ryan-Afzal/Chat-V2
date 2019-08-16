@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Chat_V2.Pages {
 
@@ -32,6 +33,10 @@ namespace Chat_V2.Pages {
 			} else {
 				return LocalRedirect("/Identity/Account/Login");
 			}
+		}
+
+		public async Task<ChatUser> GetUserByIdAsync(string userId) {
+			return await _userManager.FindByIdAsync(userId);
 		}
 
 	}

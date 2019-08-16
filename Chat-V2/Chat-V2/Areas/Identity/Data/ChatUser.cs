@@ -17,9 +17,5 @@ namespace Chat_V2.Areas.Identity.Data {
 
 	}
 
-	public class ChatRole : IdentityRole<int> {
-
-		public ChatRole(string roleName) : base(roleName) { }
-
-	}
+	public class ChatRole : IdentityRole<int> { }
 }
