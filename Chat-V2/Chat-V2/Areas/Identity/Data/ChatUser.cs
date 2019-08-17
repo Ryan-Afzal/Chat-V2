@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Chat_V2.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chat_V2.Areas.Identity.Data {
@@ -14,6 +15,8 @@ namespace Chat_V2.Areas.Identity.Data {
 
 		[PersonalData]
 		public string LastName { get; set; }
+
+		public ICollection<Membership> Memberships { get; set; }
 
 	}
 

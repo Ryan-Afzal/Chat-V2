@@ -10,18 +10,21 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Chat_V2.Models;
 
 namespace Chat_V2.Areas.Identity.Pages.Account {
 	[AllowAnonymous]
 	public class RegisterModel : PageModel {
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
+		private readonly ChatContext _context;
 		private readonly ILogger<RegisterModel> _logger;
 		private readonly IEmailSender _emailSender;
 
-		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ILogger<RegisterModel> logger, IEmailSender emailSender) {
+		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<RegisterModel> logger, IEmailSender emailSender) {
 			_userManager = userManager;
 			_signInManager = signInManager;
+			_context = context;
 			_logger = logger;
 			_emailSender = emailSender;
 		}
@@ -77,6 +80,15 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
+					Group group = await _context.Group.FindAsync(1);
+					_context.Membership.Add(
+						new Membership() {
+							GroupID = group.GroupID,
+							ChatUserID = user.Id,
+							Group = group,
+							ChatUser = user
+						});
+					_context.SaveChanges();
 					_logger.LogInformation("User created a new account with password.");
 
 					var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

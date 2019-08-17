@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,11 +16,13 @@ namespace Chat_V2.Pages {
 
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
+		private readonly ChatContext _context;
 		private readonly ILogger<ChatModel> _logger;
 
-		public ChatModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ILogger<ChatModel> logger) {
+		public ChatModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ChatModel> logger) {
 			_userManager = userManager;
 			_signInManager = signInManager;
+			_context = context;
 			_logger = logger;
 		}
 

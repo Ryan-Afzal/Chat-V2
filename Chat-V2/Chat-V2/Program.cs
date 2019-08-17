@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -20,12 +21,11 @@ namespace Chat_V2 {
 				var services = scope.ServiceProvider;
 
 				try {
-					var serviceProvider = services.GetRequiredService<IServiceProvider>();
-					var configuration = services.GetRequiredService<IConfiguration>();
-					//CreateRoles(serviceProvider, configuration).Wait();
-				} catch (Exception exception) {
+					var context = services.GetRequiredService<ChatContext>();
+					DbInitializer.Initialize(context);
+				} catch (Exception ex) {
 					var logger = services.GetRequiredService<ILogger<Program>>();
-					logger.LogError(exception, "An error occurred while creating roles.");
+					logger.LogError(ex, "An error occurred creating the DB.");
 				}
 			}
 
@@ -36,15 +36,5 @@ namespace Chat_V2 {
 			WebHost.CreateDefaultBuilder(args)
 				.UseStartup<Startup>();
 
-		public static async Task CreateRoles(IServiceProvider serviceProvider, IConfiguration configuration) {
-			var roleManager = serviceProvider.GetRequiredService<RoleManager<ChatRole>>();
-			
-			string[] roles = {
-				"Admin", 
-				"Officer", 
-				"Moderator", 
-				"User"
-			};
-		}
 	}
 }

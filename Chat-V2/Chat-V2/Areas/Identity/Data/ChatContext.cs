@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat_V2.Models {
 	public class ChatContext : IdentityDbContext<ChatUser, ChatRole, int> {
+
 		public ChatContext(DbContextOptions<ChatContext> options)
 			: base(options) {
 		}
@@ -19,5 +20,9 @@ namespace Chat_V2.Models {
 			// For example, you can rename the ASP.NET Identity table names and more.
 			// Add your customizations after calling base.OnModelCreating(builder);
 		}
+
+		public DbSet<Group> Group { get; set; }
+		public DbSet<Membership> Membership { get; set; }
+
 	}
 }
