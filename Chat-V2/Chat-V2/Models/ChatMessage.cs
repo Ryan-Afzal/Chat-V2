@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Models {
-	public class Membership {
-		public int MembershipID { get; set; }
+	public class ChatMessage {
+		public int ChatMessageID { get; set; }
 		public int GroupID { get; set; }
 		public int ChatUserID { get; set; }
-		public int Rank { get; set; }
+		public int MinRank { get; set; }
+
+		public string Message { get; set; }
 
 		public Group Group { get; set; }
 		public ChatUser ChatUser { get; set; }
