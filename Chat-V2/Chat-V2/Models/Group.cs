@@ -8,6 +8,7 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 		public string Name { get; set; }
 		
+		public ICollection<ChatMessage> ChatMessages { get; set; }
 		public ICollection<Membership> Memberships { get; set; }
 	}
 }

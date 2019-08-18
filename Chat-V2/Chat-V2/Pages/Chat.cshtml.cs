@@ -14,6 +14,10 @@ namespace Chat_V2.Pages {
 
 	public class ChatModel : PageModel {
 
+		public class ChatViewModel {
+			public ChatUser ChatUser { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -26,20 +30,27 @@ namespace Chat_V2.Pages {
 			_logger = logger;
 		}
 
+		/// <summary>
+		/// Initial data goes here. DATA SHOULD NEVER BE SAVED FROM THE VIEWMODEL!!!!!!!!!!
+		/// </summary>
 		[BindProperty]
-		public ChatUser ChatUser { get; private set; }
+		public ChatViewModel ViewModel { get; private set; }
 
 		public async Task<IActionResult> OnGetAsync() {
 			if (_signInManager.IsSignedIn(User)) {
-				ChatUser = await _userManager.GetUserAsync(User);
+				var chatUser = await _userManager.GetUserAsync(User);
+
+
+
+				ViewModel = new ChatViewModel() {
+					ChatUser = chatUser
+				};
+
+
 				return Page();
 			} else {
 				return LocalRedirect("/Identity/Account/Login");
 			}
-		}
-
-		public async Task<ChatUser> GetUserByIdAsync(string userId) {
-			return await _userManager.FindByIdAsync(userId);
 		}
 
 	}

@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-6">&nbsp;</div>
         <div class="col-6">
-            <span>@Model.ChatUser.UserName: </span>
+            <span>@Model.ViewModel.ChatUser.UserName: </span>
             <input type="text" id="messageInput" />
             <input type="button" id="sendButton" value="Send" />
         </div>
@@ -48,9 +48,9 @@
     //Disable send button until connection is established
     document.getElementById("sendButton").disabled = true;
 
-	connection.on("ReceiveMessage", function (userId, message) {
+	connection.on("ReceiveMessage", function (username, message) {
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var encodedMsg = "<" + userId + ">: " + msg;
+        var encodedMsg = "<" + username + ">: " + msg;
         var li = document.createElement("li");
         li.textContent = encodedMsg;
         document.getElementById("messagesList").appendChild(li);
@@ -58,7 +58,7 @@
 
 	//Send Message
     document.getElementById("sendButton").addEventListener("click", function (event) {
-        var user = '@(Model.ChatUser.Id)';
+        var user = '@(Model.ViewModel.ChatUser.Id)';
         var message = document.getElementById("messageInput").value;
         connection.invoke("SendMessageToAll", user, message).catch(function (err) {
             return console.error(err.toString());

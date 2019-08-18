@@ -1,5 +1,6 @@
 ﻿using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -11,18 +12,16 @@ using System.Threading.Tasks;
 namespace Chat_V2.Hubs {
 	public class ChatHub : Hub {
 
-		private IServiceProvider _serviceProvider;
-		private ChatContext _context;
+		private readonly UserManager<ChatUser> _userManager;
+		private readonly ChatContext _context;
 
-		public ChatHub(IServiceProvider serviceProvider) {
-			_serviceProvider = serviceProvider;
-			using (var scope = _serviceProvider.CreateScope()) {
-				_context = scope.ServiceProvider.GetRequiredService<ChatContext>();
-			}
+		public ChatHub(UserManager<ChatUser> userManager, ChatContext context) {
+			_userManager = userManager;
+			_context = context;
 		}
 
 		public async Task SendMessageToAll(string userId, string message) {
-			await Clients.All.SendAsync("ReceiveMessage", userId, message);
+			await Clients.All.SendAsync("ReceiveMessage", (await _userManager.FindByIdAsync(userId)).UserName, message);
 		}
 
 		public async Task SendMessageToUser(string userId, string message) {
