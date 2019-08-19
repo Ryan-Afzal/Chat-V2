@@ -9,10 +9,11 @@
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-6">&nbsp;</div>
-        <div class="col-6">
-            <span>@Model.ViewModel.ChatUser.UserName: </span>
-            <input type="text" id="messageInput" />
-            <input type="button" id="sendButton" value="Send" />
+        <div id="messages-list" class="col-6" style="overflow-y: scroll">
+            <div class="message">
+                <span class="message-header">&lt;Example Header&gt;: </span>
+                <span class="message-content">Example Message</span>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -23,7 +24,7 @@
     <div class="row">
         <div class="col-6">&nbsp;</div>
         <div class="col-6">
-            <ul id="messagesList"></ul>
+            <input type="text" id="messageInput" />
         </div>
     </div>
 </div>
@@ -48,21 +49,24 @@
     //Disable send button until connection is established
     document.getElementById("sendButton").disabled = true;
 
+    //Recieve Message
 	connection.on("ReceiveMessage", function (username, message) {
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         var encodedMsg = "<" + username + ">: " + msg;
-        var li = document.createElement("li");
+        var li = document.createElement("span");
         li.textContent = encodedMsg;
         document.getElementById("messagesList").appendChild(li);
     });
 
-	//Send Message
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        var user = '@(Model.ViewModel.ChatUser.Id)';
-        var message = document.getElementById("messageInput").value;
-        connection.invoke("SendMessageToAll", user, message).catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
+    //Send Message
+    document.getElementById("messageInput").addEventListener("keyup", function (event) {
+        if (event.keyCode == 13) {
+            var user = '@(Model.ViewModel.ChatUser.Id)';
+            var message = document.getElementById("messageInput").value;
+            connection.invoke("SendMessageToAll", user, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        }
     });
 </script>

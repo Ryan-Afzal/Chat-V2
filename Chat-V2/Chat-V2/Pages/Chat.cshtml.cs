@@ -7,6 +7,7 @@ using Chat_V2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -16,6 +17,7 @@ namespace Chat_V2.Pages {
 
 		public class ChatViewModel {
 			public ChatUser ChatUser { get; set; }
+			public Membership Membership { get; set; }
 		}
 
 		private readonly SignInManager<ChatUser> _signInManager;
@@ -31,19 +33,34 @@ namespace Chat_V2.Pages {
 		}
 
 		/// <summary>
-		/// Initial data goes here. DATA SHOULD NEVER BE SAVED FROM THE VIEWMODEL!!!!!!!!!!
+		/// Initial data goes here. DATA SHOULD NEVER BE SAVED TO THE VIEWMODEL!!!!!!!!!!
 		/// </summary>
 		[BindProperty]
 		public ChatViewModel ViewModel { get; private set; }
 
-		public async Task<IActionResult> OnGetAsync() {
+		public async Task<IActionResult> OnGetAsync(int groupId) {
 			if (_signInManager.IsSignedIn(User)) {
-				var chatUser = await _userManager.GetUserAsync(User);
+				//Get the uesr from the database
+				var chatUser = _context.Users
+					.Include(u => u.Memberships)
+					.AsNoTracking()
+					.FirstOrDefault(u => u.Id == int.Parse(_userManager.GetUserId(User)));
 
+				//Get a query of all memberships, specifically the one which with the specified groupId
+				var query = from membership in chatUser.Memberships
+							where membership.GroupID == groupId
+							select membership;
 
+				//Get if the query returned anything
+				var m = query.FirstOrDefault();
+				if (m == null) {
+					//If this user doesn't have access to this group, return to the index page.
+					return LocalRedirect("/");
+				}
 
 				ViewModel = new ChatViewModel() {
-					ChatUser = chatUser
+					ChatUser = chatUser,
+					Membership = m
 				};
 
 

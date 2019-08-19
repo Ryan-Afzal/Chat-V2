@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Chat_V2.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat_V2.Areas.Identity.Pages.Account {
 	[AllowAnonymous]
@@ -80,15 +81,15 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
-					Group group = await _context.Group.FindAsync(1);
-					_context.Membership.Add(
-						new Membership() {
-							GroupID = group.GroupID,
-							ChatUserID = user.Id,
-							Rank = PermissionRank.USER.Ordinal,
-							Group = group,
-							ChatUser = user
-						});
+					Group group = await _context.Group.FirstAsync();
+					Membership membership = new Membership() {
+						GroupID = group.GroupID,
+						ChatUserID = user.Id,
+						Rank = PermissionRank.USER.Ordinal,
+						Group = group,
+						ChatUser = user
+					};
+					_context.Membership.Add(membership);
 					_context.SaveChanges();
 					_logger.LogInformation("User created a new account with password.");
 
