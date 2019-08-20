@@ -35,8 +35,8 @@ button.accept-policy {
 }
 
 /* Sticky footer styles
--------------------------------------------------- */
-html {
+-------------------------------------------------- */html {
+
   position: relative;
   min-height: 100%;
 }
@@ -60,9 +60,12 @@ body {
 }
 
 .message-header {
-
+    font-family: Consolas;
+    font-size: medium;
 }
 
 .message-content {
-
+    font-family: Consolas;
+    font-size: small;
+    color: #000000;
 }

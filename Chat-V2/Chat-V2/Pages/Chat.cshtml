@@ -40,30 +40,44 @@
     
     //What to do when the connection is established
     connection.start().then(function () {
-        document.getElementById("sendButton").disabled = false;
         console.log("connected");
     }).catch(function (err) {
         return console.error(err.toString());
     });
 
-    //Disable send button until connection is established
-    document.getElementById("sendButton").disabled = true;
-
     //Recieve Message
-	connection.on("ReceiveMessage", function (username, message) {
+	connection.on("ReceiveMessage", function (args, message) {
+        var head = "<" + args.SenderName + ">: ";
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var encodedMsg = "<" + username + ">: " + msg;
-        var li = document.createElement("span");
-        li.textContent = encodedMsg;
-        document.getElementById("messagesList").appendChild(li);
+
+        var container = document.createElement("div");
+        container.setAttribute("class", "message");
+
+        var header = document.createElement("span");
+        header.setAttribute("class", "message-header");
+        header.setAttribute("style", "color: #" + args.Rank.Color + ";");
+        header.textContent = head;
+        container.appendChild(header);
+
+        var content = document.createElement("span");
+        content.setAttribute("class", "message-content");
+        content.setAttribute("style", "color: #" + args.Rank.Color + ";");
+        content.textContent = msg;
+        container.appendChild(content);
+        
+        document.getElementById("messages-list").appendChild(container);
     });
 
     //Send Message
     document.getElementById("messageInput").addEventListener("keyup", function (event) {
         if (event.keyCode == 13) {
-            var user = '@(Model.ViewModel.ChatUser.Id)';
+            var args = {
+                    GroupID: @Model.ViewModel.Membership.GroupID,
+                    SenderID: @Model.ViewModel.ChatUser.Id,
+                    Rank: @Model.ViewModel.Membership.Rank
+                };
             var message = document.getElementById("messageInput").value;
-            connection.invoke("SendMessageToAll", user, message).catch(function (err) {
+            connection.invoke("SendMessageAsync", args, message).catch(function (err) {
                 return console.error(err.toString());
             });
             event.preventDefault();
