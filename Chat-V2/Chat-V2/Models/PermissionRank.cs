@@ -9,21 +9,22 @@ namespace Chat_V2.Models {
 
 	public sealed class PermissionRank : IComparable<PermissionRank> {
 
-		private static readonly SortedList<string, PermissionRank> ranks = new SortedList<string, PermissionRank>();
+		private static readonly Dictionary<string, PermissionRank> ranksByName = new Dictionary<string, PermissionRank>();
+		private static readonly List<PermissionRank> ranksByOrdinal = new List<PermissionRank>();
 
 		public static readonly PermissionRank USER = new PermissionRank("user", "000000");//Regular user (default)
-		public static readonly PermissionRank MODERATOR = new PermissionRank("moderator", "EECCCC");//Moderator of a group
-		public static readonly PermissionRank OFFICER = new PermissionRank("officer", "CCCCEE");//Officer of a group (Improved Moderator)
-		public static readonly PermissionRank ADMINISTRATOR = new PermissionRank("administrator", "EEDDBB");//Administrator of a group.
+		public static readonly PermissionRank MODERATOR = new PermissionRank("moderator", "FF30A0");//Moderator of a group
+		public static readonly PermissionRank OFFICER = new PermissionRank("officer", "00FFFF");//Officer of a group (Improved Moderator)
+		public static readonly PermissionRank ADMINISTRATOR = new PermissionRank("administrator", "FFAA00");//Administrator of a group.
 		public static readonly PermissionRank OWNER = new PermissionRank("owner", "00FF00");//Owner of a group
 		public static readonly PermissionRank SUPERUSER = new PermissionRank("superuser", "FF0000");//Administrator of Global chat group
 
 		private PermissionRank(string name, string color) {
-			Ordinal = ranks.Values.Count + 1;
+			Ordinal = ranksByOrdinal.Count;
 			Name = name;
 			Color = color;
 
-			ranks.Add(Name, this);
+			AddPermissionRank(this);
 		}
 
 		public int Ordinal { get; private set; }
@@ -53,11 +54,16 @@ namespace Chat_V2.Models {
 		}
 
 		public static PermissionRank GetPermissionRankByOrdinal(int o) {
-			return ranks.Values[o];
+			return ranksByOrdinal[o];
 		}
 
 		public static PermissionRank GetPermissionRankByName(string name) {
-			return ranks[name];
+			return ranksByName[name];
+		}
+
+		private static void AddPermissionRank(PermissionRank rank) {
+			ranksByName.Add(rank.Name, rank);
+			ranksByOrdinal.Add(rank);
 		}
 	}
 

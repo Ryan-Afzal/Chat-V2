@@ -8,12 +8,8 @@
 <div class="container">
     <div class="row">&nbsp;</div>
     <div class="row">
-        <div class="col-6">&nbsp;</div>
         <div id="messages-list" class="col-6" style="overflow-y: scroll">
-            <div class="message">
-                <span class="message-header">&lt;Example Header&gt;: </span>
-                <span class="message-content">Example Message</span>
-            </div>
+
         </div>
     </div>
     <div class="row">
@@ -22,7 +18,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6">&nbsp;</div>
         <div class="col-6">
             <input type="text" id="messageInput" />
         </div>
@@ -32,13 +27,20 @@
 <script type="text/javascript">
     "use strict";
 
-    //SignalR connection
+    //Get ViewModel data
+    var viewmodel = {
+        GroupID: '@Model.ViewModel.Membership.GroupID',
+        UserID: '@Model.ViewModel.Membership.ChatUserID',
+        Rank: '@Model.ViewModel.Membership.Rank'
+    };
+
+    //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
         .configureLogging(signalR.LogLevel.Information)
         .build();
     
-    //What to do when the connection is established
+    //On connection established
     connection.start().then(function () {
         console.log("connected");
     }).catch(function (err) {
@@ -47,7 +49,7 @@
 
     //Recieve Message
 	connection.on("ReceiveMessage", function (args, message) {
-        var head = "<" + args.SenderName + ">: ";
+        var head = "<" + args.senderName + ">: ";
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         var container = document.createElement("div");
@@ -55,13 +57,13 @@
 
         var header = document.createElement("span");
         header.setAttribute("class", "message-header");
-        header.setAttribute("style", "color: #" + args.Rank.Color + ";");
+        header.setAttribute("style", "color: #" + args.senderRankColor + ";");
         header.textContent = head;
         container.appendChild(header);
 
         var content = document.createElement("span");
         content.setAttribute("class", "message-content");
-        content.setAttribute("style", "color: #" + args.Rank.Color + ";");
+        content.setAttribute("style", "color: #" + args.senderRankColor + ";");
         content.textContent = msg;
         container.appendChild(content);
         
@@ -72,14 +74,17 @@
     document.getElementById("messageInput").addEventListener("keyup", function (event) {
         if (event.keyCode == 13) {
             var args = {
-                    GroupID: @Model.ViewModel.Membership.GroupID,
-                    SenderID: @Model.ViewModel.ChatUser.Id,
-                    Rank: @Model.ViewModel.Membership.Rank
-                };
+                GroupID: viewmodel.GroupID,
+                SenderID: viewmodel.UserID,
+                Rank: viewmodel.Rank
+            };
+
             var message = document.getElementById("messageInput").value;
-            connection.invoke("SendMessageAsync", args, message).catch(function (err) {
+
+            connection.invoke("SendMessage", args, message).catch(function (err) {
                 return console.error(err.toString());
             });
+
             event.preventDefault();
         }
     });

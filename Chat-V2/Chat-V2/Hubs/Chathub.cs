@@ -22,21 +22,24 @@ namespace Chat_V2.Hubs {
 			_context = context;
 		}
 
-		public async Task SendMessageAsync(OutgoingMessageArgs args, string message) {
+		public async Task SendMessage(OutgoingMessageArgs args, string message) {
 			PermissionRank rank = PermissionRank.GetPermissionRankByOrdinal(args.Rank);
+			ChatUser sender = await _userManager.FindByIdAsync(args.SenderID + "");
 
 			await GetClientsInGroup(args.GroupID, rank)
 				.SendAsync(
 					"ReceiveMessage", 
 					new IncomingMessageArgs() {
 						SenderID = args.SenderID,
-						SenderName = (await _userManager.FindByIdAsync(args.SenderID + "")).UserName,
-						Rank = rank
+						SenderName = sender.UserName,
+						SenderRankOrdinal = rank.Ordinal,
+						SenderRankName = rank.Name,
+						SenderRankColor = rank.Color
 					}, 
 					message);
 		}
 
-		public async Task SendUpdateMessageAsync() {
+		public async Task SendUpdateMessage() {
 			throw new NotImplementedException();
 		}
 
@@ -60,14 +63,6 @@ namespace Chat_V2.Hubs {
 
 		private IClientProxy GetClientsInGroup(int groupId, PermissionRank rank) {
 			return Clients.Users(GetUsersInGroup(groupId, rank));
-		}
-
-		public async Task SendMessageToAll(string userId, string message) {
-			await Clients.All.SendAsync("ReceiveMessage", (await _userManager.FindByIdAsync(userId)).UserName, message);
-		}
-
-		public async Task SendMessageToUser(string userId, string message) {
-			await Clients.User(userId).SendAsync("ReceiveMessage", message);
 		}
 
 	}

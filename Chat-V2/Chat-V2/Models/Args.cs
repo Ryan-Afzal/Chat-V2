@@ -14,7 +14,9 @@ namespace Chat_V2.Models {
 	public class IncomingMessageArgs {
 		public int SenderID { get; set; }
 		public string SenderName { get; set; }
-		public PermissionRank Rank { get; set; }
+		public int SenderRankOrdinal { get; set; }
+		public string SenderRankName { get; set; }
+		public string SenderRankColor { get; set; }
 	}
 
 }
