@@ -22,7 +22,44 @@ namespace Chat_V2.Hubs {
 			_context = context;
 		}
 
-		//TODO Load Previous Messages
+		/*
+		 * Make changes to THIS FUNCTION (unless you tell me first)
+		 * 
+		 *  | | | |
+		 *  V V V V
+		 */
+
+		/// <summary>
+		/// This method is designed to retrieve messages from the database of the group. It is called automatically by the client.
+		/// </summary>
+		/// <param name="groupId">The group to pull from</param>
+		/// <param name="rank">The ordinal of the rank of the user getting the messages. If a message has a higher rank than this, don't include it in output.</param>
+		/// <param name="prevStart">The starting index (starting at the last index) of the messages.</param>
+		/// <param name="prevEnd">The ending index (starting at the last index) of the messages.</param>
+		public async Task GetPreviousMessages(int groupId, int rankOrd, int prevStart, int prevEnd) {
+			var group = GetGroupById(groupId);//Get the actual group object
+
+			//basic test code that just gets every single previous message regardless of prevStart and prevEnd.
+			LinkedList<IncomingMessageArgs> list = new LinkedList<IncomingMessageArgs>();
+			foreach (var m in group.ChatMessages) {
+				var user = await _userManager.FindByIdAsync(m.ChatUserID + "");
+				var rank = PermissionRank.GetPermissionRankByOrdinal(rankOrd);
+				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
+
+				if (rank.CompareTo(PermissionRank.GetPermissionRankByOrdinal(m.MinRank)) >= 0) {
+					list.AddLast(new IncomingMessageArgs() {
+						SenderID = user.Id,
+						SenderName = user.UserName,
+						SenderRankOrdinal = messageRank.Ordinal,
+						SenderRankName = messageRank.Name,
+						SenderRankColor = messageRank.Color,
+						Message = m.Message
+					});
+				}
+			}
+
+			await Clients.Caller.SendAsync("ReceivePreviousMessages", /* Replace this with the actual output */list);
+		}
 
 		public async Task SendMessage(OutgoingMessageArgs args, string message) {
 			//Load data from database based on args
@@ -37,6 +74,7 @@ namespace Chat_V2.Hubs {
 				GroupID = group.GroupID,
 				TimeStamp = DateTime.Now,
 				Message = message,
+				ChatUserRank = senderRank.Ordinal,
 				MinRank = minRank.Ordinal
 			};
 			group.ChatMessages.Add(chatMessage);
@@ -51,9 +89,9 @@ namespace Chat_V2.Hubs {
 						SenderName = sender.UserName,
 						SenderRankOrdinal = senderRank.Ordinal,
 						SenderRankName = senderRank.Name,
-						SenderRankColor = senderRank.Color
-					}, 
-					message);
+						SenderRankColor = senderRank.Color,
+						Message = message
+					});
 		}
 
 		private Group GetGroupById(int groupId) {
@@ -69,26 +107,28 @@ namespace Chat_V2.Hubs {
 			return group;
 		}
 
-		private IReadOnlyList<string> GetUsersInGroup(int groupId, PermissionRank rank) {
-			return GetUsersInGroup(GetGroupById(groupId), rank);
+		private IReadOnlyList<string> GetUsersInGroup(int groupId, PermissionRank minRank) {
+			return GetUsersInGroup(GetGroupById(groupId), minRank);
 		}
 
-		private IReadOnlyList<string> GetUsersInGroup(Group group, PermissionRank rank) {
+		private IReadOnlyList<string> GetUsersInGroup(Group group, PermissionRank minRank) {
 			List<string> list = new List<string>();
 
 			foreach (var m in group.Memberships) {
-				list.Add(m.ChatUserID + "");
+				if (m.Rank >= minRank.Ordinal) {
+					list.Add(m.ChatUserID + "");
+				}
 			}
 
 			return list.AsReadOnly();
 		}
 
-		private IClientProxy GetClientsInGroup(Group group, PermissionRank rank) {
-			return Clients.Users(GetUsersInGroup(group, rank));
+		private IClientProxy GetClientsInGroup(Group group, PermissionRank minRank) {
+			return Clients.Users(GetUsersInGroup(group, minRank));
 		}
 
-		private IClientProxy GetClientsInGroup(int groupId, PermissionRank rank) {
-			return Clients.Users(GetUsersInGroup(groupId, rank));
+		private IClientProxy GetClientsInGroup(int groupId, PermissionRank minRank) {
+			return Clients.Users(GetUsersInGroup(groupId, minRank));
 		}
 
 	}

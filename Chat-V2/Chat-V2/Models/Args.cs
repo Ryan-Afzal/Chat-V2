@@ -18,6 +18,7 @@ namespace Chat_V2.Models {
 		public int SenderRankOrdinal { get; set; }
 		public string SenderRankName { get; set; }
 		public string SenderRankColor { get; set; }
+		public string Message { get; set; }
 	}
 
 }

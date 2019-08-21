@@ -34,6 +34,50 @@
         Rank: '@Model.ViewModel.Membership.Rank'
     };
 
+    function prependMessage(senderName, senderRankColor, message) {
+        var head = "<" + senderName + ">: ";
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        var container = document.createElement("div");
+        container.setAttribute("class", "message");
+
+        var header = document.createElement("span");
+        header.setAttribute("class", "message-header");
+        header.setAttribute("style", "color: #" + senderRankColor + ";");
+        header.textContent = head;
+        container.appendChild(header);
+
+        var content = document.createElement("span");
+        content.setAttribute("class", "message-content");
+        content.setAttribute("style", "color: #" + senderRankColor + ";");
+        content.textContent = msg;
+        container.appendChild(content);
+        
+        document.getElementById("messages-list").appendChild(container);
+    }
+
+    function appendMessage(senderName, senderRankColor, message) {
+        var head = "<" + senderName + ">: ";
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        var container = document.createElement("div");
+        container.setAttribute("class", "message");
+
+        var header = document.createElement("span");
+        header.setAttribute("class", "message-header");
+        header.setAttribute("style", "color: #" + senderRankColor + ";");
+        header.textContent = head;
+        container.appendChild(header);
+
+        var content = document.createElement("span");
+        content.setAttribute("class", "message-content");
+        content.setAttribute("style", "color: #" + senderRankColor + ";");
+        content.textContent = msg;
+        container.appendChild(content);
+        
+        document.getElementById("messages-list").appendChild(container);
+    }
+
     //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
@@ -43,31 +87,23 @@
     //On connection established
     connection.start().then(function () {
         console.log("connected");
+
+        //Load the last 50 messages
+        connection.invoke("GetPreviousMessages", viewmodel.GroupID, viewmodel.Rank, 0, 50);
     }).catch(function (err) {
         return console.error(err.toString());
     });
 
-    //Recieve Message
-	connection.on("ReceiveMessage", function (args, message) {
-        var head = "<" + args.senderName + ">: ";
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    connection.on("ReceivePreviousMessages", function (messages) {
+        $.each(messages, function () {
+            var args = this;
+            prependMessage(args.senderName, args.senderRankColor, args.message);
+        });
+    });
 
-        var container = document.createElement("div");
-        container.setAttribute("class", "message");
-
-        var header = document.createElement("span");
-        header.setAttribute("class", "message-header");
-        header.setAttribute("style", "color: #" + args.senderRankColor + ";");
-        header.textContent = head;
-        container.appendChild(header);
-
-        var content = document.createElement("span");
-        content.setAttribute("class", "message-content");
-        content.setAttribute("style", "color: #" + args.senderRankColor + ";");
-        content.textContent = msg;
-        container.appendChild(content);
-        
-        document.getElementById("messages-list").appendChild(container);
+    //Receive Message
+	connection.on("ReceiveMessage", function (args) {
+        appendMessage(args.senderName, args.senderRankColor, args.message);
     });
 
     //Send Message
