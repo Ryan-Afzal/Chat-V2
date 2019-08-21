@@ -8,7 +8,8 @@ namespace Chat_V2.Models {
 	public class OutgoingMessageArgs {
 		public int GroupID { get; set; }
 		public int SenderID { get; set; }
-		public int Rank { get; set; }
+		public int SenderRank { get; set; }
+		public int MinRank { get; set; }
 	}
 
 	public class IncomingMessageArgs {

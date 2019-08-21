@@ -10,7 +10,7 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 		public int ChatUserID { get; set; }
 		public int MinRank { get; set; }
-		public DateTime DateTime { get; set; }
+		public DateTime TimeStamp { get; set; }
 
 		public string Message { get; set; }
 
