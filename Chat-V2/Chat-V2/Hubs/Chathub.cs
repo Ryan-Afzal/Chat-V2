@@ -23,7 +23,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		/*
-		 * Make changes to THIS FUNCTION (unless you tell me first)
+		 * I think I fixed it, don't change it!
 		 * 
 		 *  | | | |
 		 *  V V V V
@@ -34,31 +34,40 @@ namespace Chat_V2.Hubs {
 		/// </summary>
 		/// <param name="groupId">The group to pull from</param>
 		/// <param name="rank">The ordinal of the rank of the user getting the messages. If a message has a higher rank than this, don't include it in output.</param>
-		/// <param name="prevStart">The starting index (starting at the last index) of the messages.</param>
-		/// <param name="prevEnd">The ending index (starting at the last index) of the messages.</param>
+		/// <param name="prevStart">The starting index (starting at the last index) of the messages. [inclusive]</param>
+		/// <param name="prevEnd">The ending index (starting at the last index) of the messages. [exclusive]</param>
 		public async Task GetPreviousMessages(int groupId, int rankOrd, int prevStart, int prevEnd) {
 			var group = GetGroupById(groupId);//Get the actual group object
 
 			//basic test code that just gets every single previous message regardless of prevStart and prevEnd.
 			LinkedList<IncomingMessageArgs> list = new LinkedList<IncomingMessageArgs>();
+			int i = 0;
 			foreach (var m in group.ChatMessages) {
 				var user = await _userManager.FindByIdAsync(m.ChatUserID + "");
 				var rank = PermissionRank.GetPermissionRankByOrdinal(rankOrd);
 				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
-
+				
 				if (rank.CompareTo(PermissionRank.GetPermissionRankByOrdinal(m.MinRank)) >= 0) {
-					list.AddLast(new IncomingMessageArgs() {
-						SenderID = user.Id,
-						SenderName = user.UserName,
-						SenderRankOrdinal = messageRank.Ordinal,
-						SenderRankName = messageRank.Name,
-						SenderRankColor = messageRank.Color,
-						Message = m.Message
-					});
+					if (i > prevStart) {
+						if (i == prevEnd) {
+							break;
+						}
+						
+						list.AddLast(new IncomingMessageArgs() {
+							SenderID = user.Id,
+							SenderName = user.UserName,
+							SenderRankOrdinal = messageRank.Ordinal,
+							SenderRankName = messageRank.Name,
+							SenderRankColor = messageRank.Color,
+							Message = m.Message
+						});
+					}
+					
+					i++;
 				}
 			}
 
-			await Clients.Caller.SendAsync("ReceivePreviousMessages", /* Replace this with the actual output */list);
+			await Clients.Caller.SendAsync("ReceivePreviousMessages", list);
 		}
 
 		public async Task SendMessage(OutgoingMessageArgs args, string message) {
