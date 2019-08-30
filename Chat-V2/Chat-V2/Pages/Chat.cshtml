@@ -8,19 +8,15 @@
 <div class="container">
     <div class="row">&nbsp;</div>
     <div class="row">
-        <div id="messages-list" class="col-6" style="overflow-y: scroll; width: 100%; height: 200px;">
+        <div id="messages-list" style="overflow-y: scroll; width: 100%; height: 400px">
 
         </div>
     </div>
     <div class="row">
-        <div class="col-12">
-            <hr />
-        </div>
+        <hr />
     </div>
     <div class="row">
-        <div class="col-6">
-            <input type="text" id="messageInput" width: 100%; />
-        </div>
+        <input type="text" id="messageInput" style="width: 100%;" />
     </div>
 </div>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
@@ -33,28 +29,6 @@
         UserID: '@Model.ViewModel.Membership.ChatUserID',
         Rank: '@Model.ViewModel.Membership.Rank'
     };
-
-    function prependMessage(senderName, senderRankColor, message) {
-        var head = "<" + senderName + ">: ";
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-        var container = document.createElement("div");
-        container.setAttribute("class", "message");
-
-        var header = document.createElement("span");
-        header.setAttribute("class", "message-header");
-        header.setAttribute("style", "color: #" + senderRankColor + ";");
-        header.textContent = head;
-        container.appendChild(header);
-
-        var content = document.createElement("span");
-        content.setAttribute("class", "message-content");
-        content.setAttribute("style", "color: #" + senderRankColor + ";");
-        content.textContent = msg;
-        container.appendChild(content);
-        
-        document.getElementById("messages-list").appendChild(container);
-    }
 
     function appendMessage(senderName, senderRankColor, message) {
         var head = "<" + senderName + ">: ";
@@ -74,8 +48,11 @@
         content.setAttribute("style", "color: #" + senderRankColor + ";");
         content.textContent = msg;
         container.appendChild(content);
-        
-        document.getElementById("messages-list").appendChild(container);
+
+        var messagesList = document.getElementById("messages-list");
+
+        messagesList.appendChild(container);
+        messagesList.scrollTop = messagesList.scrollHeight;
     }
 
     //Start SignalR connection
@@ -97,7 +74,7 @@
     connection.on("ReceivePreviousMessages", function (messages) {
         $.each(messages, function () {
             var args = this;
-            prependMessage(args.senderName, args.senderRankColor, args.message);
+            appendMessage(args.senderName, args.senderRankColor, args.message);
         });
     });
 
@@ -109,18 +86,21 @@
     //Send Message
     document.getElementById("messageInput").addEventListener("keyup", function (event) {
         if (event.keyCode == 13) {
+            var element = document.getElementById("messageInput");
+            var message = element.value;
+
             var args = {
                 GroupID: viewmodel.GroupID,
                 SenderID: viewmodel.UserID,
                 SenderRank: viewmodel.Rank,
-                MinRank: viewmodel.Rank
+                MinRank: viewmodel.Rank,
+                Message: message
             };
-
-            var message = document.getElementById("messageInput").value;
-
             connection.invoke("SendMessage", args, message).catch(function (err) {
                 return console.error(err.toString());
             });
+
+            element.value = "";
 
             event.preventDefault();
         }

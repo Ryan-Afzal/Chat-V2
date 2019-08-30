@@ -10,6 +10,7 @@ namespace Chat_V2.Models {
 		public int SenderID { get; set; }
 		public int SenderRank { get; set; }
 		public int MinRank { get; set; }
+		public string Message { get; set; }
 	}
 
 	public class IncomingMessageArgs {

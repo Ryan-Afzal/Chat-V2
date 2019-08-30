@@ -21,35 +21,21 @@ namespace Chat_V2.Hubs {
 			_userManager = userManager;
 			_context = context;
 		}
-
-		/*
-		 * I think I fixed it, don't change it!
-		 * 
-		 *  | | | |
-		 *  V V V V
-		 */
-
-		/// <summary>
-		/// This method is designed to retrieve messages from the database of the group. It is called automatically by the client.
-		/// </summary>
-		/// <param name="groupId">The group to pull from</param>
-		/// <param name="rank">The ordinal of the rank of the user getting the messages. If a message has a higher rank than this, don't include it in output.</param>
-		/// <param name="prevStart">The starting index (starting at the last index) of the messages. [inclusive]</param>
-		/// <param name="prevEnd">The ending index (starting at the last index) of the messages. [exclusive]</param>
+		
 		public async Task GetPreviousMessages(int groupId, int rankOrd, int prevStart, int prevEnd) {
 			var group = GetGroupById(groupId);//Get the actual group object
 
 			//basic test code that just gets every single previous message regardless of prevStart and prevEnd.
 			LinkedList<IncomingMessageArgs> list = new LinkedList<IncomingMessageArgs>();
-			int i = 0;
+			int i = group.ChatMessages.Count - 1;
 			foreach (var m in group.ChatMessages) {
 				var user = await _userManager.FindByIdAsync(m.ChatUserID + "");
 				var rank = PermissionRank.GetPermissionRankByOrdinal(rankOrd);
 				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
 				
 				if (rank.CompareTo(PermissionRank.GetPermissionRankByOrdinal(m.MinRank)) >= 0) {
-					if (i > prevStart) {
-						if (i == prevEnd) {
+					if (i < prevEnd) {
+						if (i < prevStart) {
 							break;
 						}
 						
@@ -63,7 +49,7 @@ namespace Chat_V2.Hubs {
 						});
 					}
 					
-					i++;
+					i--;
 				}
 			}
 
@@ -76,6 +62,8 @@ namespace Chat_V2.Hubs {
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
 			ChatUser sender = await _userManager.FindByIdAsync(args.SenderID + "");
 			Group group = GetGroupById(args.GroupID);
+
+
 
 			//Log the message
 			ChatMessage chatMessage = new ChatMessage() {

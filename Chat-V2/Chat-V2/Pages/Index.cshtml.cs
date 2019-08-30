@@ -10,5 +10,9 @@ namespace Chat_V2.Pages {
 		public void OnGet() {
 
 		}
+
+		public async Task<IActionResult> OnPostAsync() {
+			return new LocalRedirectResult("/chat?groupId=3");
+		}
 	}
 }
