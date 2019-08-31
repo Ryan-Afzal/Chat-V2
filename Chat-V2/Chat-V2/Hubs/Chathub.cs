@@ -1,5 +1,6 @@
 ﻿using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
+using Chat_V2.Models.Command;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -56,21 +57,19 @@ namespace Chat_V2.Hubs {
 			await Clients.Caller.SendAsync("ReceivePreviousMessages", list);
 		}
 
-		public async Task SendMessage(OutgoingMessageArgs args, string message) {
+		public async Task SendMessage(OutgoingMessageArgs args) {
 			//Load data from database based on args
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
 			ChatUser sender = await _userManager.FindByIdAsync(args.SenderID + "");
 			Group group = GetGroupById(args.GroupID);
 
-
-
 			//Log the message
 			ChatMessage chatMessage = new ChatMessage() {
 				ChatUserID = sender.Id,
 				GroupID = group.GroupID,
 				TimeStamp = DateTime.Now,
-				Message = message,
+				Message = args.Message,
 				ChatUserRank = senderRank.Ordinal,
 				MinRank = minRank.Ordinal
 			};
@@ -87,7 +86,7 @@ namespace Chat_V2.Hubs {
 						SenderRankOrdinal = senderRank.Ordinal,
 						SenderRankName = senderRank.Name,
 						SenderRankColor = senderRank.Color,
-						Message = message
+						Message = args.Message
 					});
 		}
 
