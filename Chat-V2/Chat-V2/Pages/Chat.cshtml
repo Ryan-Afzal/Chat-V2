@@ -8,17 +8,50 @@
 <div class="container">
     <div class="row">&nbsp;</div>
     <div class="row">
-        <div id="messages-list" style="overflow-y: scroll; width: 100%; height: 400px">
+        <div class="col-6">
+            <div id="messages-list">
 
+            </div>
+            <hr />
+            <input type="text" id="message-input" />
+        </div>
+        <div class="col-6">
+            <div id="command-output-list">
+
+            </div>
+            <hr />
+            <input type="text" id="command-input" />
         </div>
     </div>
-    <div class="row">
-        <hr />
-    </div>
-    <div class="row">
-        <input type="text" id="messageInput" style="width: 100%;" />
-    </div>
 </div>
+<style>
+
+    #messages-list, #command-output-list {
+        overflow-y: scroll;
+        width: 100%;
+    }
+
+    #message-input, #command-input {
+        width: 100%;
+    }
+
+    #messages-list {
+        height: 750px;
+    }
+
+    #message-input {
+
+    }
+
+    #command-output-list {
+        height: 200px;
+    }
+
+    #command-input {
+        
+    }
+
+</style>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 <script type="text/javascript">
     "use strict";
@@ -55,6 +88,31 @@
         messagesList.scrollTop = messagesList.scrollHeight;
     }
 
+    function appendCommandMessage(color, message) {
+        var head = "$ ";
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        var container = document.createElement("div");
+        container.setAttribute("class", "message");
+
+        var header = document.createElement("span");
+        header.setAttribute("class", "message-header");
+        header.setAttribute("style", "color: #" + color + ";");
+        header.textContent = head;
+        container.appendChild(header);
+
+        var content = document.createElement("span");
+        content.setAttribute("class", "message-content");
+        content.setAttribute("style", "color: #" + color + ";");
+        content.textContent = msg;
+        container.appendChild(content);
+
+        var messagesList = document.getElementById("command-output-list");
+
+        messagesList.appendChild(container);
+        messagesList.scrollTop = messagesList.scrollHeight;
+    }
+
     //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
@@ -84,9 +142,9 @@
     });
 
     //Send Message
-    document.getElementById("messageInput").addEventListener("keyup", function (event) {
+    document.getElementById("message-input").addEventListener("keyup", function (event) {
         if (event.keyCode == 13) {
-            var element = document.getElementById("messageInput");
+            var element = document.getElementById("message-input");
             var message = element.value;
 
             var args = {
@@ -96,7 +154,34 @@
                 MinRank: viewmodel.Rank,
                 Message: message
             };
-            connection.invoke("SendMessage", args, message).catch(function (err) {
+            connection.invoke("SendMessage", args).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            element.value = "";
+
+            event.preventDefault();
+        }
+    });
+
+    //Receive Command-Related Message
+    connection.on("ReceiveCommandMessage", function (args) {
+        appendCommandMessage(args.color, args.message);
+    });
+
+    //Send Command
+    document.getElementById("command-input").addEventListener("keyup", function (event) {
+        if (event.keyCode == 13) {
+            var element = document.getElementById("command-input");
+            var text = element.value;
+
+            var args = {
+                GroupID: viewmodel.GroupID,
+                SenderID: viewmodel.UserID,
+                SenderRank: viewmodel.Rank,
+                Text: text
+            };
+            connection.invoke("ProcessCommand", args).catch(function (err) {
                 return console.error(err.toString());
             });
 

@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Identity;
 namespace Chat_V2.Models.Command {
 	public abstract class Command : ICommand {
 
-		public static readonly char CommandCharacter = '$';
-
 		public Command(int minRank, string name, string desc) {
 			MinRank = minRank;
 			Name = name;
@@ -20,7 +18,7 @@ namespace Chat_V2.Models.Command {
 		public string Name { get; }
 		public string Description { get; }
 
-		public abstract void Execute(UserManager<ChatUser> userManager, ChatContext context);
+		public abstract void Execute(CommandArgs args);
 
 	}
 }

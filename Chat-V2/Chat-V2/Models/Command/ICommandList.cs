@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Chat_V2.Models.Command {
 	public interface ICommandList {
+		bool DoesCommandExist(string name);
 		ICommand GetCommandByName(string name);
 		IEnumerable<ICommand> GetCommandsAtRank(int rank);
 	}

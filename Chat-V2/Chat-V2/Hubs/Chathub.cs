@@ -57,6 +57,56 @@ namespace Chat_V2.Hubs {
 			await Clients.Caller.SendAsync("ReceivePreviousMessages", list);
 		}
 
+		public async Task ProcessCommand(OutgoingCommandArgs args) {
+			//Load data from database based on args
+			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
+			ChatUser sender = await _userManager.FindByIdAsync(args.SenderID + "");
+			Group group = GetGroupById(args.GroupID);
+			string text = args.Text;
+
+			await Clients.User(Context.UserIdentifier)
+				.SendAsync(
+					"ReceiveCommandMessage", 
+					new IncomingCommandMessageArgs() {
+						Color = "000000",
+						Message = text
+					}
+					);
+
+			string[] splitText = text.Split(' ');
+			if (_context.CommandList.DoesCommandExist(splitText[0])) {
+				ICommand command = _context.CommandList.GetCommandByName(splitText[0]);
+				if (command.MinRank <= senderRank.Ordinal) {
+					string[] textArgs = new string[splitText.Length - 1];
+					for (int i = 1; i < splitText.Length; i++) {
+						textArgs[i - 1] = splitText[i]; 
+					}
+
+					command.Execute(
+						new CommandArgs() {
+							Args = textArgs,
+							Context = _context,
+							Group = group,
+							User = sender,
+							UserManager = _userManager,
+							UserRank = senderRank
+						}
+						);
+
+					return;
+				}
+			}
+
+			await Clients.User(Context.UserIdentifier)
+				.SendAsync(
+					"ReceiveCommandMessage",
+					new IncomingCommandMessageArgs() {
+						Color = "FF0000",
+						Message = $"ERROR: {splitText[0]} is not a valid or accessible command."
+					}
+					);
+		}
+
 		public async Task SendMessage(OutgoingMessageArgs args) {
 			//Load data from database based on args
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
