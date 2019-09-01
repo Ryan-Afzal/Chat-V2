@@ -12,5 +12,6 @@ namespace Chat_V2.Models.Command {
 		int MinRank { get; }
 		string Name { get; }
 		string Description { get; }
+		string Usage { get; }
 	}
 }

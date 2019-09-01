@@ -69,3 +69,17 @@ body {
     font-size: small;
     color: #000000;
 }
+
+.console-output {
+    overflow: scroll;
+    width: 100%;
+}
+
+.console-input {
+    width: 100%;
+}
+
+.vertical-separator {
+    width: 1px;
+    border: solid 1px black;
+}

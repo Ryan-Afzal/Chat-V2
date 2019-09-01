@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 namespace Chat_V2.Hubs {
 	public class ChatHub : Hub {
 
-		private readonly UserManager<ChatUser> _userManager;
-		private readonly ChatContext _context;
+		public UserManager<ChatUser> UserManager { get; }
+		public ChatContext ChatContext { get; }
 
 		public ChatHub(UserManager<ChatUser> userManager, ChatContext context) {
-			_userManager = userManager;
-			_context = context;
+			UserManager = userManager;
+			ChatContext = context;
 		}
 		
 		public async Task GetPreviousMessages(int groupId, int rankOrd, int prevStart, int prevEnd) {
@@ -30,7 +30,7 @@ namespace Chat_V2.Hubs {
 			LinkedList<IncomingMessageArgs> list = new LinkedList<IncomingMessageArgs>();
 			int i = group.ChatMessages.Count - 1;
 			foreach (var m in group.ChatMessages) {
-				var user = await _userManager.FindByIdAsync(m.ChatUserID + "");
+				var user = await UserManager.FindByIdAsync(m.ChatUserID + "");
 				var rank = PermissionRank.GetPermissionRankByOrdinal(rankOrd);
 				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
 				
@@ -60,7 +60,7 @@ namespace Chat_V2.Hubs {
 		public async Task ProcessCommand(OutgoingCommandArgs args) {
 			//Load data from database based on args
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
-			ChatUser sender = await _userManager.FindByIdAsync(args.SenderID + "");
+			ChatUser sender = await UserManager.FindByIdAsync(args.SenderID + "");
 			Group group = GetGroupById(args.GroupID);
 			string text = args.Text;
 
@@ -74,8 +74,8 @@ namespace Chat_V2.Hubs {
 					);
 
 			string[] splitText = text.Split(' ');
-			if (_context.CommandList.DoesCommandExist(splitText[0])) {
-				ICommand command = _context.CommandList.GetCommandByName(splitText[0]);
+			if (ChatContext.CommandList.DoesCommandExist(splitText[0])) {
+				ICommand command = ChatContext.CommandList.GetCommandByName(splitText[0]);
 				if (command.MinRank <= senderRank.Ordinal) {
 					string[] textArgs = new string[splitText.Length - 1];
 					for (int i = 1; i < splitText.Length; i++) {
@@ -85,10 +85,9 @@ namespace Chat_V2.Hubs {
 					command.Execute(
 						new CommandArgs() {
 							Args = textArgs,
-							Context = _context,
+							Hub = this,
 							Group = group,
 							User = sender,
-							UserManager = _userManager,
 							UserRank = senderRank
 						}
 						);
@@ -111,7 +110,7 @@ namespace Chat_V2.Hubs {
 			//Load data from database based on args
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
-			ChatUser sender = await _userManager.FindByIdAsync(args.SenderID + "");
+			ChatUser sender = await UserManager.FindByIdAsync(args.SenderID + "");
 			Group group = GetGroupById(args.GroupID);
 
 			//Log the message
@@ -124,7 +123,7 @@ namespace Chat_V2.Hubs {
 				MinRank = minRank.Ordinal
 			};
 			group.ChatMessages.Add(chatMessage);
-			_context.SaveChanges();
+			ChatContext.SaveChanges();
 
 			//Distribute the message
 			await GetClientsInGroup(group, minRank)
@@ -141,7 +140,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		private Group GetGroupById(int groupId) {
-			var group = _context.Group
+			var group = ChatContext.Group
 				.Include(g => g.Memberships)
 				.Include(g => g.ChatMessages)
 				.FirstOrDefault(g => g.GroupID == groupId);

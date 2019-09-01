@@ -10,12 +10,12 @@ namespace Chat_V2.Models.Command {
 
 		public CommandList() {
 			this.commandsByName = new Dictionary<string, ICommand>();
-
 			this.RegisterCommands();
 		}
 
 		private void RegisterCommands() {
 			// Add commands here.
+			this.RegisterCommand(new HelpCommand());
 		}
 
 		private void RegisterCommand(ICommand command) {
