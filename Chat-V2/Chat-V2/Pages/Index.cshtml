@@ -13,7 +13,7 @@
     @if (SignInManager.IsSignedIn(User)) {
         <p>Welcome @UserManager.GetUserName(User)!</p>
 
-        <a href="~/chat?groupId=3">Go to Chat</a>
+        <a href="~/chat">Go to Chat</a>
     } else {
         <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use Chat V2.</p>
     }

@@ -38,8 +38,15 @@ namespace Chat_V2.Pages {
 		[BindProperty]
 		public ChatViewModel ViewModel { get; private set; }
 
-		public async Task<IActionResult> OnGetAsync(int groupId) {
+		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (_signInManager.IsSignedIn(User)) {
+				if (groupId == null) {
+					groupId = _context.Group
+						.AsNoTracking()
+						.FirstOrDefault(g => g.Name.Equals("Global"))
+						.GroupID;
+				}
+
 				//Get the user from the database
 				int userId = int.Parse(_userManager.GetUserId(User));
 				var chatUser = _context.Users
