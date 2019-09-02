@@ -20,7 +20,7 @@
 
         <div class="col-1"></div>
 
-        <div class="col-5" id="data-pane">
+        <div id="data-pane" class="col-5">
             <div id="command-output-list" class="console-output">
 
             </div>
@@ -31,37 +31,95 @@
 
             <hr />
 
-            <div id="info-pane">
-                
+            <div id="info-pane" class="container">
+                <div class="row" style="height: 100%;">
+                    <div class="col-6">
+
+                    </div>
+                    <div class="col-6">
+                        <div id="online-members-list">
+                            <div class="user-data-container">
+                                <div class="user-data-name">Sample User Name</div>
+                                <div class="user-data-rank">&nbsp;&nbsp;&nbsp;&nbsp;Rank</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <style>
 
+    .message {
+
+    }
+
+    .message-header {
+        font-family: Consolas;
+        font-size: medium;
+    }
+
+    .message-content {
+        font-family: Consolas;
+        font-size: small;
+        color: #000000;
+    }
+
+    .user-data-container {
+        display: block;
+        width: 100%;
+    }
+
+    .user-data-container:hover {
+        border: solid 1px #AAAAAA;
+    }
+
+    .user-data-name {
+        width: 100%;
+    }
+
+    .user-data-rank {
+        width: 100%;
+    }
+
+    /* The output area for the message terminal */
     #messages-list {
         height: 750px;
     }
 
+    /* The input area for the message terminal */
     #message-input {
 
     }
 
+    /* The output area for the command terminal */
     #command-output-list {
         height: 200px;
     }
 
+    /* The input area for the command terminal */
     #command-input {
         
     }
 
+    /* The panel containing the command terminal and info pane */
     #data-pane {
         border: solid 5px #00FFBB;
         border-radius: 4px 4px;
+        width: 100%;
     }
 
+    /* The panel containing group data */
     #info-pane {
         width: 100%;
+    }
+
+    /* The list of online group members */
+    #online-members-list {
+        overflow: scroll;
+        width: 100%;
+        height: 100%;
     }
 
 </style>
@@ -70,7 +128,7 @@
     "use strict";
 
     //Get ViewModel data
-    var viewmodel = {
+    const viewmodel = {
         GroupID: '@Model.ViewModel.Membership.GroupID',
         UserID: '@Model.ViewModel.Membership.ChatUserID',
         Rank: '@Model.ViewModel.Membership.Rank'
@@ -126,6 +184,15 @@
         messagesList.scrollTop = messagesList.scrollHeight;
     }
 
+    function userConnected(userId, userName, userRankName) {
+        
+    }
+
+    function userDisconnected(userId) {
+        document.getElementById("online-members-list")
+            .removeChild(document.getElementById("user-" + userId));
+    }
+
     //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
@@ -136,10 +203,28 @@
     connection.start().then(function () {
         console.log("connected");
 
+        var args = {
+            GroupID: viewmodel.GroupID,
+            SenderID: viewmodel.UserID
+        };
+
+        //Send the connection event
+        connection.invoke("ClientConnected", args);
+
         //Load the last 50 messages
         connection.invoke("GetPreviousMessages", viewmodel.GroupID, viewmodel.Rank, 0, 50);
     }).catch(function (err) {
         return console.error(err.toString());
+    });
+
+    window.addEventListener('unload', (event) => {
+        var args = {
+            GroupID: viewmodel.GroupID,
+            SenderID: viewmodel.UserID
+        };
+
+        //Send the disconnection event
+        connection.invoke("ClientDisconnected", args);
     });
 
     connection.on("ReceivePreviousMessages", function (messages) {
@@ -202,5 +287,15 @@
 
             event.preventDefault();
         }
+    });
+
+    connection.on("UserConnected", function (args) {
+        if (args.userId != viewmodel.UserID) {
+            userConnected(args.userId, args.userName, args.userRankName);
+        }
+    });
+
+    connection.on("UserDisconnected", function (args) {
+        userDisconnected(args.userId);
     });
 </script>

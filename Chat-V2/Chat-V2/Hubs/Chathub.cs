@@ -82,7 +82,7 @@ namespace Chat_V2.Hubs {
 						textArgs[i - 1] = splitText[i]; 
 					}
 
-					command.Execute(
+					await command.Execute(
 						new CommandArgs() {
 							Args = textArgs,
 							Hub = this,
@@ -137,6 +137,50 @@ namespace Chat_V2.Hubs {
 						SenderRankColor = senderRank.Color,
 						Message = args.Message
 					});
+		}
+
+		public async Task ClientConnected(ClientConnectedArgs args) {
+			var chatUser = ChatContext.Users
+					.Include(u => u.Memberships)
+					.AsNoTracking()
+					.FirstOrDefault(u => u.Id == args.SenderID);
+			var query = from membership in chatUser.Memberships
+						where membership.GroupID == args.GroupID
+						select membership;
+
+			//Get if the query returned anything
+			var m = query.FirstOrDefault();
+			if (m == null) {
+				//Should never happen, but just in case...
+				throw new ArgumentException($"User with ID {args.SenderID} is not a member of group with ID {args.GroupID}");
+			}
+
+			m.IsActive = true;
+			await ChatContext.SaveChangesAsync();
+
+			Debug.WriteLine($"{m.IsActive}");
+		}
+
+		public async Task ClientDisconnected(ClientDisconnectedArgs args) {
+			var chatUser = ChatContext.Users
+					.Include(u => u.Memberships)
+					.AsNoTracking()
+					.FirstOrDefault(u => u.Id == args.SenderID);
+			var query = from membership in chatUser.Memberships
+						where membership.GroupID == args.GroupID
+						select membership;
+
+			//Get if the query returned anything
+			var m = query.FirstOrDefault();
+			if (m == null) {
+				//Should never happen, but just in case...
+				throw new ArgumentException($"User with ID {args.SenderID} is not a member of group with ID {args.GroupID}");
+			}
+
+			m.IsActive = false;
+			await ChatContext.SaveChangesAsync();
+
+			Debug.WriteLine($"{m.IsActive}");
 		}
 
 		private Group GetGroupById(int groupId) {

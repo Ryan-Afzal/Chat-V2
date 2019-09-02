@@ -40,11 +40,12 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnGetAsync(int groupId) {
 			if (_signInManager.IsSignedIn(User)) {
-				//Get the uesr from the database
+				//Get the user from the database
+				int userId = int.Parse(_userManager.GetUserId(User));
 				var chatUser = _context.Users
 					.Include(u => u.Memberships)
 					.AsNoTracking()
-					.FirstOrDefault(u => u.Id == int.Parse(_userManager.GetUserId(User)));
+					.FirstOrDefault(u => u.Id == userId);
 
 				//Get a query of all memberships, specifically the one which with the specified groupId
 				var query = from membership in chatUser.Memberships

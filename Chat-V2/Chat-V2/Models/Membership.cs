@@ -5,11 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Models {
+	/// <summary>
+	/// Stores data about a <code>User</code>'s relationship to a <code>Group</code>.
+	/// </summary>
 	public class Membership {
 		public int MembershipID { get; set; }
 		public int GroupID { get; set; }
 		public int ChatUserID { get; set; }
 		public int Rank { get; set; }
+		public bool IsActive { get; set; }
 
 		public Group Group { get; set; }
 		public ChatUser ChatUser { get; set; }

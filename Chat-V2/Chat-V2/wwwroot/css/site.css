@@ -55,21 +55,6 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
-.message {
-
-}
-
-.message-header {
-    font-family: Consolas;
-    font-size: medium;
-}
-
-.message-content {
-    font-family: Consolas;
-    font-size: small;
-    color: #000000;
-}
-
 .console-output {
     overflow: scroll;
     width: 100%;
