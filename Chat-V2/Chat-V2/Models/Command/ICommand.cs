@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Chat_V2.Models.Command {
 	public interface ICommand {
-		void Execute(CommandArgs args);
+		Task Execute(CommandArgs args);
 
 		int MinRank { get; }
 		string Name { get; }

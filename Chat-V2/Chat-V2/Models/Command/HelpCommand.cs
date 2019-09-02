@@ -10,23 +10,25 @@ namespace Chat_V2.Models.Command {
 
 		public HelpCommand() : base(0, "help", "Lists all accessible commands.", "help") { }
 
-		public override void Execute(CommandArgs args) {
-			StringBuilder builder = new StringBuilder();
+		public async override Task Execute(CommandArgs args) {
+			IClientProxy proxy = args.Hub.Clients.User($"{args.User.Id}");
 
-			builder.Append($"Commands available at rank: {args.UserRank.Name}");
-
-			foreach (ICommand command in args.Hub.ChatContext.CommandList.GetCommandsAtRank(args.UserRank.Ordinal)) {
-				builder.Append($"       {command.Usage}: {command.Description}");
-			}
-
-			args.Hub.Clients.User($"{args.User.Id}")
-				.SendAsync(
-				"ReceiveCommandMessage",
+			await proxy.SendAsync("ReceiveCommandMessage",
 				new IncomingCommandMessageArgs() {
 					Color = "0000FF",
-					Message = builder.ToString()
-				}
-				);
+					Message = $"Commands available at rank: {args.UserRank.Name}"
+				});
+
+			foreach (ICommand command in args.Hub.ChatContext.CommandList.GetCommandsAtRank(args.UserRank.Ordinal)) {
+				await proxy.SendAsync("ReceiveCommandMessage",
+					new IncomingCommandMessageArgs() {
+						Color = "0000FF",
+						Message = $"    [{command.Usage}]: {command.Description}"
+					});
+			}
+
+			
+				
 		}
 	}
 }

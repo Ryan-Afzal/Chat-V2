@@ -8,28 +8,32 @@
 <div class="container">
     <div class="row">&nbsp;</div>
     <div class="row">
-        <div class="col-5">
+        <div class="col-6">
             <div id="messages-list" class="console-output">
 
             </div>
 
-            <hr />
+            <br />
 
             <input type="text" id="message-input" class="console-input" placeholder="Enter message here" />
         </div>
 
-        <div class="col-2 vertical-separator">
+        <div class="col-1"></div>
 
-        </div>
-
-        <div class="col-5">
+        <div class="col-5" id="data-pane">
             <div id="command-output-list" class="console-output">
 
             </div>
 
+            <br />
+
+            <input type="text" id="command-input" class="console-input" placeholder="Enter commands here. Type 'help' for a list of commands." />
+
             <hr />
 
-            <input type="text" id="command-input" class="console-input" placeholder="Enter command here. Type 'help' for a list of commands." />
+            <div id="info-pane">
+                
+            </div>
         </div>
     </div>
 </div>
@@ -49,6 +53,15 @@
 
     #command-input {
         
+    }
+
+    #data-pane {
+        border: solid 5px #00FFBB;
+        border-radius: 4px 4px;
+    }
+
+    #info-pane {
+        width: 100%;
     }
 
 </style>

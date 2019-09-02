@@ -20,7 +20,7 @@ namespace Chat_V2.Models.Command {
 		public string Description { get; }
 		public string Usage { get; }
 
-		public abstract void Execute(CommandArgs args);
+		public abstract Task Execute(CommandArgs args);
 
 	}
 }

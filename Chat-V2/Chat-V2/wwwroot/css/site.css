@@ -78,8 +78,3 @@ body {
 .console-input {
     width: 100%;
 }
-
-.vertical-separator {
-    width: 1px;
-    border: solid 1px black;
-}
