@@ -8,6 +8,7 @@ using Chat_V2.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -60,6 +61,9 @@ namespace Chat_V2 {
 
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
+			app.UseForwardedHeaders(new ForwardedHeadersOptions {
+				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+			});
 			app.UseAuthentication();
 			app.UseCookiePolicy();
 			app.UseSignalR(routes => {
