@@ -56,10 +56,12 @@ body {
 }
 
 .console-output {
-    overflow: scroll;
+    overflow-y: scroll;
     width: 100%;
+    text-wrap: normal;
 }
 
 .console-input {
     width: 100%;
+    text-wrap: normal;
 }
