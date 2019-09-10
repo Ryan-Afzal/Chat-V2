@@ -17,6 +17,7 @@ namespace Chat_V2.Areas.Identity {
 					options.UseSqlServer(
 						context.Configuration.GetConnectionString("ChatContextConnection")
 						//"Server=(sqlservr)\\MSSQL14.MSSQLSERVER;Database=Chat-V2;Trusted_Connection=True;"
+						//"Server=.;Database=Chat-V2;Trusted_Connection=True;"
 				));
 
 
