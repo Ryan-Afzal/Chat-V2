@@ -14,10 +14,10 @@ namespace Chat_V2.Areas.Identity {
 		public void Configure(IWebHostBuilder builder) {
 			builder.ConfigureServices((context, services) => {
 				services.AddDbContext<ChatContext>(options =>
-					options.UseSqlServer(
-						context.Configuration.GetConnectionString("ChatContextConnection")
-						//"Server=(sqlservr)\\MSSQL14.MSSQLSERVER;Database=Chat-V2;Trusted_Connection=True;"
-						//"Server=.;Database=Chat-V2;Trusted_Connection=True;"
+					options.UseNpgsql(
+						@"User ID=root;Password=**********;Host=localhost;Port=5432;Database=Chat-V2;"
+					//options.UseSqlServer(
+						//context.Configuration.GetConnectionString("ChatContextConnection")
 				));
 
 
