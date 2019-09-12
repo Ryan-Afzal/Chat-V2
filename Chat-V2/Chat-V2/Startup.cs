@@ -45,6 +45,10 @@ namespace Chat_V2 {
 
 			services.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+			services.Configure<ForwardedHeadersOptions>(options => {
+				options.ForwardedHeaders =
+					ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+			});
 
 			services.AddSignalR();
 		}
@@ -59,11 +63,11 @@ namespace Chat_V2 {
 				app.UseHsts();
 			}
 
+			app.UseForwardedHeaders(/*new ForwardedHeadersOptions {
+				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+			}*/);
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
-			app.UseForwardedHeaders(new ForwardedHeadersOptions {
-				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-			});
 			app.UseAuthentication();
 			app.UseCookiePolicy();
 			app.UseSignalR(routes => {
