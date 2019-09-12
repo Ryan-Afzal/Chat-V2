@@ -15,7 +15,7 @@ namespace Chat_V2.Areas.Identity {
 			builder.ConfigureServices((context, services) => {
 				services.AddDbContext<ChatContext>(options =>
 					options.UseNpgsql(
-						@"User ID=root;Password=**********;Host=localhost;Port=5432;Database=Chat-V2;"
+						@"User ID=postgres;Password=ryanserver083103;Host=localhost;Port=5432;Database=Chat-V2;"
 					//options.UseSqlServer(
 						//context.Configuration.GetConnectionString("ChatContextConnection")
 				));
