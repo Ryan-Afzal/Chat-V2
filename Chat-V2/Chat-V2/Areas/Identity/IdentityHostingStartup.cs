@@ -13,15 +13,19 @@ namespace Chat_V2.Areas.Identity {
 	public class IdentityHostingStartup : IHostingStartup {
 		public void Configure(IWebHostBuilder builder) {
 			builder.ConfigureServices((context, services) => {
-				services.AddDbContext<ChatContext>(options =>
-					options.UseNpgsql(
-						@"User ID=postgres;Password=ryanserver083103;Host=localhost;Port=5432;Database=Chat-V2;"
-					//options.UseSqlServer(
-						//context.Configuration.GetConnectionString("ChatContextConnection")
-				));
+                services.AddDbContext<ChatContext>(options =>
 
+#if DEBUG
+                    options.UseSqlServer(
+                         context.Configuration.GetConnectionString("ChatContextConnection")
+                     ));
+#else
+                    options.UseNpgsql(
+                        @"User ID=postgres;Password=ryanserver083103;Host=localhost;Port=5432;Database=Chat-V2;"
+                    ));
+#endif
 
-			});
+            });
 		}
 	}
 }
