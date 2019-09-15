@@ -145,8 +145,8 @@ namespace Chat_V2.Hubs {
 					.FirstOrDefault(u => u.Id == args.SenderID);
 
 			var membershipQuery = from membership in chatUser.Memberships
-						where membership.GroupID == args.GroupID
-						select membership;
+								  where membership.GroupID == args.GroupID
+								  select membership;
 
 			//Get if the query returned anything
 			var m = membershipQuery.FirstOrDefault();

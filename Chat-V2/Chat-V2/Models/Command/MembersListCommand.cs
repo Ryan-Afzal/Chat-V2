@@ -23,13 +23,16 @@ namespace Chat_V2.Models.Command {
 					Color = "0000FF",
 					Message = $"ID       Name              Rank            Online  "
 				});
-			
-			foreach (Membership membership in args.Group.Memberships) {
-				await proxy.SendAsync("ReceiveCommandMessage",
-					new IncomingCommandMessageArgs() {
-						Color = "0000FF",
-						Message = $"{(membership.ChatUserID + "").PadRight(7)}  {membership.ChatUser.UserName.PadRight(16).Substring(0, 16)}  {PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name.PadRight(14)}  {membership.IsActive}"
-					});
+
+			var list = from membership in args.Group.Memberships
+					   where membership.IsActive
+					   select new IncomingCommandMessageArgs() {
+						   Color = "0000FF",
+						   Message = $"{(membership.ChatUserID + "").PadRight(7)}  {args.Hub.ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName.PadRight(16).Substring(0, 16)}  {PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name.PadRight(14)}  {membership.IsActive}"
+					   };
+
+			foreach (var msg in list) {
+				await proxy.SendAsync("ReceiveCommandMessage", msg);
 			}
 		}
 	}
