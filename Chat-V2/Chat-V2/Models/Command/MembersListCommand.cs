@@ -23,7 +23,7 @@ namespace Chat_V2.Models.Command {
 					Color = "0000FF",
 					Message = $"ID       Name              Rank            Online  "
 				});
-
+			
 			foreach (Membership membership in args.Group.Memberships) {
 				await proxy.SendAsync("ReceiveCommandMessage",
 					new IncomingCommandMessageArgs() {

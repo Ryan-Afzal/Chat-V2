@@ -13051,23 +13051,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\zanzan\\.nuget\\packages\\": {},
+    "C:\\Users\\ryana\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\zanzan\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
+      "projectUniqueName": "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
       "projectName": "Chat-V2",
-      "projectPath": "C:\\Users\\zanzan\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
-      "packagesPath": "C:\\Users\\zanzan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\zanzan\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2\\obj\\",
+      "projectPath": "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
+      "packagesPath": "C:\\Users\\ryana\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ryana\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\zanzan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ryana\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

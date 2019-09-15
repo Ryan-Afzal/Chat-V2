@@ -40,7 +40,7 @@ namespace Chat_V2.Hubs {
 							break;
 						}
 						
-						list.AddLast(new IncomingMessageArgs() {
+						list.AddFirst(new IncomingMessageArgs() {
 							SenderID = user.Id,
 							SenderName = user.UserName,
 							SenderRankOrdinal = messageRank.Ordinal,
@@ -142,14 +142,14 @@ namespace Chat_V2.Hubs {
 		public async Task ClientConnected(ClientConnectedArgs args) {
 			var chatUser = ChatContext.Users
 					.Include(u => u.Memberships)
-					.AsNoTracking()
 					.FirstOrDefault(u => u.Id == args.SenderID);
-			var query = from membership in chatUser.Memberships
+
+			var membershipQuery = from membership in chatUser.Memberships
 						where membership.GroupID == args.GroupID
 						select membership;
 
 			//Get if the query returned anything
-			var m = query.FirstOrDefault();
+			var m = membershipQuery.FirstOrDefault();
 			if (m == null) {
 				//Should never happen, but just in case...
 				throw new ArgumentException($"User with ID {args.SenderID} is not a member of group with ID {args.GroupID}");
@@ -158,13 +158,30 @@ namespace Chat_V2.Hubs {
 			m.IsActive = true;
 			await ChatContext.SaveChangesAsync();
 
-			Debug.WriteLine($"{m.IsActive}");
+			await Clients.Caller.SendAsync(
+				"ReceiveConnectedUsers",
+				from membership in GetGroupById(args.GroupID).Memberships
+				where membership.IsActive
+				select new UserConnectedArgs() {
+					UserID = membership.ChatUserID,
+					UserName = ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName,
+					UserRankName = PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name
+				}
+				);
+
+			await GetClientsInGroup(args.GroupID, PermissionRank.USER)
+				.SendAsync(
+				"UserConnected",
+				new UserConnectedArgs() {
+					UserID = chatUser.Id,
+					UserName = chatUser.UserName,
+					UserRankName = PermissionRank.GetPermissionRankByOrdinal(m.Rank).Name
+				});
 		}
 
 		public async Task ClientDisconnected(ClientDisconnectedArgs args) {
 			var chatUser = ChatContext.Users
 					.Include(u => u.Memberships)
-					.AsNoTracking()
 					.FirstOrDefault(u => u.Id == args.SenderID);
 			var query = from membership in chatUser.Memberships
 						where membership.GroupID == args.GroupID
@@ -180,7 +197,12 @@ namespace Chat_V2.Hubs {
 			m.IsActive = false;
 			await ChatContext.SaveChangesAsync();
 
-			Debug.WriteLine($"{m.IsActive}");
+			await GetClientsInGroup(args.GroupID, PermissionRank.USER)
+				.SendAsync(
+				"UserDisconnected", 
+				new UserDisconnectedArgs() {
+					UserID = chatUser.Id
+				});
 		}
 
 		private Group GetGroupById(int groupId) {

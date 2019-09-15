@@ -33,15 +33,12 @@
 
             <div id="info-pane" class="container">
                 <div class="row" style="height: 100%;">
-                    <div class="col-6">
+                    <div class="col-3">
 
                     </div>
-                    <div class="col-6">
+                    <div class="col-9">
                         <div id="online-members-list">
-                            <div class="user-data-container">
-                                <div class="user-data-name">Sample User Name</div>
-                                <div class="user-data-rank">&nbsp;&nbsp;&nbsp;&nbsp;Rank</div>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -134,6 +131,9 @@
         Rank: '@Model.ViewModel.Membership.Rank'
     };
 
+    //The number of messages currently displayed. Used for getting previous messages.
+    var numMessages = 0;
+
     function appendMessage(senderName, senderRankColor, message) {
         var head = "<" + senderName + ">: ";
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -157,6 +157,30 @@
 
         messagesList.appendChild(container);
         messagesList.scrollTop = messagesList.scrollHeight;
+    }
+
+    function prependMessage(senderName, senderRankColor, message) {
+        var head = "<" + senderName + ">: ";
+        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        var container = document.createElement("div");
+        container.setAttribute("class", "message");
+
+        var header = document.createElement("span");
+        header.setAttribute("class", "message-header");
+        header.setAttribute("style", "color: #" + senderRankColor + ";");
+        header.textContent = head;
+        container.appendChild(header);
+
+        var content = document.createElement("span");
+        content.setAttribute("class", "message-content");
+        content.setAttribute("style", "color: #" + senderRankColor + ";");
+        content.textContent = msg;
+        container.appendChild(content);
+
+        var messagesList = document.getElementById("messages-list");
+
+        messagesList.prepend(container);
     }
 
     function appendCommandMessage(color, message) {
@@ -185,7 +209,21 @@
     }
 
     function userConnected(userId, userName, userRankName) {
-        
+        var container = document.createElement("div");
+        container.setAttribute("id", "user-" + userId);
+        container.setAttribute("class", "user-data-container");
+
+        var name = document.createElement("div");
+        name.setAttribute("class", "user-data-name");
+        name.textContent = userName;
+        container.appendChild(name);
+
+        var rank = document.createElement("div");
+        rank.setAttribute("class", "user-data-rank");
+        rank.textContent = "    " + userRankName;
+        container.appendChild(rank);
+
+        document.getElementById("online-members-list").appendChild(container);
     }
 
     function userDisconnected(userId) {
@@ -203,13 +241,13 @@
     connection.start().then(function () {
         console.log("connected");
 
-        var args = {
+        var connectionArgs = {
             GroupID: viewmodel.GroupID,
             SenderID: viewmodel.UserID
         };
 
         //Send the connection event
-        connection.invoke("ClientConnected", args);
+        connection.invoke("ClientConnected", connectionArgs);
 
         //Load the last 50 messages
         connection.invoke("GetPreviousMessages", viewmodel.GroupID, viewmodel.Rank, 0, 50);
@@ -217,6 +255,7 @@
         return console.error(err.toString());
     });
 
+    //On disconnect
     window.addEventListener('unload', (event) => {
         var args = {
             GroupID: viewmodel.GroupID,
@@ -227,16 +266,29 @@
         connection.invoke("ClientDisconnected", args);
     });
 
+    //Receive Previous Messages
     connection.on("ReceivePreviousMessages", function (messages) {
         $.each(messages, function () {
             var args = this;
-            appendMessage(args.senderName, args.senderRankColor, args.message);
+            prependMessage(args.senderName, args.senderRankColor, args.message);
+            numMessages++;
+        });
+    });
+
+    //Receive List of Connected Users
+    connection.on("ReceiveConnectedUsers", function (users) {
+        $.each(users, function () {
+            var args = this;
+            if (args.userID != parseInt(viewmodel.UserID)) {
+                userConnected(args.userID, args.userName, args.userRankName);
+            }
         });
     });
 
     //Receive Message
 	connection.on("ReceiveMessage", function (args) {
         appendMessage(args.senderName, args.senderRankColor, args.message);
+        numMessages++;
     });
 
     //Send Message
@@ -289,13 +341,15 @@
         }
     });
 
+    //On User Connect
     connection.on("UserConnected", function (args) {
-        if (args.userId != viewmodel.UserID) {
-            userConnected(args.userId, args.userName, args.userRankName);
+        if (args.userID != parseInt(viewmodel.UserID)) {
+            userConnected(args.userID, args.userName, args.userRankName);
         }
     });
 
+    //On User Disconnect
     connection.on("UserDisconnected", function (args) {
-        userDisconnected(args.userId);
+        userDisconnected(args.userID);
     });
 </script>
