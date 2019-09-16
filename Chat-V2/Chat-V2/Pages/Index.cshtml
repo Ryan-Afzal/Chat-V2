@@ -9,12 +9,12 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to WhaleChat</h1>
+    <h1 class="display-4">Welcome to RooChat</h1>
     @if (SignInManager.IsSignedIn(User)) {
         <p>Welcome @UserManager.GetUserName(User)!</p>
 
         <a href="~/chat">Go to Chat</a>
     } else {
-        <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use Chat V2.</p>
+        <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use RooChat.</p>
     }
 </div>
