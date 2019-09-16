@@ -352,4 +352,9 @@
     connection.on("UserDisconnected", function (args) {
         userDisconnected(args.userID);
     });
+
+    //On Receive Rank Update
+    connection.on("UpdateRank", function (args) {
+        viewmodel.Rank = args.newRank;
+    });
 </script>

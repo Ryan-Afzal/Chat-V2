@@ -78,4 +78,11 @@ namespace Chat_V2.Models {
 		public int UserID { get; set; }
 	}
 
+	/// <summary>
+	/// Represents data passed to the client when the client's rank is updated
+	/// </summary>
+	public class RankUpdateArgs {
+		public int NewRank { get; set; }
+	}
+
 }
