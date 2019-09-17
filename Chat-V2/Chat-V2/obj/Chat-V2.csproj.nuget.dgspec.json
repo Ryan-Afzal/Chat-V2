@@ -1,28 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/ryan/Chat-V2/Chat-V2/Chat-V2/Chat-V2.csproj": {}
+    "C:\\Users\\s-afzalr\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj": {}
   },
   "projects": {
-    "/home/ryan/Chat-V2/Chat-V2/Chat-V2/Chat-V2.csproj": {
+    "C:\\Users\\s-afzalr\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/ryan/Chat-V2/Chat-V2/Chat-V2/Chat-V2.csproj",
+        "projectUniqueName": "C:\\Users\\s-afzalr\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
         "projectName": "Chat-V2",
-        "projectPath": "/home/ryan/Chat-V2/Chat-V2/Chat-V2/Chat-V2.csproj",
-        "packagesPath": "/home/ryan/.nuget/packages/",
-        "outputPath": "/home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/",
+        "projectPath": "C:\\Users\\s-afzalr\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\Chat-V2.csproj",
+        "packagesPath": "C:\\Users\\s-afzalr\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\s-afzalr\\Documents\\GitHub\\Chat-V2\\Chat-V2\\Chat-V2\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "/home/ryan/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\s-afzalr\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

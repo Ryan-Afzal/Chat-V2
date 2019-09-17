@@ -22,52 +22,144 @@ namespace Chat_V2.Hubs {
 			UserManager = userManager;
 			ChatContext = context;
 		}
-		
-		public async Task GetPreviousMessages(int groupId, int rankOrd, int prevStart, int prevEnd) {
-			var group = GetGroupById(groupId);//Get the actual group object
+
+		public async Task Connected(ConnectedArgs args) {
+			var chatUser = await ChatContext.Users
+				.Include(u => u.Memberships)
+				.ThenInclude(m => m.Group)
+				.FirstOrDefaultAsync(u => u.Id == args.UserID);
+			chatUser.IsOnline = true;
+			await ChatContext.SaveChangesAsync();
+
+			foreach (var m in chatUser.Memberships) {
+				await Clients.Caller.SendAsync(
+					"AddGroup", 
+					new AddGroupArgs() {
+						GroupID = m.GroupID,
+						MembershipID = m.MembershipID,
+						GroupName = m.Group.Name
+					});
+			}
+		}
+
+		public async Task Disconnected(DisconnectedArgs args) {
+			var chatUser = await UserManager.FindByIdAsync(args.UserID + "");
+			chatUser.IsOnline = false;
+			await ChatContext.SaveChangesAsync();
+		}
+
+		public async Task ConnectedToGroup(ConnectedToGroupArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.ThenInclude(g => g.Memberships)
+				.ThenInclude(m => m.ChatUser)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			membership.IsActive = true;
+			await ChatContext.SaveChangesAsync();
+
+			await GetPreviousMessages(new GetPreviousMessagesArgs() {
+				MembershipID = args.MembershipID,
+				StartIndex = 0,
+				EndIndex = 50
+			});
+
+			foreach (var _m in membership.Group.Memberships) {
+				if (_m.IsActive) {
+					await Clients.Caller.SendAsync(
+						"OtherUserConnectedToGroup", 
+						new OtherUserConnectedToGroupArgs() {
+							GroupID = _m.GroupID,
+							UserID = _m.ChatUserID,
+							UserName = _m.ChatUser.UserName,
+							UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
+						});
+				}
+			}
+
+			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+				.SendAsync(
+				"OtherUserConnectedToGroup",
+				new OtherUserConnectedToGroupArgs() {
+					GroupID = membership.GroupID,
+					UserID = membership.ChatUserID,
+					UserName = membership.ChatUser.UserName,
+					UserRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name
+				});
+		}
+
+		public async Task DisconnectedFromGroup(DisconnectedFromGroupArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			membership.IsActive = false;
+			await ChatContext.SaveChangesAsync();
+
+			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+				.SendAsync(
+				"OtherUserDisconnectedFromGroup",
+				new OtherUserDisconnectedFromGroupArgs() {
+					UserID = membership.ChatUserID, 
+					GroupID = membership.GroupID
+				});
+		}
+
+		public async Task GetPreviousMessages(GetPreviousMessagesArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.ThenInclude(g => g.ChatMessages)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
 			//basic test code that just gets every single previous message regardless of prevStart and prevEnd.
-			LinkedList<IncomingMessageArgs> list = new LinkedList<IncomingMessageArgs>();
-			int i = group.ChatMessages.Count - 1;
-			foreach (var m in group.ChatMessages) {
+			LinkedList<ReceiveMessageArgs> list = new LinkedList<ReceiveMessageArgs>();
+			int i = membership.Group.ChatMessages.Count - 1;
+			foreach (var m in membership.Group.ChatMessages) {
 				var user = await UserManager.FindByIdAsync(m.ChatUserID + "");
-				var rank = PermissionRank.GetPermissionRankByOrdinal(rankOrd);
+				var rank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
-				
+
 				if (rank.CompareTo(PermissionRank.GetPermissionRankByOrdinal(m.MinRank)) >= 0) {
-					if (i < prevEnd) {
-						if (i < prevStart) {
+					if (i < args.EndIndex) {
+						if (i < args.StartIndex) {
 							break;
 						}
-						
-						list.AddFirst(new IncomingMessageArgs() {
+
+						list.AddFirst(new ReceiveMessageArgs() {
 							SenderID = user.Id,
 							SenderName = user.UserName,
-							SenderRankOrdinal = messageRank.Ordinal,
-							SenderRankName = messageRank.Name,
 							SenderRankColor = messageRank.Color,
 							Message = m.Message
 						});
 					}
-					
+
 					i--;
 				}
 			}
 
-			await Clients.Caller.SendAsync("ReceivePreviousMessages", list);
+			await Clients.Caller.SendAsync(
+				"ReceivePreviousMessages",
+				list);
 		}
 
-		public async Task ProcessCommand(OutgoingCommandArgs args) {
-			//Load data from database based on args
-			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
-			ChatUser sender = await UserManager.FindByIdAsync(args.SenderID + "");
-			Group group = GetGroupById(args.GroupID);
-			string text = args.Text;
+		public async Task ProcessCommand(ProcessCommandArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.ThenInclude(g => g.ChatMessages)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
+			ChatUser sender = membership.ChatUser;
+			Group group = membership.Group;
+			string text = args.Message;
 
 			await Clients.User(Context.UserIdentifier)
 				.SendAsync(
-					"ReceiveCommandMessage", 
-					new IncomingCommandMessageArgs() {
+					"ReceiveCommandMessage",
+					new ReceiveCommandMessageArgs() {
 						Color = "000000",
 						Message = text
 					}
@@ -79,7 +171,7 @@ namespace Chat_V2.Hubs {
 				if (command.MinRank <= senderRank.Ordinal) {
 					string[] textArgs = new string[splitText.Length - 1];
 					for (int i = 1; i < splitText.Length; i++) {
-						textArgs[i - 1] = splitText[i]; 
+						textArgs[i - 1] = splitText[i];
 					}
 
 					await command.Execute(
@@ -99,19 +191,24 @@ namespace Chat_V2.Hubs {
 			await Clients.User(Context.UserIdentifier)
 				.SendAsync(
 					"ReceiveCommandMessage",
-					new IncomingCommandMessageArgs() {
+					new ReceiveCommandMessageArgs() {
 						Color = "FF0000",
 						Message = $"ERROR: {splitText[0]} is not a valid or accessible command."
 					}
 					);
 		}
 
-		public async Task SendMessage(OutgoingMessageArgs args) {
+		public async Task SendMessage(SendMessageArgs args) {
 			//Load data from database based on args
-			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(args.SenderRank);
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.ThenInclude(g => g.ChatMessages)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
-			ChatUser sender = await UserManager.FindByIdAsync(args.SenderID + "");
-			Group group = GetGroupById(args.GroupID);
+			ChatUser sender = membership.ChatUser;
+			Group group = membership.Group;
 
 			//Log the message
 			ChatMessage chatMessage = new ChatMessage() {
@@ -128,81 +225,14 @@ namespace Chat_V2.Hubs {
 			//Distribute the message
 			await GetClientsInGroup(group, minRank)
 				.SendAsync(
-					"ReceiveMessage", 
-					new IncomingMessageArgs() {
-						SenderID = args.SenderID,
+					"ReceiveMessage",
+					new ReceiveMessageArgs() {
+						SenderID = sender.Id,
+						GroupID = group.GroupID,
 						SenderName = sender.UserName,
-						SenderRankOrdinal = senderRank.Ordinal,
-						SenderRankName = senderRank.Name,
 						SenderRankColor = senderRank.Color,
 						Message = args.Message
 					});
-		}
-
-		public async Task ClientConnected(ClientConnectedArgs args) {
-			var chatUser = ChatContext.Users
-					.Include(u => u.Memberships)
-					.FirstOrDefault(u => u.Id == args.SenderID);
-
-			var membershipQuery = from membership in chatUser.Memberships
-								  where membership.GroupID == args.GroupID
-								  select membership;
-
-			//Get if the query returned anything
-			var m = membershipQuery.FirstOrDefault();
-			if (m == null) {
-				//Should never happen, but just in case...
-				throw new ArgumentException($"User with ID {args.SenderID} is not a member of group with ID {args.GroupID}");
-			}
-
-			m.IsActive = true;
-			await ChatContext.SaveChangesAsync();
-
-			await Clients.Caller.SendAsync(
-				"ReceiveConnectedUsers",
-				from membership in GetGroupById(args.GroupID).Memberships
-				where membership.IsActive
-				select new UserConnectedArgs() {
-					UserID = membership.ChatUserID,
-					UserName = ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName,
-					UserRankName = PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name
-				}
-				);
-
-			await GetClientsInGroup(args.GroupID, PermissionRank.USER)
-				.SendAsync(
-				"UserConnected",
-				new UserConnectedArgs() {
-					UserID = chatUser.Id,
-					UserName = chatUser.UserName,
-					UserRankName = PermissionRank.GetPermissionRankByOrdinal(m.Rank).Name
-				});
-		}
-
-		public async Task ClientDisconnected(ClientDisconnectedArgs args) {
-			var chatUser = ChatContext.Users
-					.Include(u => u.Memberships)
-					.FirstOrDefault(u => u.Id == args.SenderID);
-			var query = from membership in chatUser.Memberships
-						where membership.GroupID == args.GroupID
-						select membership;
-
-			//Get if the query returned anything
-			var m = query.FirstOrDefault();
-			if (m == null) {
-				//Should never happen, but just in case...
-				throw new ArgumentException($"User with ID {args.SenderID} is not a member of group with ID {args.GroupID}");
-			}
-
-			m.IsActive = false;
-			await ChatContext.SaveChangesAsync();
-
-			await GetClientsInGroup(args.GroupID, PermissionRank.USER)
-				.SendAsync(
-				"UserDisconnected", 
-				new UserDisconnectedArgs() {
-					UserID = chatUser.Id
-				});
 		}
 
 		private Group GetGroupById(int groupId) {

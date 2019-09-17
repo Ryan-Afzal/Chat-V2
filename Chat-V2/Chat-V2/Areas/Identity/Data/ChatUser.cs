@@ -16,6 +16,8 @@ namespace Chat_V2.Areas.Identity.Data {
 		[PersonalData]
 		public string LastName { get; set; }
 
+        public bool IsOnline { get; set; }
+
 		public ICollection<Membership> Memberships { get; set; }
 
 	}
