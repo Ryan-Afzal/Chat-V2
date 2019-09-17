@@ -70,7 +70,6 @@ namespace Chat_V2 {
 			app.UseCookiePolicy();
 			app.UseSignalR(routes => {
 				routes.MapHub<ChatHub>("/chatHub");
-				routes.MapHub<GroupsHub>("/groupsHub");
 			});
 			app.UseMvc();
 		}
