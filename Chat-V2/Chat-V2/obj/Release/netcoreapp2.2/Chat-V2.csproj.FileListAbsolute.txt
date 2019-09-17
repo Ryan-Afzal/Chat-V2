@@ -41,3 +41,4 @@
 /home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp2.2/Chat-V2.dll
 /home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp2.2/Chat-V2.pdb
 /home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp2.2/Chat-V2.csproj.CopyComplete
+/home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp2.2/Razor/Pages/Groups.g.cshtml.cs

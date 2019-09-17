@@ -47,8 +47,11 @@ namespace Chat_V2.Pages {
 						.GroupID;
 				}
 
-				//Get the user from the database
-				var chatUser = await _userManager.GetUserAsync(User);
+				int userId = int.Parse(_userManager.GetUserId(User));
+				var chatUser = _context.Users
+					.Include(u => u.Memberships)
+					.AsNoTracking()
+					.FirstOrDefault(u => u.Id == userId);
 
 				//Get a query of all memberships, specifically the one which with the specified groupId
 				var query = from membership in chatUser.Memberships
