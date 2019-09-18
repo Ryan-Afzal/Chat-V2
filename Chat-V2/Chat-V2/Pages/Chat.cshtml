@@ -255,12 +255,14 @@
     function userDisconnected(userId) {
         document.getElementById("online-members-list")
             .removeChild(document.getElementById("user-" + userId));
+        Console.log("removed user" + userId);
     }
 
     function clearUsers() {
-        $("#online-users-list").empty();
+        $("#online-members-list").empty();
     }
 
+    //Clears messages, clears users, disconnects from the current group, and resets data.
     function clear() {
         clearMessages();
         clearUsers();
@@ -287,8 +289,8 @@
         membershipID = membershipId;
 
         var args = {
-            MembershipID: membershipID;
-        }
+            MembershipID: membershipID
+        };
 
         connection.invoke("ConnectedToGroup", args);
     }
@@ -353,6 +355,8 @@
 
     //On Disconnect
     window.addEventListener('unload', (event) => {
+        clear();
+
         var args = {
             UserID: viewmodel.UserID
         };
