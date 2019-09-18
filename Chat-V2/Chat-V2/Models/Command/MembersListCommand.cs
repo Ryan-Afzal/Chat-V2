@@ -14,19 +14,19 @@ namespace Chat_V2.Models.Command {
 			IClientProxy proxy = args.Hub.Clients.User($"{args.User.Id}");
 
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"Members of group {args.Group.Name}#{args.Group.GroupID}"
 				});
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"ID       Name              Rank            Online  "
 				});
 
 			var list = from membership in args.Group.Memberships
 					   where membership.IsActive
-					   select new IncomingCommandMessageArgs() {
+					   select new ReceiveCommandMessageArgs() {
 						   Color = "0000FF",
 						   Message = $"{(membership.ChatUserID + "").PadRight(7)}  {args.Hub.ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName.PadRight(16).Substring(0, 16)}  {PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name.PadRight(14)}  {membership.IsActive}"
 					   };

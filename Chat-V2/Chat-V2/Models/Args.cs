@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace Chat_V2.Models {
 
+	//To Server
+
     public class ConnectedArgs {
         public int UserID { get; set; }
     }
@@ -38,6 +40,8 @@ namespace Chat_V2.Models {
         public string Message { get; set; }
     }
 
+	//To Client
+
     public class AddGroupArgs {
         public int GroupID { get; set; }
 		public int MembershipID { get; set; }
@@ -60,10 +64,6 @@ namespace Chat_V2.Models {
         public int UserID { get; set; }
     }
 
-    public class NewGroupMessageArgs {
-        public int GroupID { get; set; }
-    }
-
     public class ReceiveMessageArgs {
         public int SenderID { get; set; }
         public int GroupID { get; set; }
@@ -75,11 +75,6 @@ namespace Chat_V2.Models {
     public class ReceiveCommandMessageArgs {
         public string Message { get; set; }
         public string Color { get; set; }
-    }
-
-    public class ReceiveNewRankArgs {
-        public int GroupID { get; set; }
-        public string NewRank { get; set; }
     }
 
 }

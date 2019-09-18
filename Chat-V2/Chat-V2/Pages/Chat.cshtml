@@ -83,11 +83,16 @@
     }
 
     .group-data-container {
+        display: block;
+        width: 100%;
+    }
 
+    .group-data-container:hover {
+        border: solid 1px #AAAAAA;
     }
 
     .group-data-name {
-
+        width: 100%;
     }
 
     /* The output area for the message terminal */
@@ -148,6 +153,9 @@
     //The number of messages currently displayed. Used for getting previous messages.
     var numMessages = 0;
 
+    var currentGroupID = -1;
+    var membershipID = -1;
+
     function appendMessage(senderName, senderRankColor, message) {
         var head = "<" + senderName + ">: ";
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -195,6 +203,10 @@
         var messagesList = document.getElementById("messages-list");
 
         messagesList.prepend(container);
+    }
+
+    function clearMessages() {
+        $("#messages-list").empty();
     }
 
     function appendCommandMessage(color, message) {
@@ -245,6 +257,80 @@
             .removeChild(document.getElementById("user-" + userId));
     }
 
+    function clearUsers() {
+        $("#online-users-list").empty();
+    }
+
+    function clear() {
+        clearMessages();
+        clearUsers();
+
+        var args = {
+            MembershipID: membershipID
+        };
+
+        connection.invoke("DisconnectedFromGroup", args);
+
+        numMessages = 0;
+        currentGroupID = -1;
+        membershipID = -1;
+    }
+
+    function newGroupMessage(groupId) {
+        //Signal new Group Message
+    }
+
+    function switchGroupTo(groupId, membershipId) {
+        clear();
+
+        currentGroupID = groupId;
+        membershipID = membershipId;
+
+        var args = {
+            MembershipID: membershipID;
+        }
+
+        connection.invoke("ConnectedToGroup", args);
+    }
+
+    function addGroup(groupId, groupName, membershipId) {
+        var container = document.createElement("div");
+        container.setAttribute("class", "group-data-container");
+        container.setAttribute("id", "group-" + groupId);
+        container.setAttribute("groupId", groupId);
+        container.setAttribute("membershipId", membershipId);
+        container.addEventListener("click", function () {
+            switchGroupTo(
+                parseInt(container.getAttribute("groupId")),
+                parseInt(container.getAttribute("membershipId"))
+            );
+        });
+
+        var header = document.createElement("span");
+        header.setAttribute("class", "group-data-name");
+        header.textContent = groupName;
+        container.appendChild(header);
+
+        //var content = document.createElement("span");
+        //content.setAttribute("class", "message-content");
+        //content.setAttribute("style", "color: #" + senderRankColor + ";");
+        //content.textContent = msg;
+        //container.appendChild(content);
+
+        var groupsList = document.getElementById("groups-list");
+
+        groupsList.prepend(container);
+    }
+
+    function removeGroup(groupId) {
+        document.getElementById("groups-list")
+            .removeChild(document.getElementById("group-" + groupId));
+
+        if (groupId == currentGroupID) {
+            clear();
+        }
+    }
+
     //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
@@ -256,28 +342,23 @@
         console.log("connected");
 
         var connectionArgs = {
-            GroupID: viewmodel.GroupID,
-            SenderID: viewmodel.UserID
+            UserID: viewmodel.UserID
         };
 
         //Send the connection event
-        connection.invoke("ClientConnected", connectionArgs);
-
-        //Load the last 50 messages
-        connection.invoke("GetPreviousMessages", viewmodel.GroupID, viewmodel.Rank, 0, 50);
+        connection.invoke("Connected", connectionArgs);
     }).catch(function (err) {
         return console.error(err.toString());
     });
 
-    //On disconnect
+    //On Disconnect
     window.addEventListener('unload', (event) => {
         var args = {
-            GroupID: viewmodel.GroupID,
-            SenderID: viewmodel.UserID
+            UserID: viewmodel.UserID
         };
 
         //Send the disconnection event
-        connection.invoke("ClientDisconnected", args);
+        connection.invoke("Disconnected", args);
     });
 
     //Receive Previous Messages
@@ -289,34 +370,27 @@
         });
     });
 
-    //Receive List of Connected Users
-    connection.on("ReceiveConnectedUsers", function (users) {
-        $.each(users, function () {
-            var args = this;
-            if (args.userID != parseInt(viewmodel.UserID)) {
-                userConnected(args.userID, args.userName, args.userRankName);
-            }
-        });
-    });
-
     //Receive Message
-	connection.on("ReceiveMessage", function (args) {
-        appendMessage(args.senderName, args.senderRankColor, args.message);
-        numMessages++;
+    connection.on("ReceiveMessage", function (args) {
+        if (args.groupID == currentGroupID) {
+            appendMessage(args.senderName, args.senderRankColor, args.message);
+            numMessages++;
+        } else {
+            newGroupMessage(args.groupID);
+        }
+        
 
         //Put the sound here
     });
 
     //Send Message
     document.getElementById("message-input").addEventListener("keyup", function (event) {
-        if (event.keyCode == 13) {
+        if (event.keyCode == 13 && currentGroupID != -1) {
             var element = document.getElementById("message-input");
             var message = element.value;
 
             var args = {
-                GroupID: viewmodel.GroupID,
-                SenderID: viewmodel.UserID,
-                SenderRank: viewmodel.Rank,
+                MembershipID: membershipID,
                 MinRank: viewmodel.Rank,
                 Message: message
             };
@@ -342,10 +416,8 @@
             var text = element.value;
 
             var args = {
-                GroupID: viewmodel.GroupID,
-                SenderID: viewmodel.UserID,
-                SenderRank: viewmodel.Rank,
-                Text: text
+                MembershipID: membershipID,
+                Message: text
             };
             connection.invoke("ProcessCommand", args).catch(function (err) {
                 return console.error(err.toString());
@@ -357,20 +429,31 @@
         }
     });
 
-    //On User Connect
-    connection.on("UserConnected", function (args) {
+    //On User Connected to system. May not be for the active group!
+    connection.on("OtherUserConnectedToGroup", function (args) {
         if (args.userID != parseInt(viewmodel.UserID)) {
-            userConnected(args.userID, args.userName, args.userRankName);
+            if (args.groupID == currentGroupID) {
+                userConnected(args.userID, args.userName, args.userRankName);
+            } else {
+                //Do something for other groups
+            }
         }
     });
 
-    //On User Disconnect
-    connection.on("UserDisconnected", function (args) {
-        userDisconnected(args.userID);
+    //On User Disconnected from system.
+    connection.on("OtherUserDisconnectedFromGroup", function (args) {
+        if (args.groupID == currentGroupID) {
+            userDisconnected(args.userID);
+        } else {
+            //Do something for other groups
+        }
     });
 
-    //On Receive Rank Update
-    connection.on("UpdateRank", function (args) {
-        viewmodel.Rank = args.newRank;
+    connection.on("AddGroup", function (args) {
+        addGroup(args.groupID, args.groupName, args.membershipID);
+    });
+
+    connection.on("RemoveGroup", function (args) {
+        removeGroup(args.groupID);
     });
 </script>

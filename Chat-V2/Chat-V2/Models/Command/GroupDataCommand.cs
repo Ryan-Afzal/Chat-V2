@@ -14,26 +14,26 @@ namespace Chat_V2.Models.Command {
 			IClientProxy proxy = args.Hub.Clients.User($"{args.User.Id}");
 
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"Data for group #{args.Group.GroupID}:"
 				});
 
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"Name: {args.Group.Name}"
 				});
 
 
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"Date Created: UNAVAILABLE"
 				});
 
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"Members: {args.Group.Memberships.Count}"
 				});

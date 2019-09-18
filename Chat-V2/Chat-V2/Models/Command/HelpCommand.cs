@@ -14,14 +14,14 @@ namespace Chat_V2.Models.Command {
 			IClientProxy proxy = args.Hub.Clients.User($"{args.User.Id}");
 
 			await proxy.SendAsync("ReceiveCommandMessage",
-				new IncomingCommandMessageArgs() {
+				new ReceiveCommandMessageArgs() {
 					Color = "0000FF",
 					Message = $"Commands available at rank: {args.UserRank.Name}"
 				});
 
 			foreach (ICommand command in args.Hub.ChatContext.CommandList.GetCommandsAtRank(args.UserRank.Ordinal)) {
 				await proxy.SendAsync("ReceiveCommandMessage",
-					new IncomingCommandMessageArgs() {
+					new ReceiveCommandMessageArgs() {
 						Color = "0000FF",
 						Message = $"    [{command.Usage}]: {command.Description}"
 					});
