@@ -266,11 +266,13 @@
         clearMessages();
         clearUsers();
 
-        var args = {
+        if (membershipID != -1) {
+            var args = {
             MembershipID: membershipID
         };
 
         connection.invoke("DisconnectedFromGroup", args);
+        }
 
         numMessages = 0;
         currentGroupID = -1;
