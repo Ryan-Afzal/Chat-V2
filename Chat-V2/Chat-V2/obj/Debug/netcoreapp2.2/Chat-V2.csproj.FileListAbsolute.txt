@@ -209,11 +209,13 @@ C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.dll
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.pdb
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.csproj.CopyComplete
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.pdb
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.Views.pdb
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.deps.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.runtimeconfig.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.runtimeconfig.dev.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.dll
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.Views.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp2.2\Chat-V2.Views.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.csproj.CoreCompileInputs.cache
@@ -247,8 +249,5 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\_ViewStart.g.cshtml.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.RazorTargetAssemblyInfo.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.RazorTargetAssemblyInfo.cs
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.Views.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.dll
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.csproj.CopyComplete
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.csprojAssemblyReference.cache
