@@ -13,7 +13,8 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 		public int ChatUserID { get; set; }
 		public int Rank { get; set; }
-		public bool IsActive { get; set; }
+		public bool IsOnlineInGroup { get; set; }
+		public bool IsActiveInGroup { get; set; }
 
 		public Group Group { get; set; }
 		public ChatUser ChatUser { get; set; }

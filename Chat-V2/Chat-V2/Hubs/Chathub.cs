@@ -56,7 +56,7 @@ namespace Chat_V2.Hubs {
 				.ThenInclude(m => m.ChatUser)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
-			membership.IsActive = true;
+			membership.IsOnlineInGroup = true;
 			await ChatContext.SaveChangesAsync();
 
 			await GetPreviousMessages(new GetPreviousMessagesArgs() {
@@ -66,7 +66,7 @@ namespace Chat_V2.Hubs {
 			});
 
 			foreach (var _m in membership.Group.Memberships) {
-				if (_m.IsActive) {
+				if (_m.IsOnlineInGroup) {
 					await Clients.Caller.SendAsync(
 						"OtherUserConnectedToGroup", 
 						new OtherUserConnectedToGroupArgs() {
@@ -75,10 +75,27 @@ namespace Chat_V2.Hubs {
 							UserName = _m.ChatUser.UserName,
 							UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
 						});
+					if (_m.IsActiveInGroup) {
+						await Clients.Caller.SendAsync(
+							"OtherUserActiveInGroup",
+							new OtherUserConnectedToGroupArgs() {
+								GroupID = _m.GroupID,
+								UserID = _m.ChatUserID
+							});
+					} else {
+						await Clients.Caller.SendAsync(
+							"OtherUserInactiveInGroup",
+							new OtherUserConnectedToGroupArgs() {
+								GroupID = _m.GroupID,
+								UserID = _m.ChatUserID
+							});
+					}
 				}
 			}
 
-			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+			var proxy = GetClientsInGroup(membership.GroupID, PermissionRank.USER);
+
+			await proxy
 				.SendAsync(
 				"OtherUserConnectedToGroup",
 				new OtherUserConnectedToGroupArgs() {
@@ -86,6 +103,14 @@ namespace Chat_V2.Hubs {
 					UserID = membership.ChatUserID,
 					UserName = membership.ChatUser.UserName,
 					UserRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name
+				});
+
+			await proxy
+				.SendAsync(
+				"OtherUserActiveInGroup", 
+				new OtherUserActiveInGroupArgs() {
+					GroupID = membership.GroupID,
+					UserID = membership.ChatUserID
 				});
 		}
 
@@ -95,7 +120,7 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
-			membership.IsActive = false;
+			membership.IsOnlineInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
 			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
@@ -103,6 +128,44 @@ namespace Chat_V2.Hubs {
 				"OtherUserDisconnectedFromGroup",
 				new OtherUserDisconnectedFromGroupArgs() {
 					UserID = membership.ChatUserID, 
+					GroupID = membership.GroupID
+				});
+		}
+
+		public async Task ActiveInGroup(ActiveInGroupArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.ThenInclude(g => g.Memberships)
+				.ThenInclude(m => m.ChatUser)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			membership.IsActiveInGroup = true;
+			await ChatContext.SaveChangesAsync();
+
+			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+				.SendAsync(
+				"OtherUserActiveInGroup",
+				new OtherUserActiveInGroupArgs() {
+					GroupID = membership.GroupID,
+					UserID = membership.ChatUserID
+				});
+		}
+
+		public async Task InactiveInGroup(InactiveInGroupArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(m => m.Group)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			membership.IsActiveInGroup = false;
+			await ChatContext.SaveChangesAsync();
+
+			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+				.SendAsync(
+				"OtherUserInactiveInGroup",
+				new OtherUserInactiveInGroupArgs() {
+					UserID = membership.ChatUserID,
 					GroupID = membership.GroupID
 				});
 		}
@@ -132,7 +195,8 @@ namespace Chat_V2.Hubs {
 							SenderID = user.Id,
 							SenderName = user.UserName,
 							SenderRankColor = messageRank.Color,
-							Message = m.Message
+							Message = m.Message,
+							Timestamp = m.TimeStamp.ToLocalTime().ToShortTimeString()
 						});
 					}
 
@@ -231,7 +295,8 @@ namespace Chat_V2.Hubs {
 						GroupID = group.GroupID,
 						SenderName = sender.UserName,
 						SenderRankColor = senderRank.Color,
-						Message = args.Message
+						Message = args.Message, 
+						Timestamp = chatMessage.TimeStamp.ToLocalTime().ToShortTimeString()
 					});
 		}
 

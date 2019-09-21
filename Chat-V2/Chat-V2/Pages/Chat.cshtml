@@ -70,6 +70,12 @@
         width: 100%;
     }
 
+    .user-data-container-inactive {
+        display: block;
+        width: 100%;
+        color: red;
+    }
+
     .user-data-container:hover {
         border: solid 1px #AAAAAA;
     }
@@ -156,8 +162,8 @@
     var currentGroupID = -1;
     var membershipID = -1;
 
-    function appendMessage(senderName, senderRankColor, message) {
-        var head = "<" + senderName + ">: ";
+    function appendMessage(senderName, senderRankColor, message, timestamp) {
+        var head = "[" + timestamp + "]" + senderName + ": ";
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         var container = document.createElement("div");
@@ -181,8 +187,8 @@
         messagesList.scrollTop = messagesList.scrollHeight;
     }
 
-    function prependMessage(senderName, senderRankColor, message) {
-        var head = "<" + senderName + ">: ";
+    function prependMessage(senderName, senderRankColor, message, timestamp) {
+        var head = "[" + timestamp + "]" + senderName + ": ";
         var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         var container = document.createElement("div");
@@ -255,6 +261,16 @@
     function userDisconnected(userId) {
         document.getElementById("online-members-list")
             .removeChild(document.getElementById("user-" + userId));
+    }
+
+    function userActive(userId) {
+        document.getElementById("user-" + userId)
+            .setAttribute("class", "user-data-container");
+    }
+
+    function userInactive(userId) {
+        document.getElementById("user-" + userId)
+            .setAttribute("class", "user-data-container user-data-container-inactive");
     }
 
     function clearUsers() {
@@ -355,7 +371,7 @@
     });
 
     //On Disconnect
-    window.addEventListener('unload', (event) => {
+    window.addEventListener('unload', function (event) {
         clear();
 
         var args = {
@@ -366,11 +382,35 @@
         connection.invoke("Disconnected", args);
     });
 
+    //On Focus
+    window.addEventListener('focus', function (event) {
+        if (membershipID != -1) {
+            var args = {
+                MembershipID: membershipID
+            };
+
+            //Send the active event
+            connection.invoke("ActiveInGroup", args);
+        }
+    });
+
+    //On Blur
+    window.addEventListener('blur', function (event) {
+        if (membershipID != -1) {
+            var args = {
+                MembershipID: membershipID
+            };
+
+            //Send the active event
+            connection.invoke("InactiveInGroup", args);
+        }
+    });
+
     //Receive Previous Messages
     connection.on("ReceivePreviousMessages", function (messages) {
         $.each(messages, function () {
             var args = this;
-            prependMessage(args.senderName, args.senderRankColor, args.message);
+            prependMessage(args.senderName, args.senderRankColor, args.message, args.timestamp);
             numMessages++;
         });
     });
@@ -378,7 +418,7 @@
     //Receive Message
     connection.on("ReceiveMessage", function (args) {
         if (args.groupID == currentGroupID) {
-            appendMessage(args.senderName, args.senderRankColor, args.message);
+            appendMessage(args.senderName, args.senderRankColor, args.message, args.timestamp);
             numMessages++;
         } else {
             newGroupMessage(args.groupID);
@@ -451,6 +491,20 @@
             userDisconnected(args.userID);
         } else {
             //Do something for other groups
+        }
+    });
+
+    //On User become Active
+    connection.on("OtherUserActiveInGroup", function (args) {
+        if (args.groupID == currentGroupID) {
+            userActive(args.userID);
+        }
+    });
+
+    //On User become Inactive
+    connection.on("OtherUserInactiveInGroup", function (args) {
+        if (args.groupID == currentGroupID) {
+            userInactive(args.userID);
         }
     });
 

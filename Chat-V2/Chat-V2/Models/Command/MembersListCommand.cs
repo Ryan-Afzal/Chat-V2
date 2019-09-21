@@ -25,10 +25,10 @@ namespace Chat_V2.Models.Command {
 				});
 
 			var list = from membership in args.Group.Memberships
-					   where membership.IsActive
+					   where membership.IsOnlineInGroup
 					   select new ReceiveCommandMessageArgs() {
 						   Color = "0000FF",
-						   Message = $"{(membership.ChatUserID + "").PadRight(7)}  {args.Hub.ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName.PadRight(16).Substring(0, 16)}  {PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name.PadRight(14)}  {membership.IsActive}"
+						   Message = $"{(membership.ChatUserID + "").PadRight(7)}  {args.Hub.ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName.PadRight(16).Substring(0, 16)}  {PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name.PadRight(14)}  {membership.IsOnlineInGroup}"
 					   };
 
 			foreach (var msg in list) {

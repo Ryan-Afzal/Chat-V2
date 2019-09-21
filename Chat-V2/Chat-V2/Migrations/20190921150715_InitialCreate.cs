@@ -210,7 +210,8 @@ namespace Chat_V2.Migrations
                     GroupID = table.Column<int>(nullable: false),
                     ChatUserID = table.Column<int>(nullable: false),
                     Rank = table.Column<int>(nullable: false),
-                    IsActive = table.Column<bool>(nullable: false)
+                    IsOnlineInGroup = table.Column<bool>(nullable: false),
+                    IsActiveInGroup = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

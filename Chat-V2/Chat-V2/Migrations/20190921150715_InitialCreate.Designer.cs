@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat_V2.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    [Migration("20190918022932_InitialCreate")]
+    [Migration("20190921150715_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -154,7 +154,9 @@ namespace Chat_V2.Migrations
 
                     b.Property<int>("GroupID");
 
-                    b.Property<bool>("IsActive");
+                    b.Property<bool>("IsActiveInGroup");
+
+                    b.Property<bool>("IsOnlineInGroup");
 
                     b.Property<int>("Rank");
 

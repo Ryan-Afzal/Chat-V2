@@ -152,7 +152,9 @@ namespace Chat_V2.Migrations
 
                     b.Property<int>("GroupID");
 
-                    b.Property<bool>("IsActive");
+                    b.Property<bool>("IsActiveInGroup");
+
+                    b.Property<bool>("IsOnlineInGroup");
 
                     b.Property<int>("Rank");
 

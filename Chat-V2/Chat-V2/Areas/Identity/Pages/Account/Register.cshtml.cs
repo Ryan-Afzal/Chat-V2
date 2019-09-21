@@ -86,7 +86,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 						GroupID = group.GroupID,
 						ChatUserID = user.Id,
 						Rank = PermissionRank.USER.Ordinal,
-						IsActive = false,
+						IsOnlineInGroup = false,
 						Group = group,
 						ChatUser = user
 					};
