@@ -196,7 +196,7 @@ namespace Chat_V2.Hubs {
 							SenderName = user.UserName,
 							SenderRankColor = messageRank.Color,
 							Message = m.Message,
-							Timestamp = m.TimeStamp.ToLocalTime().ToShortTimeString()
+							Timestamp = m.TimeStamp.ToShortTimeString()
 						});
 					}
 
