@@ -5,7 +5,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-6">
@@ -31,7 +31,7 @@
 
             <hr />
 
-            <div id="info-pane" class="container h-50">
+            <div id="info-pane" class="container-fluid">
                 <div class="row">
                     <div class="col-6">
                         <table class="table h-100">
@@ -82,7 +82,7 @@
     .user-data-container-inactive {
         display: block;
         width: 100%;
-        color: red;
+        color: #AAAAAA;
     }
 
     .user-data-container:hover {
@@ -111,7 +111,7 @@
 
     /* The output area for the message terminal */
     #messages-list {
-        height: 750px;
+        height: 75vh;
     }
 
     /* The input area for the message terminal */
@@ -133,6 +133,7 @@
     #data-pane {
         border: solid 5px #00FFBB;
         border-radius: 10px 50px;
+        height: 75vh;
     }
 
     /* The panel containing group data */
@@ -342,6 +343,11 @@
         name.textContent = groupName;
         container.appendChild(name);
 
+        var numOnline = document.createElement("td");
+        numOnline.setAttribute("class", "group-data-online");
+        numOnline.textContent = 1;
+        container.appendChild(numOnline);
+
         var groupsList = document.getElementById("groups-list");
 
         groupsList.prepend(container);
@@ -507,7 +513,10 @@
         if (args.groupID == currentGroupID) {
             userDisconnected(args.userID);
         } else {
-            //Do something for other groups
+            var node = document.getElementById("group-" + args.groupID)
+                .getElementsByClassName("group-data-online")
+                .item(0);
+            node.textContent = parseInt(node.textContent) + 1;
         }
     });
 
@@ -515,6 +524,11 @@
     connection.on("OtherUserActiveInGroup", function (args) {
         if (args.groupID == currentGroupID) {
             userActive(args.userID);
+        } else {
+            var node = document.getElementById("group-" + args.groupID)
+                .getElementsByClassName("group-data-online")
+                .item(0);
+            node.textContent = parseInt(node.textContent) - 1;
         }
     });
 
