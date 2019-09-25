@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Models.Command {
-	public class GetUserListCommand : Command {
+	public class MembersListCommand : Command {
 
-		public GetUserListCommand() : base(0, "members-list", "Lists all group memebers.", "members-list") { }
+		public MembersListCommand() : base(0, "members-list", "Lists all group memebers.", "members-list") { }
 
 		public async override Task Execute(CommandArgs args) {
 			IClientProxy proxy = args.Hub.Clients.User($"{args.User.Id}");
@@ -25,7 +25,6 @@ namespace Chat_V2.Models.Command {
 				});
 
 			var list = from membership in args.Group.Memberships
-					   where membership.IsOnlineInGroup
 					   select new ReceiveCommandMessageArgs() {
 						   Color = "0000FF",
 						   Message = $"{(membership.ChatUserID + "").PadRight(7)}  {args.Hub.ChatContext.Users.FirstOrDefault(u => u.Id == membership.ChatUserID).UserName.PadRight(16).Substring(0, 16)}  {PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name.PadRight(14)}  {membership.IsOnlineInGroup}"

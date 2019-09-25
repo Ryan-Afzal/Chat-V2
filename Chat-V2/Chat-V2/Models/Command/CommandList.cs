@@ -13,7 +13,9 @@ namespace Chat_V2.Models.Command {
 
 			this.RegisterCommand(new HelpCommand());
 			this.RegisterCommand(new GroupDataCommand());
-			this.RegisterCommand(new GetUserListCommand());
+			this.RegisterCommand(new MembersListCommand());
+			this.RegisterCommand(new SetUserPermissionCommand());
+
 		}
 
 		private void RegisterCommand(ICommand command) {

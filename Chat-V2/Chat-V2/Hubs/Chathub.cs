@@ -213,7 +213,7 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
-				.ThenInclude(g => g.ChatMessages)
+				.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 			ChatUser sender = membership.ChatUser;
