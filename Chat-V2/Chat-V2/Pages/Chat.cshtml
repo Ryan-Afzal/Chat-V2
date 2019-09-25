@@ -5,7 +5,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
+<div class="container-fluid" style="overflow: auto;">
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-6">
@@ -48,9 +48,9 @@
                         </table>
                     </div>
                     <div class="col-6">
-                        <div id="online-members-list" class="h-100">
+                        <ul id="online-members-list" class="list-group h-100">
 
-                        </div>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -80,13 +80,11 @@
     }
 
     .user-data-container-inactive {
-        display: block;
-        width: 100%;
-        color: #AAAAAA;
+        color: #BBBBBB;
     }
 
     .user-data-container:hover {
-        border: solid 1px #AAAAAA;
+        border: solid 1px #BBBBBB;
     }
 
     .user-data-name {
@@ -249,9 +247,9 @@
     }
 
     function userConnected(userId, userName, userRankName) {
-        var container = document.createElement("div");
+        var container = document.createElement("li");
         container.setAttribute("id", "user-" + userId);
-        container.setAttribute("class", "user-data-container");
+        container.setAttribute("class", "list-group-item list-group-item-primary user-data-container");
 
         var name = document.createElement("div");
         name.setAttribute("class", "user-data-name");
@@ -273,12 +271,12 @@
 
     function userActive(userId) {
         document.getElementById("user-" + userId)
-            .setAttribute("class", "user-data-container");
+            .setAttribute("class", "list-group-item list-group-item-secondary user-data-container");
     }
 
     function userInactive(userId) {
         document.getElementById("user-" + userId)
-            .setAttribute("class", "user-data-container user-data-container-inactive");
+            .setAttribute("class", "list-group-item list-group-item-primary user-data-container user-data-container-inactive");
     }
 
     function clearUsers() {
@@ -502,40 +500,47 @@
         if (args.userID != parseInt(viewmodel.UserID)) {
             if (args.groupID == currentGroupID) {
                 userConnected(args.userID, args.userName, args.userRankName);
-            } else {
-                //Do something for other groups
             }
+            var node = document.getElementById("group-" + args.groupID)
+                    .getElementsByClassName("group-data-online")
+                    .item(0);
+                node.textContent = parseInt(node.textContent) + 1;
         }
     });
 
     //On User Disconnected from system.
     connection.on("OtherUserDisconnectedFromGroup", function (args) {
-        if (args.groupID == currentGroupID) {
-            userDisconnected(args.userID);
-        } else {
+        if (args.userID != parseInt(viewmodel.UserID)) {
+            if (args.groupID == currentGroupID) {
+                userDisconnected(args.userID);
+            }
             var node = document.getElementById("group-" + args.groupID)
-                .getElementsByClassName("group-data-online")
-                .item(0);
-            node.textContent = parseInt(node.textContent) + 1;
+                    .getElementsByClassName("group-data-online")
+                    .item(0);
+                node.textContent = parseInt(node.textContent) - 1;
         }
     });
 
     //On User become Active
     connection.on("OtherUserActiveInGroup", function (args) {
-        if (args.groupID == currentGroupID) {
-            userActive(args.userID);
-        } else {
-            var node = document.getElementById("group-" + args.groupID)
-                .getElementsByClassName("group-data-online")
-                .item(0);
-            node.textContent = parseInt(node.textContent) - 1;
+        if (args.userID != parseInt(viewmodel.UserID)) {
+            if (args.groupID == currentGroupID) {
+                userActive(args.userID);
+            } else {
+                var node = document.getElementById("group-" + args.groupID)
+                    .getElementsByClassName("group-data-online")
+                    .item(0);
+                node.textContent = parseInt(node.textContent) - 1;
+            }
         }
     });
 
     //On User become Inactive
     connection.on("OtherUserInactiveInGroup", function (args) {
-        if (args.groupID == currentGroupID) {
-            userInactive(args.userID);
+        if (args.userID != parseInt(viewmodel.UserID)) {
+            if (args.groupID == currentGroupID) {
+                userInactive(args.userID);
+            }
         }
     });
 
