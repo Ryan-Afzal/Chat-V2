@@ -64,7 +64,7 @@ namespace Chat_V2 {
 			}
 
 			app.UseForwardedHeaders();
-			//app.UseHttpsRedirection();
+			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseAuthentication();
 			app.UseCookiePolicy();
