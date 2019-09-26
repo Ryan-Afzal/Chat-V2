@@ -39,7 +39,7 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">NAME</th>
-                                    <th scope="col">ONLINE</th>
+                                    <!--<th scope="col">ONLINE</th>-->
                                 </tr>
                             </thead>
                             <tbody id="groups-list">
@@ -341,10 +341,10 @@
         name.textContent = groupName;
         container.appendChild(name);
 
-        var numOnline = document.createElement("td");
-        numOnline.setAttribute("class", "group-data-online");
-        numOnline.textContent = 1;
-        container.appendChild(numOnline);
+        //var numOnline = document.createElement("td");
+        //numOnline.setAttribute("class", "group-data-online");
+        //numOnline.textContent = 1;
+        //container.appendChild(numOnline);
 
         var groupsList = document.getElementById("groups-list");
 
@@ -455,18 +455,20 @@
             var element = document.getElementById("message-input");
             var message = element.value;
 
-            var args = {
-                MembershipID: membershipID,
-                MinRank: viewmodel.Rank,
-                Message: message
-            };
-            connection.invoke("SendMessage", args).catch(function (err) {
-                return console.error(err.toString());
-            });
+            if (message.trim() != "") {
+                var args = {
+                    MembershipID: membershipID,
+                    MinRank: viewmodel.Rank,
+                    Message: message
+                };
+                connection.invoke("SendMessage", args).catch(function (err) {
+                    return console.error(err.toString());
+                });
 
-            element.value = "";
+                element.value = "";
 
-            event.preventDefault();
+                event.preventDefault();
+            }
         }
     });
 
@@ -500,11 +502,12 @@
         if (args.userID != parseInt(viewmodel.UserID)) {
             if (args.groupID == currentGroupID) {
                 userConnected(args.userID, args.userName, args.userRankName);
+            } else {
+                //var node = document.getElementById("group-" + args.groupID)
+                //        .getElementsByClassName("group-data-online")
+                //        .item(0);
+                //    node.textContent = parseInt(node.textContent) + 1;
             }
-            var node = document.getElementById("group-" + args.groupID)
-                    .getElementsByClassName("group-data-online")
-                    .item(0);
-                node.textContent = parseInt(node.textContent) + 1;
         }
     });
 
@@ -513,11 +516,12 @@
         if (args.userID != parseInt(viewmodel.UserID)) {
             if (args.groupID == currentGroupID) {
                 userDisconnected(args.userID);
+            } else {
+                //var node = document.getElementById("group-" + args.groupID)
+                //        .getElementsByClassName("group-data-online")
+                //        .item(0);
+                //    node.textContent = parseInt(node.textContent) - 1;
             }
-            var node = document.getElementById("group-" + args.groupID)
-                    .getElementsByClassName("group-data-online")
-                    .item(0);
-                node.textContent = parseInt(node.textContent) - 1;
         }
     });
 
@@ -526,11 +530,6 @@
         if (args.userID != parseInt(viewmodel.UserID)) {
             if (args.groupID == currentGroupID) {
                 userActive(args.userID);
-            } else {
-                var node = document.getElementById("group-" + args.groupID)
-                    .getElementsByClassName("group-data-online")
-                    .item(0);
-                node.textContent = parseInt(node.textContent) - 1;
             }
         }
     });
