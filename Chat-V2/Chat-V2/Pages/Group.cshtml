@@ -1,0 +1,29 @@
+﻿@page
+@model Chat_V2.Pages.GroupModel
+@{
+    ViewData["Title"] = "Group";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
+
+<div id="group-data" class="container-fluid">
+
+</div>
+<hr />
+<div class="container-fluid">
+    @if (Model.ViewModel.IsGroupMember) {
+
+    } else {
+    <div id="not-group-member" class="row">
+        <div class="col-12">
+            <h2>You are not a group member. To become a group member, send a join request.</h2>
+            <div class="form-group">
+                <label asp-for="JoinGroupInput.Message"></label>
+                <textarea asp-for="JoinGroupInput.Message" class="form-control" />
+                <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send join request</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

@@ -19,6 +19,7 @@ namespace Chat_V2.Areas.Identity.Data {
         public bool IsOnline { get; set; }
 
 		public ICollection<Membership> Memberships { get; set; }
+		public ICollection<GroupJoinInvitation> GroupJoinInvitations { get; set; }
 
 	}
 
