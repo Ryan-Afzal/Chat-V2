@@ -82,6 +82,16 @@ namespace Chat_V2.Pages {
 		}
 
 		public async Task<IActionResult> OnPostSendJoinRequestAsync() {
+			GroupJoinRequest request = new GroupJoinRequest() {
+				ChatUserID = ViewModel.ChatUser.Id,
+				GroupID = ViewModel.Group.GroupID,
+				Message = JoinGroupInput.Message,
+				DateSent = DateTime.Now
+			};
+
+			ViewModel.GroupJoinRequests.Add(request);
+			await _context.SaveChangesAsync();
+
 			throw new NotImplementedException();
 		}
 	}

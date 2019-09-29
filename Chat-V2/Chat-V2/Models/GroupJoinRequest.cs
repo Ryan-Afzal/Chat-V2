@@ -9,6 +9,7 @@ namespace Chat_V2.Models {
 		public int RequestID { get; set; }
 		public int GroupID { get; set; }
 		public int ChatUserID { get; set; }
+		public string Message { get; set; }
 		public DateTime DateSent { get; set; }
 
 		public Group Group { get; set; }

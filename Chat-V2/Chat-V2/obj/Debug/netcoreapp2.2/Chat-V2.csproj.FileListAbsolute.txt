@@ -295,3 +295,4 @@ C:\Users\zanzan\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netco
 C:\Users\zanzan\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.dll
 C:\Users\zanzan\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.pdb
 C:\Users\zanzan\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Chat-V2.csproj.CopyComplete
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\Group.g.cshtml.cs
