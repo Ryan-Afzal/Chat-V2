@@ -1,29 +1,108 @@
 ﻿@page
 @model Chat_V2.Pages.GroupModel
+@using Chat_V2.Models
 @{
-    ViewData["Title"] = "Group";
+    ViewData["Title"] = "Group " + Model.ViewModel.Group.Name;
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
+<h1 class="display-4">Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
 
 <div id="group-data" class="container-fluid">
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ViewModel.Group.GroupID)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ViewModel.Group.GroupID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ViewModel.Group.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ViewModel.Group.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ViewModel.Group.DateCreated)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ViewModel.Group.DateCreated)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ViewModel.Group.IsPrivate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ViewModel.Group.IsPrivate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ViewModel.Group.Memberships)
+        </dt>
 
+        <dd class="col-sm-10">
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>UserName</th>
+                    <th>Rank</th>
+                </tr>
+                @foreach (var item in Model.ViewModel.Group.Memberships.OrderByDescending(membership => membership.Rank)) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChatUser.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChatUser.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => PermissionRank.GetPermissionRankByOrdinal(item.Rank).Name)
+                </td>
+            </tr>
+                }
+            </table>
+        </dd>
+    </dl>
 </div>
 <hr />
 <div class="container-fluid">
     @if (Model.ViewModel.IsGroupMember) {
+        <div id="group-member-user" class="row">
 
+        </div>
+        @if (Model.ViewModel.Membership.Rank > PermissionRank.USER.Ordinal) {
+            <div id="group-member-moderator" class="row">
+
+            </div>
+            @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
+                <div id="group-member-officer" class="row">
+
+                </div>
+                @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
+                    <div id="group-member-admin" class="row">
+
+                    </div>
+                    @if (Model.ViewModel.Membership.Rank > PermissionRank.ADMINISTRATOR.Ordinal) {
+                        <div id="group-member-owner" class="row">
+
+                        </div>
+                        @if (Model.ViewModel.Membership.Rank > PermissionRank.OWNER.Ordinal) {
+                            <div id="group-member-superuser" class="row">
+
+                            </div>
+                        }
+                    }
+                }
+            }
+        }
     } else {
-    <div id="not-group-member" class="row">
-        <div class="col-12">
-            <h2>You are not a group member. To become a group member, send a join request.</h2>
-            <div class="form-group">
-                <label asp-for="JoinGroupInput.Message"></label>
-                <textarea asp-for="JoinGroupInput.Message" class="form-control" />
-                <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send join request</button>
+        <div id="not-group-member" class="row">
+            <div class="col-12">
+                <h2>You are not a group member. To become a group member, send a join request.</h2>
+                <div class="form-group">
+                    <label asp-for="JoinGroupInput.Message"></label>
+                    <textarea asp-for="JoinGroupInput.Message" class="form-control" />
+                    <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send join request</button>
+                </div>
             </div>
         </div>
-    </div>
     }
 </div>

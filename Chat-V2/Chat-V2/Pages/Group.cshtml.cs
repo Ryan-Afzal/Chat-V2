@@ -56,6 +56,11 @@ namespace Chat_V2.Pages {
 							.Include(g => g.GroupJoinRequests)
 							.Include(g => g.Memberships)
 							.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+				if (group == null) {
+					return LocalRedirect("/");
+				}
+
 				var membership = group.Memberships
 							.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
@@ -89,7 +94,7 @@ namespace Chat_V2.Pages {
 				DateSent = DateTime.Now
 			};
 
-			ViewModel.GroupJoinRequests.Add(request);
+			ViewModel.Group.GroupJoinRequests.Add(request);
 			await _context.SaveChangesAsync();
 
 			throw new NotImplementedException();
