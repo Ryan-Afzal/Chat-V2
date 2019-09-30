@@ -38,7 +38,7 @@
             @Html.DisplayNameFor(model => model.ViewModel.Group.Memberships)
         </dt>
 
-        <dd class="col-sm-10">
+        <dd class="col-sm-10" id="group-member-list">
             <table class="table">
                 <tr>
                     <th>ID</th>
@@ -65,26 +65,32 @@
 <hr />
 <div class="container-fluid">
     @if (Model.ViewModel.IsGroupMember) {
+        <hr />
         <div id="group-member-user" class="row">
 
         </div>
         @if (Model.ViewModel.Membership.Rank > PermissionRank.USER.Ordinal) {
+            <hr />
             <div id="group-member-moderator" class="row">
 
             </div>
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
+                <hr />
                 <div id="group-member-officer" class="row">
 
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
+                    <hr />
                     <div id="group-member-admin" class="row">
 
                     </div>
                     @if (Model.ViewModel.Membership.Rank > PermissionRank.ADMINISTRATOR.Ordinal) {
+                        <hr />
                         <div id="group-member-owner" class="row">
 
                         </div>
                         @if (Model.ViewModel.Membership.Rank > PermissionRank.OWNER.Ordinal) {
+                            <hr />
                             <div id="group-member-superuser" class="row">
 
                             </div>
@@ -106,3 +112,10 @@
         </div>
     }
 </div>
+<style>
+
+    #group-member-list {
+        
+    }
+
+</style>

@@ -23,13 +23,47 @@ namespace Chat_V2.Hubs {
 			ChatContext = context;
 		}
 
+		public override async Task OnConnectedAsync() {
+			await base.OnConnectedAsync();
+
+			var user = await UserManager.GetUserAsync(Context.User);
+			user.NumOnline++;
+			await ChatContext.SaveChangesAsync();
+		}
+
+		public override async Task OnDisconnectedAsync(Exception exception) {
+			await base.OnDisconnectedAsync(exception);
+
+			var userId = int.Parse(Context.UserIdentifier);
+			var chatUser = await ChatContext.Users
+				.Include(u => u.Memberships)
+				.FirstOrDefaultAsync(u => u.Id == userId);
+			chatUser.NumOnline--;
+			
+			if (!chatUser.IsOnline) {
+				foreach (Membership membership in chatUser.Memberships) {
+					if (membership.IsOnlineInGroup) {
+						membership.IsOnlineInGroup = false;
+						await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+							.SendAsync(
+							"OtherUserDisconnectedFromGroup",
+							new OtherUserDisconnectedFromGroupArgs() {
+								UserID = membership.ChatUserID,
+								GroupID = membership.GroupID
+							});
+					}
+				}
+			}
+
+			await ChatContext.SaveChangesAsync();
+		}
+
 		public async Task Connected(ConnectedArgs args) {
 			var chatUser = await ChatContext.Users
 				.Include(u => u.Memberships)
 				.ThenInclude(m => m.Group)
 				.FirstOrDefaultAsync(u => u.Id == args.UserID);
-			chatUser.IsOnline = true;
-			await ChatContext.SaveChangesAsync();
+			//await ChatContext.SaveChangesAsync();
 
 			foreach (var m in chatUser.Memberships) {
 				await Clients.Caller.SendAsync(
@@ -43,9 +77,8 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task Disconnected(DisconnectedArgs args) {
-			var chatUser = await UserManager.FindByIdAsync(args.UserID + "");
-			chatUser.IsOnline = false;
-			await ChatContext.SaveChangesAsync();
+			//var chatUser = await UserManager.GetUserAsync(Context.User);
+			//await ChatContext.SaveChangesAsync();
 		}
 
 		public async Task ConnectedToGroup(ConnectedToGroupArgs args) {
