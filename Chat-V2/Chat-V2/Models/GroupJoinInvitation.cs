@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chat_V2.Models {
 	public class GroupJoinInvitation {
-		public int InvitationID { get; set; }
+		public int GroupJoinInvitationID { get; set; }
 		public int GroupID { get; set; }
 		public int ChatUserID { get; set; }
 		public DateTime DateSent { get; set; }
