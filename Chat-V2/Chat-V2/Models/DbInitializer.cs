@@ -14,6 +14,12 @@ namespace Chat_V2.Models {
 			//context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
+			var user = context.Users.FirstOrDefault(u => u.UserName.Equals("Ryan-Afzal"));
+
+			if (user != null) {
+				user.Memberships.FirstOrDefault().Rank = PermissionRank.SUPERUSER.Ordinal;
+			}
+
 			if (context.Group.Any()) {
 				return;
 			}
