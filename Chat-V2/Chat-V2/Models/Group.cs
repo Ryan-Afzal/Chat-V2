@@ -9,6 +9,7 @@ namespace Chat_V2.Models {
 	/// Represents a group in the chat system.
 	/// </summary>
 	public class Group {
+		[Key]
 		public int GroupID { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
@@ -20,7 +21,10 @@ namespace Chat_V2.Models {
 		/// </summary>
 		[Display(Name = "Private?")]
 		public bool IsPrivate { get; set; }
+		[Dipslay(Name = "Archived?")]
 		public bool IsArchived { get; set; }
+
+		public ICollection<int> BannedIDs { get; set; }
 
 		public ICollection<ChatMessage> ChatMessages { get; set; }
 		public ICollection<Membership> Memberships { get; set; }
