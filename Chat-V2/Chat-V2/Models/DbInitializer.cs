@@ -27,10 +27,20 @@ namespace Chat_V2.Models {
 			Group globalServerGroup = new Group() {
 				Name = "Global",
 				DateCreated = DateTime.Now,
-				IsPrivate = false
+				IsPrivate = false,
+				IsArchived = false,
+				Description = "The global chat"
 			};
-
 			context.Group.Add(globalServerGroup);
+
+			Group testGroup = new Group() {
+				Name = "Test Group",
+				DateCreated = DateTime.Now,
+				IsPrivate = false,
+				IsArchived = false,
+				Description = "Ryan's Test Group"
+			};
+			context.Group.Add(testGroup);
 			context.SaveChanges();
 
 		}

@@ -15,6 +15,7 @@ namespace Chat_V2.Pages {
 
 		public class GroupViewModel {
 			public bool IsGroupMember { get; set; }
+			public bool JoinRequestSent { get; set; }
 			public ChatUser ChatUser { get; set; }
 			public Group Group { get; set; }
 			public Membership Membership { get; set; }
@@ -54,6 +55,7 @@ namespace Chat_V2.Pages {
 				var chatUser = await _userManager.GetUserAsync(User);
 				var group = await _context.Group
 							.Include(g => g.GroupJoinRequests)
+							.ThenInclude(r => r.ChatUser)
 							.Include(g => g.Memberships)
 							.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -64,7 +66,11 @@ namespace Chat_V2.Pages {
 				var membership = group.Memberships
 							.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
-				ViewModel = new GroupViewModel();
+				ViewModel = new GroupViewModel() {
+					Group = group,
+					JoinRequestSent = JoinRequestSent(group, chatUser.Id),
+					ChatUser = chatUser
+				};
 				JoinGroupInput = new JoinGroupInputModel();
 
 				if (membership == null) {
@@ -75,8 +81,6 @@ namespace Chat_V2.Pages {
 					}
 				} else {
 					ViewModel.IsGroupMember = true;
-					ViewModel.ChatUser = chatUser;
-					ViewModel.Group = group;
 					ViewModel.Membership = membership;
 				}
 
@@ -97,11 +101,23 @@ namespace Chat_V2.Pages {
 			ViewModel.Group.GroupJoinRequests.Add(request);
 			await _context.SaveChangesAsync();
 
-			throw new NotImplementedException();
+			return Page();
 		}
 
 		public async Task<IActionResult> OnPostLeaveGroupAsync() {
 			throw new NotImplementedException();
+		}
+
+		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? userId) {
+			throw new NotImplementedException();
+		}
+
+		public async Task<IActionResult> OnPostRejectJoinRequestAsync(int? userId) {
+			throw new NotImplementedException();
+		}
+
+		private bool JoinRequestSent(Group group, int userId) {
+			return group.GroupJoinRequests.FirstOrDefault(r => r.ChatUserID == userId) != null;
 		}
 	}
 }
