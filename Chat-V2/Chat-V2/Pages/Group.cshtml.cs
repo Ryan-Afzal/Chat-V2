@@ -99,5 +99,9 @@ namespace Chat_V2.Pages {
 
 			throw new NotImplementedException();
 		}
+
+		public async Task<IActionResult> OnPostLeaveGroupAsync() {
+			throw new NotImplementedException();
+		}
 	}
 }

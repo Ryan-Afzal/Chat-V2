@@ -333,11 +333,21 @@ namespace Chat_V2.Hubs {
 					});
 		}
 
-		private async Task<Group> GetGroupById(int groupId) {
-			var group = await ChatContext.Group
-				.Include(g => g.Memberships)
-				.Include(g => g.ChatMessages)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+		private async Task<Group> GetGroupById(int groupId, bool loadMembers, bool loadMessages, bool tracking) {
+			var query = ChatContext.Group;
+			if (loadMembers) {
+				query.Include(g => g.Memberships);
+			}
+
+			if (loadMessages) {
+				query.Include(g => g.ChatMessages);
+			}
+
+			if (!tracking) {
+				query.AsNoTracking();
+			}
+
+			Group group = await query.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
 				throw new ArgumentException("Invalid Group ID");
@@ -347,7 +357,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		private async Task<IReadOnlyList<string>> GetUsersInGroup(int groupId, PermissionRank minRank) {
-			return GetUsersInGroup(await GetGroupById(groupId), minRank);
+			return GetUsersInGroup(await GetGroupById(groupId, true, false, false), minRank);
 		}
 
 		private IReadOnlyList<string> GetUsersInGroup(Group group, PermissionRank minRank) {
