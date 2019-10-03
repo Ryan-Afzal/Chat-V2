@@ -44,7 +44,7 @@ namespace Chat_V2.Hubs {
 				foreach (Membership membership in chatUser.Memberships) {
 					if (membership.IsOnlineInGroup) {
 						membership.IsOnlineInGroup = false;
-						await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+						await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
 							.SendAsync(
 							"OtherUserDisconnectedFromGroup",
 							new OtherUserDisconnectedFromGroupArgs() {
@@ -126,7 +126,7 @@ namespace Chat_V2.Hubs {
 				}
 			}
 
-			var proxy = GetClientsInGroup(membership.GroupID, PermissionRank.USER);
+			var proxy = await GetClientsInGroup(membership.GroupID, PermissionRank.USER);
 
 			await proxy
 				.SendAsync(
@@ -156,7 +156,7 @@ namespace Chat_V2.Hubs {
 			membership.IsOnlineInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
-			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserDisconnectedFromGroup",
 				new OtherUserDisconnectedFromGroupArgs() {
@@ -176,7 +176,7 @@ namespace Chat_V2.Hubs {
 			membership.IsActiveInGroup = true;
 			await ChatContext.SaveChangesAsync();
 
-			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserActiveInGroup",
 				new OtherUserActiveInGroupArgs() {
@@ -194,7 +194,7 @@ namespace Chat_V2.Hubs {
 			membership.IsActiveInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
-			await GetClientsInGroup(membership.GroupID, PermissionRank.USER)
+			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserInactiveInGroup",
 				new OtherUserInactiveInGroupArgs() {
@@ -333,11 +333,11 @@ namespace Chat_V2.Hubs {
 					});
 		}
 
-		private Group GetGroupById(int groupId) {
-			var group = ChatContext.Group
+		private async Task<Group> GetGroupById(int groupId) {
+			var group = await ChatContext.Group
 				.Include(g => g.Memberships)
 				.Include(g => g.ChatMessages)
-				.FirstOrDefault(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
 				throw new ArgumentException("Invalid Group ID");
@@ -346,8 +346,8 @@ namespace Chat_V2.Hubs {
 			return group;
 		}
 
-		private IReadOnlyList<string> GetUsersInGroup(int groupId, PermissionRank minRank) {
-			return GetUsersInGroup(GetGroupById(groupId), minRank);
+		private async Task<IReadOnlyList<string>> GetUsersInGroup(int groupId, PermissionRank minRank) {
+			return GetUsersInGroup(await GetGroupById(groupId), minRank);
 		}
 
 		private IReadOnlyList<string> GetUsersInGroup(Group group, PermissionRank minRank) {
@@ -365,9 +365,9 @@ namespace Chat_V2.Hubs {
 		private IClientProxy GetClientsInGroup(Group group, PermissionRank minRank) {
 			return Clients.Users(GetUsersInGroup(group, minRank));
 		}
-
-		private IClientProxy GetClientsInGroup(int groupId, PermissionRank minRank) {
-			return Clients.Users(GetUsersInGroup(groupId, minRank));
+		
+		private async Task<IClientProxy> GetClientsInGroup(int groupId, PermissionRank minRank) {
+			return Clients.Users(await GetUsersInGroup(groupId, minRank));
 		}
 
 	}
