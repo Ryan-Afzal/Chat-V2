@@ -3,8 +3,8 @@ using System;
 using Chat_V2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Chat_V2.Migrations
 {
@@ -15,14 +15,15 @@ namespace Chat_V2.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Chat_V2.Areas.Identity.Data.ChatRole", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -37,7 +38,8 @@ namespace Chat_V2.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -45,7 +47,8 @@ namespace Chat_V2.Migrations
             modelBuilder.Entity("Chat_V2.Areas.Identity.Data.ChatUser", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("AccessFailedCount");
 
@@ -59,7 +62,7 @@ namespace Chat_V2.Migrations
 
                     b.Property<string>("FirstName");
 
-                    b.Property<bool>("IsOnline");
+                    b.Property<int?>("GroupID");
 
                     b.Property<string>("LastName");
 
@@ -72,6 +75,8 @@ namespace Chat_V2.Migrations
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
+
+                    b.Property<int>("NumOnline");
 
                     b.Property<string>("PasswordHash");
 
@@ -88,12 +93,15 @@ namespace Chat_V2.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GroupID");
+
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -101,7 +109,8 @@ namespace Chat_V2.Migrations
             modelBuilder.Entity("Chat_V2.Models.ChatMessage", b =>
                 {
                     b.Property<int>("ChatMessageID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ChatUserID");
 
@@ -112,6 +121,8 @@ namespace Chat_V2.Migrations
                     b.Property<string>("Message");
 
                     b.Property<int>("MinRank");
+
+                    b.Property<int>("StatusType");
 
                     b.Property<DateTime>("TimeStamp");
 
@@ -127,7 +138,16 @@ namespace Chat_V2.Migrations
             modelBuilder.Entity("Chat_V2.Models.Group", b =>
                 {
                     b.Property<int>("GroupID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsArchived");
+
+                    b.Property<bool>("IsPrivate");
 
                     b.Property<string>("Name");
 
@@ -136,10 +156,57 @@ namespace Chat_V2.Migrations
                     b.ToTable("Group");
                 });
 
+            modelBuilder.Entity("Chat_V2.Models.GroupJoinInvitation", b =>
+                {
+                    b.Property<int>("GroupJoinInvitationID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ChatUserID");
+
+                    b.Property<DateTime>("DateSent");
+
+                    b.Property<int>("GroupID");
+
+                    b.Property<string>("Message");
+
+                    b.HasKey("GroupJoinInvitationID");
+
+                    b.HasIndex("ChatUserID");
+
+                    b.HasIndex("GroupID");
+
+                    b.ToTable("GroupJoinInvitation");
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.GroupJoinRequest", b =>
+                {
+                    b.Property<int>("GroupJoinRequestID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ChatUserID");
+
+                    b.Property<DateTime>("DateSent");
+
+                    b.Property<int>("GroupID");
+
+                    b.Property<string>("Message");
+
+                    b.HasKey("GroupJoinRequestID");
+
+                    b.HasIndex("ChatUserID");
+
+                    b.HasIndex("GroupID");
+
+                    b.ToTable("GroupJoinRequest");
+                });
+
             modelBuilder.Entity("Chat_V2.Models.Membership", b =>
                 {
                     b.Property<int>("MembershipID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ChatUserID");
 
@@ -160,10 +227,26 @@ namespace Chat_V2.Migrations
                     b.ToTable("Membership");
                 });
 
+            modelBuilder.Entity("Chat_V2.Models.MembershipStatus", b =>
+                {
+                    b.Property<int>("MembershipID");
+
+                    b.Property<DateTime>("DateIssued");
+
+                    b.Property<DateTime>("Expiration");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("MembershipID");
+
+                    b.ToTable("MembershipStatus");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType");
 
@@ -181,7 +264,8 @@ namespace Chat_V2.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType");
 
@@ -245,6 +329,13 @@ namespace Chat_V2.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Chat_V2.Areas.Identity.Data.ChatUser", b =>
+                {
+                    b.HasOne("Chat_V2.Models.Group")
+                        .WithMany("BannedUsers")
+                        .HasForeignKey("GroupID");
+                });
+
             modelBuilder.Entity("Chat_V2.Models.ChatMessage", b =>
                 {
                     b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
@@ -254,6 +345,32 @@ namespace Chat_V2.Migrations
 
                     b.HasOne("Chat_V2.Models.Group", "Group")
                         .WithMany("ChatMessages")
+                        .HasForeignKey("GroupID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.GroupJoinInvitation", b =>
+                {
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
+                        .WithMany("GroupJoinInvitations")
+                        .HasForeignKey("ChatUserID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Chat_V2.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.GroupJoinRequest", b =>
+                {
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
+                        .WithMany()
+                        .HasForeignKey("ChatUserID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Chat_V2.Models.Group", "Group")
+                        .WithMany("GroupJoinRequests")
                         .HasForeignKey("GroupID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -268,6 +385,14 @@ namespace Chat_V2.Migrations
                     b.HasOne("Chat_V2.Models.Group", "Group")
                         .WithMany("Memberships")
                         .HasForeignKey("GroupID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.MembershipStatus", b =>
+                {
+                    b.HasOne("Chat_V2.Models.Membership")
+                        .WithOne("MembershipStatus")
+                        .HasForeignKey("Chat_V2.Models.MembershipStatus", "MembershipID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

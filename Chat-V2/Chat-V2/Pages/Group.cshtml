@@ -59,7 +59,7 @@
                 </td>
                 @if (Model.ViewModel.IsGroupMember) {
                     <td>
-                        @Html.DisplayFor(modelItem => (item.MembershipStatus == null) ? "NONE" : item.MembershipStatus.Type.ToString())
+                        @Html.DisplayFor(modelItem => item.MembershipStatus.Type)
                     </td>
                 }
             </tr>

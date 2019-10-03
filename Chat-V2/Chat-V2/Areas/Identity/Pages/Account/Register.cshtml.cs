@@ -82,13 +82,20 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
 					Group group = await _context.Group.FirstAsync();
+					MembershipStatus status = new MembershipStatus() {
+						DateIssued = DateTime.Now,
+						Expiration = DateTime.Now,
+						Type = MembershipStatusType.NONE
+					};
 					Membership membership = new Membership() {
 						GroupID = group.GroupID,
 						ChatUserID = user.Id,
 						Rank = PermissionRank.USER.Ordinal,
 						IsOnlineInGroup = false,
+						IsActiveInGroup = false,
 						Group = group,
-						ChatUser = user
+						ChatUser = user,
+						MembershipStatus = status
 					};
 					_context.Membership.Add(membership);
 					_context.SaveChanges();

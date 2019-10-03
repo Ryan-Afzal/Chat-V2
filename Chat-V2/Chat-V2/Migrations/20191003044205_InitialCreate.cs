@@ -1,6 +1,6 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Chat_V2.Migrations
 {
@@ -13,7 +13,7 @@ namespace Chat_V2.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true)
@@ -24,41 +24,16 @@ namespace Chat_V2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    PasswordHash = table.Column<string>(nullable: true),
-                    SecurityStamp = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    IsOnline = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Group",
                 columns: table => new
                 {
                     GroupID = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    Name = table.Column<string>(nullable: true)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    IsPrivate = table.Column<bool>(nullable: false),
+                    IsArchived = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,7 +45,7 @@ namespace Chat_V2.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<int>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -87,11 +62,47 @@ namespace Chat_V2.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    NumOnline = table.Column<int>(nullable: false),
+                    GroupID = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Group_GroupID",
+                        column: x => x.GroupID,
+                        principalTable: "Group",
+                        principalColumn: "GroupID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -176,12 +187,13 @@ namespace Chat_V2.Migrations
                 columns: table => new
                 {
                     ChatMessageID = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GroupID = table.Column<int>(nullable: false),
                     ChatUserID = table.Column<int>(nullable: false),
                     ChatUserRank = table.Column<int>(nullable: false),
                     MinRank = table.Column<int>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false),
+                    StatusType = table.Column<int>(nullable: false),
                     Message = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -202,11 +214,67 @@ namespace Chat_V2.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GroupJoinInvitation",
+                columns: table => new
+                {
+                    GroupJoinInvitationID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    GroupID = table.Column<int>(nullable: false),
+                    ChatUserID = table.Column<int>(nullable: false),
+                    Message = table.Column<string>(nullable: true),
+                    DateSent = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupJoinInvitation", x => x.GroupJoinInvitationID);
+                    table.ForeignKey(
+                        name: "FK_GroupJoinInvitation_AspNetUsers_ChatUserID",
+                        column: x => x.ChatUserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupJoinInvitation_Group_GroupID",
+                        column: x => x.GroupID,
+                        principalTable: "Group",
+                        principalColumn: "GroupID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupJoinRequest",
+                columns: table => new
+                {
+                    GroupJoinRequestID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    GroupID = table.Column<int>(nullable: false),
+                    ChatUserID = table.Column<int>(nullable: false),
+                    Message = table.Column<string>(nullable: true),
+                    DateSent = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupJoinRequest", x => x.GroupJoinRequestID);
+                    table.ForeignKey(
+                        name: "FK_GroupJoinRequest_AspNetUsers_ChatUserID",
+                        column: x => x.ChatUserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupJoinRequest_Group_GroupID",
+                        column: x => x.GroupID,
+                        principalTable: "Group",
+                        principalColumn: "GroupID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Membership",
                 columns: table => new
                 {
                     MembershipID = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     GroupID = table.Column<int>(nullable: false),
                     ChatUserID = table.Column<int>(nullable: false),
                     Rank = table.Column<int>(nullable: false),
@@ -230,6 +298,26 @@ namespace Chat_V2.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MembershipStatus",
+                columns: table => new
+                {
+                    MembershipID = table.Column<int>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
+                    DateIssued = table.Column<DateTime>(nullable: false),
+                    Expiration = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MembershipStatus", x => x.MembershipID);
+                    table.ForeignKey(
+                        name: "FK_MembershipStatus_Membership_MembershipID",
+                        column: x => x.MembershipID,
+                        principalTable: "Membership",
+                        principalColumn: "MembershipID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -239,7 +327,8 @@ namespace Chat_V2.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -257,6 +346,11 @@ namespace Chat_V2.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_GroupID",
+                table: "AspNetUsers",
+                column: "GroupID");
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -265,7 +359,8 @@ namespace Chat_V2.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessage_ChatUserID",
@@ -275,6 +370,26 @@ namespace Chat_V2.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessage_GroupID",
                 table: "ChatMessage",
+                column: "GroupID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupJoinInvitation_ChatUserID",
+                table: "GroupJoinInvitation",
+                column: "ChatUserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupJoinInvitation_GroupID",
+                table: "GroupJoinInvitation",
+                column: "GroupID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupJoinRequest_ChatUserID",
+                table: "GroupJoinRequest",
+                column: "ChatUserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupJoinRequest_GroupID",
+                table: "GroupJoinRequest",
                 column: "GroupID");
 
             migrationBuilder.CreateIndex(
@@ -309,10 +424,19 @@ namespace Chat_V2.Migrations
                 name: "ChatMessage");
 
             migrationBuilder.DropTable(
-                name: "Membership");
+                name: "GroupJoinInvitation");
+
+            migrationBuilder.DropTable(
+                name: "GroupJoinRequest");
+
+            migrationBuilder.DropTable(
+                name: "MembershipStatus");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Membership");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

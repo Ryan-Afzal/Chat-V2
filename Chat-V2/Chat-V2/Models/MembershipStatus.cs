@@ -14,6 +14,7 @@ namespace Chat_V2.Models {
 	}
 
 	public enum MembershipStatusType {
+		NONE,
 		CENSURE,
 		BLOCK
 	}
