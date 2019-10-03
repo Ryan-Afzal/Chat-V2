@@ -96,4 +96,16 @@ namespace Chat_V2.Models {
         public string Color { get; set; }
     }
 
+	public class ClientBannedFromGroupArgs {
+		public int GroupID { get; set; }
+	}
+
+	public class ClientBlockedFromGroupArgs {
+		public int GroupID { get; set; }
+	}
+
+	public class ClientUnblockedFromGroupArgs {
+		public int GroupID { get; set; }
+	}
+
 }

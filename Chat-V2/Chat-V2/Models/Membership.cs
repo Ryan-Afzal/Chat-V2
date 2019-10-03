@@ -18,6 +18,6 @@ namespace Chat_V2.Models {
 
 		public Group Group { get; set; }
 		public ChatUser ChatUser { get; set; }
-		public MembershipStatus MembershipStatus { get; set; }
+		public MembershipStatus? MembershipStatus { get; set; }
 	}
 }

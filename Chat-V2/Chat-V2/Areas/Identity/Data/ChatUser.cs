@@ -15,7 +15,7 @@ namespace Chat_V2.Areas.Identity.Data {
 
 		[PersonalData]
 		public string LastName { get; set; }
-
+		
         public bool IsOnline {
 			get {
 				return NumOnline > 0;

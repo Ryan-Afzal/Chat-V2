@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chat_V2.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,10 +22,10 @@ namespace Chat_V2.Models {
 		/// </summary>
 		[Display(Name = "Private?")]
 		public bool IsPrivate { get; set; }
-		[Dipslay(Name = "Archived?")]
+		[Display(Name = "Archived?")]
 		public bool IsArchived { get; set; }
 
-		public ICollection<int> BannedIDs { get; set; }
+		public ICollection<ChatUser> BannedUsers { get; set; }
 
 		public ICollection<ChatMessage> ChatMessages { get; set; }
 		public ICollection<Membership> Memberships { get; set; }

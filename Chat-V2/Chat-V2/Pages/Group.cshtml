@@ -44,6 +44,7 @@
                     <th>ID</th>
                     <th>UserName</th>
                     <th>Rank</th>
+                    @if (Model.ViewModel.IsGroupMember) {<th>Status</th>}
                 </tr>
                 @foreach (var item in Model.ViewModel.Group.Memberships.OrderByDescending(membership => membership.Rank)) {
             <tr>
@@ -56,6 +57,11 @@
                 <td>
                     @Html.DisplayFor(modelItem => PermissionRank.GetPermissionRankByOrdinal(item.Rank).Name)
                 </td>
+                @if (Model.ViewModel.IsGroupMember) {
+                    <td>
+                        @Html.DisplayFor(modelItem => (item.MembershipStatus == null) ? "NONE" : item.MembershipStatus.Type.ToString())
+                    </td>
+                }
             </tr>
                 }
             </table>

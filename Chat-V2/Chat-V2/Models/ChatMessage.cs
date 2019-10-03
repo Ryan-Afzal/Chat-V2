@@ -12,6 +12,7 @@ namespace Chat_V2.Models {
 		public int ChatUserRank { get; set; }
 		public int MinRank { get; set; }
 		public DateTime TimeStamp { get; set; }
+		public MembershipStatusType StatusType { get; set; }
 		public string Message { get; set; }
 
 		public Group Group { get; set; }

@@ -65,12 +65,12 @@
 
     .message-header {
         font-family: Consolas;
-        font-size: medium;
+        font-size: small;
     }
 
     .message-content {
         font-family: Consolas;
-        font-size: small;
+        font-size: medium;
         color: #000000;
     }
 
@@ -97,6 +97,10 @@
 
     .group-data-container {
         
+    }
+
+    .group-data-container-blocked {
+        color: red;
     }
 
     .group-data-container:hover {
@@ -360,6 +364,27 @@
         }
     }
 
+    function blockedGroup(groupId) {
+        var group = document.getElementById("group-" + groupId);
+        group.setAttribute("class", "group-data-container-blocked");
+        group.removeEventListener("click");
+
+        if (groupId == currentGroupID) {
+            clear();
+        }
+    }
+
+    function unblockedGroup(groupId) {
+        var group = document.getElementById("group-" + groupId);
+        group.setAttribute("class", "group-data-container");
+        group.addEventListener("click", function () {
+            switchGroupTo(
+                parseInt(container.getAttribute("groupId")),
+                parseInt(container.getAttribute("membershipId"))
+            );
+        });
+    }
+
     //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
@@ -549,5 +574,17 @@
 
     connection.on("RemoveGroup", function (args) {
         removeGroup(args.groupID);
+    });
+
+    connection.on("ClientBannedFromGroup", function (args) {
+        removeGroup(args.groupID);
+    });
+
+    connection.on("ClientBlockedFromGroup", function (args) {
+        blockedGroup(args.groupID);
+    });
+
+    connection.on("ClientUnblockedFromGroup", function (args) {
+        unblockedGroup(args.groupID);
     });
 </script>
