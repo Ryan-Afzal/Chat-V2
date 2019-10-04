@@ -37,14 +37,11 @@ namespace Chat_V2.Pages {
 			_logger = logger;
 		}
 
-		/// <summary>
-		/// Initial data goes here. DATA SHOULD NEVER BE SAVED TO THE VIEWMODEL!!!!!!!!!!
-		/// </summary>
 		[BindProperty]
-		public GroupViewModel ViewModel { get; private set; }
+		public GroupViewModel ViewModel { get; set; }
 
 		[BindProperty]
-		public JoinGroupInputModel JoinGroupInput { get; private set; }
+		public JoinGroupInputModel JoinGroupInput { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (groupId == null) {
@@ -90,15 +87,23 @@ namespace Chat_V2.Pages {
 			}
 		}
 
-		public async Task<IActionResult> OnPostSendJoinRequestAsync() {
+		public async Task<IActionResult> OnPostSendJoinRequestAsync(int? userId, int? groupId) {
+			if (userId == null || groupId == null) {
+				return Page();
+			}
+
 			GroupJoinRequest request = new GroupJoinRequest() {
-				ChatUserID = ViewModel.ChatUser.Id,
-				GroupID = ViewModel.Group.GroupID,
+				ChatUserID = (int)userId,
+				GroupID = (int)groupId,
 				Message = JoinGroupInput.Message,
 				DateSent = DateTime.Now
 			};
 
-			ViewModel.Group.GroupJoinRequests.Add(request);
+			(await _context.Group
+				.Include(g => g.GroupJoinRequests)
+				.FirstOrDefaultAsync(g => g.GroupID == request.GroupID))
+				.GroupJoinRequests
+				.Add(request);
 			await _context.SaveChangesAsync();
 
 			return Page();
