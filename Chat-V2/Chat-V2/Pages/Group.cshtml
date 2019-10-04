@@ -100,7 +100,7 @@
         @if (Model.ViewModel.Membership.Rank > PermissionRank.USER.Ordinal) {
             <hr />
             <div id="group-member-moderator" class="row">
-                <h3 class="display-1">Join Requests</h3>
+                <h4 class="display-4">Join Requests</h4>
                 <div id="join-requests-list" class="col-12">
                     @foreach (var request in Model.ViewModel.Group.GroupJoinRequests) {
                     <div id="request-user-@(request.ChatUserID)" class="card">
@@ -129,7 +129,8 @@
                             <form method="post">
                                 <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
                                 <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
-                                <input type="hidden" name="userId" value="@(request.ChatUserID)" />
+                                <input type="hidden" name="groupId" value="@(request.GroupID)" />
+                                <input type="hidden" name="requestId" value="@(request.GroupJoinRequestID)" />
                             </form>
                         </div>
                         <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
@@ -173,6 +174,8 @@
                         <label asp-for="JoinGroupInput.Message"></label>
                         <textarea asp-for="JoinGroupInput.Message" class="form-control"></textarea>
                         <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send</button>
+                        <input type="hidden" name="userId" value="@(Model.ViewModel.ChatUser.Id)" />
+                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
                     </form>
                 }
             </div>

@@ -90,7 +90,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 					Membership membership = new Membership() {
 						GroupID = group.GroupID,
 						ChatUserID = user.Id,
-						Rank = PermissionRank.USER.Ordinal,
+						Rank = PermissionRank.ADMINISTRATOR.Ordinal,
 						IsOnlineInGroup = false,
 						IsActiveInGroup = false,
 						Group = group,

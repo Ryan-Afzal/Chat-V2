@@ -89,7 +89,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostSendJoinRequestAsync(int? userId, int? groupId) {
 			if (userId == null || groupId == null) {
-				return Page();
+				return LocalRedirect("/");
 			}
 
 			GroupJoinRequest request = new GroupJoinRequest() {
@@ -106,19 +106,41 @@ namespace Chat_V2.Pages {
 				.Add(request);
 			await _context.SaveChangesAsync();
 
-			return Page();
+			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostLeaveGroupAsync() {
 			throw new NotImplementedException();
 		}
 
-		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? userId) {
+		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? groupId, int? requestId) {
 			throw new NotImplementedException();
 		}
 
-		public async Task<IActionResult> OnPostRejectJoinRequestAsync(int? userId) {
-			throw new NotImplementedException();
+		public async Task<IActionResult> OnPostRejectJoinRequestAsync(int? groupId, int? requestId) {
+			if (requestId == null || groupId == null) {
+				return LocalRedirect("/");
+			}
+
+			var group = await _context.Group
+				.Include(g => g.GroupJoinRequests)
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+			if (group == null) {
+				return LocalRedirect("/");
+			}
+
+			var request = group.GroupJoinRequests
+				.FirstOrDefault(r => r.GroupJoinRequestID == requestId);
+
+			if (request == null) {
+				return LocalRedirect("/");
+			}
+
+			group.GroupJoinRequests.Remove(request);
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
 		private bool JoinRequestSent(Group group, int userId) {
