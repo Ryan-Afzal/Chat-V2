@@ -109,8 +109,21 @@ namespace Chat_V2.Pages {
 			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
-		public async Task<IActionResult> OnPostLeaveGroupAsync() {
-			throw new NotImplementedException();
+		public async Task<IActionResult> OnPostLeaveGroupAsync(int? userId, int? groupId) {
+			if (userId == null || groupId == null) {
+				return LocalRedirect("/");
+			}
+
+			Group group = await _context.Group
+				.Include(g => g.Memberships)
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == userId);
+
+			_context.Membership.Remove(membership);
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? groupId, int? requestId) {

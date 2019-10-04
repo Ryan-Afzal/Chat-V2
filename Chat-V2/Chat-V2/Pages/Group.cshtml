@@ -91,6 +91,8 @@
                             <form method="post" class="form-group">
                                 <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                 <button type="submit" asp-page-handler="LeaveGroup" class="btn btn-danger">Leave Group</button>
+                                <input type="hidden" name="userId" value="@(Model.ViewModel.ChatUser.Id)" />
+                                <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
                             </form>
                         </div>
                     </div>
