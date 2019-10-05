@@ -115,6 +115,10 @@ namespace Chat_V2.Pages {
 				return LocalRedirect("/");
 			}
 
+			if ((await _userManager.GetUserAsync(User)).Id != userId) {
+				return BadRequest();
+			}
+
 			Group group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
@@ -191,6 +195,14 @@ namespace Chat_V2.Pages {
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect("/group?groupId=" + groupId);
+		}
+
+		public async Task<IActionResult> OnPostMakePrivateAsync(int? groupId) {
+			throw new NotImplementedException();
+		}
+
+		public async Task<IActionResult> OnPostMakePublicAsync(int? groupId) {
+			throw new NotImplementedException();
 		}
 
 		private bool JoinRequestSent(Group group, int userId) {
