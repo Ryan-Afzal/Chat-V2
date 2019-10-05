@@ -52,8 +52,9 @@ namespace Chat_V2.Pages {
 				var chatUser = await _userManager.GetUserAsync(User);
 				var group = await _context.Group
 							.Include(g => g.GroupJoinRequests)
-							.ThenInclude(r => r.ChatUser)
+								.ThenInclude(r => r.ChatUser)
 							.Include(g => g.Memberships)
+								.ThenInclude(m => m.ChatUser)
 							.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 				if (group == null) {
@@ -127,7 +128,43 @@ namespace Chat_V2.Pages {
 		}
 
 		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? groupId, int? requestId) {
-			throw new NotImplementedException();
+			if (requestId == null || groupId == null) {
+				return LocalRedirect("/");
+			}
+
+			var group = await _context.Group
+				.Include(g => g.GroupJoinRequests)
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+			if (group == null) {
+				return LocalRedirect("/");
+			}
+
+			var request = group.GroupJoinRequests
+				.FirstOrDefault(r => r.GroupJoinRequestID == requestId);
+
+			if (request == null) {
+				return LocalRedirect("/");
+			}
+
+			Membership membership = new Membership() {
+				ChatUserID = request.ChatUserID,
+				GroupID = group.GroupID,
+				IsActiveInGroup = false,
+				IsOnlineInGroup = false,
+				MembershipStatus = new MembershipStatus() {
+					DateIssued = DateTime.Now,
+					Expiration = DateTime.Now,
+					Type = MembershipStatusType.NONE
+				},
+				Rank = PermissionRank.USER.Ordinal
+			};
+
+			await _context.Membership.AddAsync(membership);
+			group.GroupJoinRequests.Remove(request);
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostRejectJoinRequestAsync(int? groupId, int? requestId) {

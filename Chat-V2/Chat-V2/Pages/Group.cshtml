@@ -105,45 +105,49 @@
                 <h4 class="display-4">Join Requests</h4>
                 <div id="join-requests-list" class="col-12">
                     @foreach (var request in Model.ViewModel.Group.GroupJoinRequests) {
-                    <div id="request-user-@(request.ChatUserID)" class="card">
-                        <div class="card-header">@(request.ChatUser.UserName)</div>
-                        <div class="card-body">
-                            <dl>
-                                <dt>
-                                    ID
-                                </dt>
-                                <dh>
-                                    @(request.ChatUserID)
-                                </dh>
-                                <dt>
-                                    Username
-                                </dt>
-                                <dh>
-                                    @(request.ChatUser.UserName)
-                                </dh>
-                                <dt>
-                                    Message
-                                </dt>
-                                <dh>
-                                    @(request.Message)
-                                </dh>
-                            </dl>
-                            <form method="post">
-                                <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
-                                <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
-                                <input type="hidden" name="groupId" value="@(request.GroupID)" />
-                                <input type="hidden" name="requestId" value="@(request.GroupJoinRequestID)" />
-                            </form>
+                        <div id="request-user-@(request.ChatUserID)" class="card">
+                            <div class="card-header">@(request.ChatUser.UserName)</div>
+                            <div class="card-body">
+                                <dl>
+                                    <dt>
+                                        ID
+                                    </dt>
+                                    <dh>
+                                        @(request.ChatUserID)
+                                    </dh>
+                                    <dt>
+                                        Username
+                                    </dt>
+                                    <dh>
+                                        @(request.ChatUser.UserName)
+                                    </dh>
+                                    <dt>
+                                        Message
+                                    </dt>
+                                    <dh>
+                                        @(request.Message)
+                                    </dh>
+                                </dl>
+                                <form method="post">
+                                    <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
+                                    <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
+                                    <input type="hidden" name="groupId" value="@(request.GroupID)" />
+                                    <input type="hidden" name="requestId" value="@(request.GroupJoinRequestID)" />
+                                </form>
+                            </div>
+                            <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
                         </div>
-                        <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
-                    </div>
                     }
+                </div>
+                <h4 class="display-4">Invite Members</h4>
+                <div id="invite-members" class="col-12">
+                    <!-- TODO add invite members section -->
                 </div>
             </div>
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                 <hr />
                 <div id="group-member-officer" class="row">
-
+                    <!-- TODO add banning members -->
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
