@@ -14,14 +14,6 @@ namespace Chat_V2.Models {
 			//context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
-			var user = context.Users
-				.Include(u => u.Memberships)
-				.FirstOrDefault(u => u.UserName.Equals("Ryan-Afzal"));
-
-			if (user != null) {
-				user.Memberships.FirstOrDefault().Rank = PermissionRank.SUPERUSER.Ordinal;
-			}
-
 			if (context.Group.Any()) {
 				return;
 			}
@@ -34,15 +26,6 @@ namespace Chat_V2.Models {
 				Description = "The global chat"
 			};
 			context.Group.Add(globalServerGroup);
-
-			Group testGroup = new Group() {
-				Name = "Test Group",
-				DateCreated = DateTime.Now,
-				IsPrivate = false,
-				IsArchived = false,
-				Description = "Ryan's Test Group"
-			};
-			context.Group.Add(testGroup);
 			context.SaveChanges();
 
 		}

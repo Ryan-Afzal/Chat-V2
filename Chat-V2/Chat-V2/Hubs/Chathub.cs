@@ -229,7 +229,7 @@ namespace Chat_V2.Hubs {
 							SenderName = user.UserName,
 							SenderRankColor = messageRank.Color,
 							Message = m.Message,
-							Timestamp = m.TimeStamp.ToShortTimeString()
+							Timestamp = m.TimeStamp.ToString()
 						});
 					}
 
@@ -329,7 +329,7 @@ namespace Chat_V2.Hubs {
 						SenderName = sender.UserName,
 						SenderRankColor = senderRank.Color,
 						Message = args.Message, 
-						Timestamp = chatMessage.TimeStamp.ToLocalTime().ToShortTimeString()
+						Timestamp = chatMessage.TimeStamp.ToLocalTime().ToString()
 					});
 		}
 
