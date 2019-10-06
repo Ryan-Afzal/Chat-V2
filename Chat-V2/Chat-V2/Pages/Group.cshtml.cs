@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
@@ -25,6 +26,16 @@ namespace Chat_V2.Pages {
 			public string Message { get; set; }
 		}
 
+		public class InviteToGroupInputModel {
+			[Required]
+			public int UserID { get; set; }
+
+			[Required]
+			public string UserName { get; set; }
+			
+			public string Message { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -42,6 +53,9 @@ namespace Chat_V2.Pages {
 
 		[BindProperty]
 		public JoinGroupInputModel JoinGroupInput { get; set; }
+
+		[BindProperty]
+		public InviteToGroupInputModel InviteToGroupInput { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (groupId == null) {
@@ -69,7 +83,9 @@ namespace Chat_V2.Pages {
 					JoinRequestSent = JoinRequestSent(group, chatUser.Id),
 					ChatUser = chatUser
 				};
+
 				JoinGroupInput = new JoinGroupInputModel();
+				InviteToGroupInput = new InviteToGroupInputModel();
 
 				if (membership == null) {
 					if (group.IsPrivate) {
@@ -94,8 +110,8 @@ namespace Chat_V2.Pages {
 			}
 
 			GroupJoinRequest request = new GroupJoinRequest() {
-				ChatUserID = (int)userId,
-				GroupID = (int)groupId,
+				ChatUserID = userId.Value,
+				GroupID = groupId.Value,
 				Message = JoinGroupInput.Message,
 				DateSent = DateTime.Now
 			};
@@ -197,11 +213,102 @@ namespace Chat_V2.Pages {
 			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
+		public async Task<IActionResult> OnPostInviteToGroupAsync(int? groupId) {
+			if (groupId == null) {
+				return LocalRedirect("/");
+			}
+
+			var chatUser = await _context.Users
+				.Include(u => u.GroupJoinInvitations)
+				.Include(u => u.Memberships)
+				.FirstOrDefaultAsync(u => u.Id == InviteToGroupInput.UserID);
+
+			if (chatUser == null) {
+				return LocalRedirect("/group?groupId=" + groupId);
+			}
+
+			if (!chatUser.UserName.Equals(InviteToGroupInput.UserName)) {
+				return LocalRedirect("/group?groupId=" + groupId);
+			}
+
+			var group = await _context.Group
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+			if (group == null) {
+				return LocalRedirect("/");
+			}
+
+			if (chatUser.GroupJoinInvitations.FirstOrDefault(i => i.GroupID == groupId.Value) != null || chatUser.Memberships.FirstOrDefault(m => m.GroupID == groupId) == null) {
+				return LocalRedirect("/group?groupId=" + groupId);
+			}
+
+			GroupJoinInvitation invitation = new GroupJoinInvitation() {
+				GroupID = groupId.Value,
+				DateSent = DateTime.Now,
+				Message = InviteToGroupInput.Message
+			};
+
+			chatUser.GroupJoinInvitations.Add(invitation);
+
+			await _context.SaveChangesAsync();
+			return LocalRedirect("/group?groupId=" + groupId);
+		}
+
 		public async Task<IActionResult> OnPostMakePrivateAsync(int? groupId) {
-			throw new NotImplementedException();
+			if (groupId == null) {
+				return LocalRedirect("/");
+			}
+
+			var chatUser = await _userManager.GetUserAsync(User);
+			Group group = await _context.Group
+				.Include(g => g.Memberships)
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+
+			if (membership == null || membership.Rank < PermissionRank.OWNER.Ordinal) {
+				return BadRequest();
+			}
+
+			group.IsPrivate = true;
+			
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostMakePublicAsync(int? groupId) {
+			if (groupId == null) {
+				return LocalRedirect("/");
+			}
+
+			var chatUser = await _userManager.GetUserAsync(User);
+			Group group = await _context.Group
+				.Include(g => g.Memberships)
+				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+
+			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+
+			if (membership == null || membership.Rank < PermissionRank.OWNER.Ordinal) {
+				return BadRequest();
+			}
+
+			group.IsPrivate = false;
+
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect("/group?groupId=" + groupId);
+		}
+
+		public async Task<IActionResult> OnPostLeaveGroupOwnerAsync(int? groupId) {
+			throw new NotImplementedException();
+		}
+
+		public async Task<IActionResult> OnPostArchiveGroupAsync(int? groupId) {
+			throw new NotImplementedException();
+		}
+
+		public async Task<IActionResult> OnPostDeleteGroupAsync(int? groupId) {
 			throw new NotImplementedException();
 		}
 
