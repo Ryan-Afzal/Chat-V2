@@ -49,22 +49,25 @@
 }
                 </tr>
                 @foreach (var item in Model.ViewModel.Group.Memberships.OrderByDescending(membership => membership.Rank)) {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ChatUser.Id)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ChatUser.UserName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => PermissionRank.GetPermissionRankByOrdinal(item.Rank).Name)
-                        </td>
-                        @if (Model.ViewModel.IsGroupMember) {
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MembershipStatus.Type)
-                            </td>
-                        }
-                    </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChatUser.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChatUser.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => PermissionRank.GetPermissionRankByOrdinal(item.Rank).Name)
+                </td>
+                @if (Model.ViewModel.IsGroupMember) {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MembershipStatus.Type)
+                    </td>
+                }
+                <td>
+                    <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
+                </td>
+            </tr>
                 }
             </table>
         </dd>
@@ -249,7 +252,7 @@
                                     Danger Zone
                                 </div>
                                 <div class="card-body">
-                                    Danger Zone!
+                                    Danger Zone! (Leave Group (Owner), Archive Group, and Delete Group)
                                 </div>
                             </div>
                         </div>

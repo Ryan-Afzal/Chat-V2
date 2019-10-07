@@ -22,7 +22,6 @@ namespace Chat_V2.Models {
 		/// </summary>
 		[Display(Name = "Private?")]
 		public bool IsPrivate { get; set; }
-		[Display(Name = "Archived?")]
 		public bool IsArchived { get; set; }
 
 		public ICollection<ChatUser> BannedUsers { get; set; }

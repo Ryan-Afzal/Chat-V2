@@ -1,0 +1,83 @@
+﻿@page
+@model Chat_V2.Pages.UsersModel
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Users</h1>
+
+<form asp-page="./Users" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="./Users">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<form asp-page="./Profile" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by ID:
+            <input type="text" name="userId" value="" />
+            <input type="submit" value="Find" class="btn btn-primary" /> |
+            <a asp-page="./Users">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <!--<th>
+        <a asp-page="./Users" asp-route-sortOrder="@Model.IdSort" asp-route-currentFilter="@Model.CurrentFilter">
+            @Html.DisplayNameFor(model => model.Users[0].Id)
+        </a>
+    </th>-->
+            <th>
+                <a asp-page="./Users" asp-route-sortOrder="@Model.NameSort" asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.Users[0].UserName)
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Users) {
+        <tr>
+            <!--<td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>-->
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                <a asp-page="/Profile" asp-route-userId="@item.Id">View</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.Users.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Users.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Users.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Users.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

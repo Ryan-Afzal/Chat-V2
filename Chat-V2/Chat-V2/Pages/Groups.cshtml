@@ -1,0 +1,87 @@
+﻿@page
+@model Chat_V2.Pages.GroupsModel
+@{
+    ViewData["Title"] = "Groups";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Groups</h1>
+
+<p>
+    <a asp-page="./CreateGroup">Create New</a>
+</p>
+
+<form asp-page="./Groups" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="./Groups">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<form asp-page="./Group" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by ID:
+            <input type="text" name="groupId" value="" />
+            <input type="submit" value="Find" class="btn btn-primary" /> |
+            <a asp-page="./Groups">Back to full List</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Groups" asp-route-sortOrder="@Model.IdSort" asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.Groups[0].GroupID)
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Groups" asp-route-sortOrder="@Model.NameSort" asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.Groups[0].Name)
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Groups) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GroupID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-page="/Group" asp-route-groupId="@item.GroupID">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.Groups.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Groups.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Groups.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Groups.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

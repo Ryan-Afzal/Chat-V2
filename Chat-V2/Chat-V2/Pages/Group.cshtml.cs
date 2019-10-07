@@ -59,7 +59,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (groupId == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			if (_signInManager.IsSignedIn(User)) {
@@ -72,7 +72,7 @@ namespace Chat_V2.Pages {
 							.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 				if (group == null) {
-					return LocalRedirect("/");
+					return NotFound();
 				}
 
 				var membership = group.Memberships
@@ -89,7 +89,7 @@ namespace Chat_V2.Pages {
 
 				if (membership == null) {
 					if (group.IsPrivate) {
-						return LocalRedirect("/");
+						return LocalRedirect("/Groups");
 					} else {
 						ViewModel.IsGroupMember = false;
 					}
@@ -106,7 +106,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostSendJoinRequestAsync(int? userId, int? groupId) {
 			if (userId == null || groupId == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			GroupJoinRequest request = new GroupJoinRequest() {
@@ -128,7 +128,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostLeaveGroupAsync(int? userId, int? groupId) {
 			if (userId == null || groupId == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			if ((await _userManager.GetUserAsync(User)).Id != userId) {
@@ -149,7 +149,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? groupId, int? requestId) {
 			if (requestId == null || groupId == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			var group = await _context.Group
@@ -157,14 +157,14 @@ namespace Chat_V2.Pages {
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			var request = group.GroupJoinRequests
 				.FirstOrDefault(r => r.GroupJoinRequestID == requestId);
 
 			if (request == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			Membership membership = new Membership() {
@@ -189,7 +189,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostRejectJoinRequestAsync(int? groupId, int? requestId) {
 			if (requestId == null || groupId == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			var group = await _context.Group
@@ -197,14 +197,14 @@ namespace Chat_V2.Pages {
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			var request = group.GroupJoinRequests
 				.FirstOrDefault(r => r.GroupJoinRequestID == requestId);
 
 			if (request == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			group.GroupJoinRequests.Remove(request);
@@ -235,7 +235,7 @@ namespace Chat_V2.Pages {
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
-				return LocalRedirect("/");
+				return NotFound();
 			}
 
 			if (chatUser.GroupJoinInvitations.FirstOrDefault(i => i.GroupID == groupId.Value) != null || chatUser.Memberships.FirstOrDefault(m => m.GroupID == groupId) == null) {

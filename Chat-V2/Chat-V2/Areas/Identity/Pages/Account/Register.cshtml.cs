@@ -76,7 +76,8 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 					UserName = Input.Username, 
 					Email = Input.Email, 
 					FirstName = Input.FirstName, 
-					LastName = Input.LastName
+					LastName = Input.LastName,
+					ProfileDescription = ""
 				};
 
 				var result = await _userManager.CreateAsync(user, Input.Password);
