@@ -5,12 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Chat_V2.Pages {
+	[Authorize]
 	public class CreateGroupModel : PageModel {
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
@@ -41,11 +43,8 @@ namespace Chat_V2.Pages {
 		}
 
 		public async Task<IActionResult> OnGetAsync() {
-			if (_signInManager.IsSignedIn(User)) {
-				return Page();
-			} else {
-				return LocalRedirect("/Identity/Account/Login");
-			}
+			Input = new InputModel();
+			return Page();
 		}
 
 		public async Task<IActionResult> OnPostAsync() {

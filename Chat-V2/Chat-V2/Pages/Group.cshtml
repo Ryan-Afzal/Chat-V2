@@ -6,7 +6,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="display-4">Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
+<h1>Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
 
 <div id="group-data" class="container-fluid">
     <dl class="row">
@@ -111,7 +111,7 @@
         @if (Model.ViewModel.Membership.Rank > PermissionRank.USER.Ordinal) {
             <hr />
             <div id="group-member-moderator" class="row">
-                <h4 class="display-4">Join Requests</h4>
+                <h4>Join Requests</h4>
                 <div id="join-requests-list" class="col-12">
                     @if (Model.ViewModel.Group.GroupJoinRequests.Count == 0) {
                         <div id="no-requests" class="card">
@@ -157,7 +157,7 @@
 
                 <br />
 
-                <h4 class="display-4">Invite Members</h4>
+                <h4>Invite Members</h4>
                 <div id="invite-members" class="col-12">
                     <form method="post" class="form-group">
                         <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
@@ -182,7 +182,7 @@
                     </form>
                 </div>
 
-                <h4 class="display-4">Banned Users</h4>
+                <h4>Banned Users</h4>
                 <table class="table">
                     <tr>
                         <th>ID</th>
@@ -201,9 +201,11 @@
                             </td>
                             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                                 <td>
-                                    <button asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
-                                    <input type="hidden" name="userId" value="@item.Id" />
-                                    <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                    <form method="post" class="form-group">
+                                        <button type="submit" asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
+                                        <input type="hidden" name="userId" value="@item.Id" />
+                                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                    </form>
                                 </td>
                             }
                         </tr>
@@ -213,12 +215,14 @@
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                 <hr />
                 <div id="group-member-officer" class="row">
-                    <h4 class="display-4">Ban User by Id</h4>
-                    <form method="post" class="form-group">
-                        <input type="number" name="userId" />
-                        <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
-                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
-                    </form>
+                    <h4>Ban User by Id</h4>
+                    <div class="col-12">
+                        <form method="post" class="form-group">
+                            <input type="text" name="userId" />
+                            <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
+                            <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                        </form>
+                    </div>
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
@@ -285,7 +289,10 @@
                                     Danger Zone
                                 </div>
                                 <div class="card-body">
-                                    
+                                    <form method="post" class="form-group">
+                                        <button type="submit" asp-page-handler="ArchiveGroup" class="btn btn-warning disabled">Archive</button>
+                                        <button type="submit" asp-page-handler="DeleteGroup" class="btn btn-danger disabled">Delete</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -300,22 +307,30 @@
             }
         }
     } else {
-        <div id="not-group-member" class="row">
-            <div class="col-12">
-                @if (Model.ViewModel.JoinRequestSent) {
-                    <h3>You have sent a join request.</h3>
-                } else {
-                    <h3>You are not a group member. To become a group member, send a join request.</h3>
-                    <form method="post" class="form-group">
-                        <label asp-for="JoinGroupInput.Message"></label>
-                        <textarea asp-for="JoinGroupInput.Message" class="form-control"></textarea>
-                        <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send</button>
-                        <input type="hidden" name="userId" value="@(Model.ViewModel.ChatUser.Id)" />
-                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
-                    </form>
-                }
+        @if (Model.ViewModel.IsBanned) {
+            <div id="not-group-memeber" class="row">
+                <div class="col-12">
+                    <h3>You are banned from this group.</h3>
+                </div>
             </div>
-        </div>
+        } else {
+            <div id="not-group-member" class="row">
+                <div class="col-12">
+                    @if (Model.ViewModel.JoinRequestSent) {
+                        <h3>You have sent a join request.</h3>
+                    } else {
+                        <h3>You are not a group member. To become a group member, send a join request.</h3>
+                        <form method="post" class="form-group">
+                            <label asp-for="JoinGroupInput.Message"></label>
+                            <textarea asp-for="JoinGroupInput.Message" class="form-control"></textarea>
+                            <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send</button>
+                            <input type="hidden" name="userId" value="@(Model.ViewModel.ChatUser.Id)" />
+                            <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                        </form>
+                    }
+                </div>
+            </div>
+        }
     }
 </div>
 <style>

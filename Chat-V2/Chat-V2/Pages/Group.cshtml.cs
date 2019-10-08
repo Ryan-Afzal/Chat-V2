@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,10 +13,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Chat_V2.Pages {
+
+	[Authorize]
 	public class GroupModel : PageModel {
 
 		public class GroupViewModel {
 			public bool IsGroupMember { get; set; }
+			public bool IsBanned { get; set; }
 			public bool JoinRequestSent { get; set; }
 			public ChatUser ChatUser { get; set; }
 			public Group Group { get; set; }
@@ -62,46 +66,49 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			if (_signInManager.IsSignedIn(User)) {
-				var chatUser = await _userManager.GetUserAsync(User);
-				var group = await _context.Group
-							.Include(g => g.GroupJoinRequests)
-								.ThenInclude(r => r.ChatUser)
-							.Include(g => g.Memberships)
-								.ThenInclude(m => m.ChatUser)
-							.FirstOrDefaultAsync(g => g.GroupID == groupId);
+			var chatUser = await _userManager.GetUserAsync(User);
+			var group = await _context.Group
+						.Include(g => g.GroupJoinRequests)
+							.ThenInclude(r => r.ChatUser)
+						.Include(g => g.BannedUsers)
+						.Include(g => g.Memberships)
+							.ThenInclude(m => m.ChatUser)
+						.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
-				if (group == null) {
-					return NotFound();
-				}
-
-				var membership = group.Memberships
-							.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
-
-				ViewModel = new GroupViewModel() {
-					Group = group,
-					JoinRequestSent = JoinRequestSent(group, chatUser.Id),
-					ChatUser = chatUser
-				};
-
-				JoinGroupInput = new JoinGroupInputModel();
-				InviteToGroupInput = new InviteToGroupInputModel();
-
-				if (membership == null) {
-					if (group.IsPrivate) {
-						return LocalRedirect("/Groups");
-					} else {
-						ViewModel.IsGroupMember = false;
-					}
-				} else {
-					ViewModel.IsGroupMember = true;
-					ViewModel.Membership = membership;
-				}
-
-				return Page();
-			} else {
-				return LocalRedirect("/Identity/Account/Login");
+			if (group == null) {
+				return NotFound();
 			}
+
+			var membership = group.Memberships
+						.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+
+			ViewModel = new GroupViewModel() {
+				Group = group,
+				JoinRequestSent = JoinRequestSent(group, chatUser.Id),
+				ChatUser = chatUser
+			};
+
+			JoinGroupInput = new JoinGroupInputModel();
+			InviteToGroupInput = new InviteToGroupInputModel();
+
+			if (membership == null) {
+				if (group.IsPrivate) {
+					return LocalRedirect("/Groups");
+				} else {
+					ViewModel.IsGroupMember = false;
+					if (group.BannedUsers.FirstOrDefault(u => u.Id == chatUser.Id) == null) {
+						ViewModel.IsBanned = false;
+					} else {
+						ViewModel.IsBanned = true;
+					}
+				}
+			} else {
+				ViewModel.IsGroupMember = true;
+				ViewModel.IsBanned = false;
+				ViewModel.Membership = membership;
+			}
+
+			return Page();
 		}
 
 		public async Task<IActionResult> OnPostSendJoinRequestAsync(int? userId, int? groupId) {
@@ -109,18 +116,23 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
+			var group = await _context.Group
+				.Include(g => g.GroupJoinRequests)
+				.Include(g => g.BannedUsers)
+				.FirstOrDefaultAsync(g => g.GroupID == groupId.Value);
+
+			if (group.BannedUsers.FirstOrDefault(u => u.Id == userId.Value) != null) {
+				return BadRequest();
+			}
+
 			GroupJoinRequest request = new GroupJoinRequest() {
 				ChatUserID = userId.Value,
-				GroupID = groupId.Value,
+				GroupID = group.GroupID,
 				Message = JoinGroupInput.Message,
 				DateSent = DateTime.Now
 			};
 
-			(await _context.Group
-				.Include(g => g.GroupJoinRequests)
-				.FirstOrDefaultAsync(g => g.GroupID == request.GroupID))
-				.GroupJoinRequests
-				.Add(request);
+			group.GroupJoinRequests.Add(request);
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect("/group?groupId=" + groupId);
@@ -232,13 +244,16 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
+				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
 				return NotFound();
 			}
 
-			if (chatUser.GroupJoinInvitations.FirstOrDefault(i => i.GroupID == groupId.Value) != null || chatUser.Memberships.FirstOrDefault(m => m.GroupID == groupId) == null) {
+			if (chatUser.GroupJoinInvitations.FirstOrDefault(i => i.GroupID == groupId.Value) != null
+				|| chatUser.Memberships.FirstOrDefault(m => m.GroupID == groupId) != null
+				|| group.BannedUsers.FirstOrDefault(u => u.Id == chatUser.Id) != null) {
 				return LocalRedirect("/group?groupId=" + groupId);
 			}
 
@@ -259,7 +274,7 @@ namespace Chat_V2.Pages {
 				return BadRequest();
 			}
 
-			return LocalRedirect("./ConfirmUnbanUser?userId=" + userId + "&groupId=" + groupId);
+			return LocalRedirect("/ConfirmUnbanUser?userId=" + userId + "&groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostBanUserAsync(int? userId, int? groupId) {
@@ -267,7 +282,7 @@ namespace Chat_V2.Pages {
 				return BadRequest();
 			}
 
-			return LocalRedirect("./ConfirmBanUser?userId=" + userId + "&groupId=" + groupId);
+			return LocalRedirect("/ConfirmBanUser?userId=" + userId + "&groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostMakePrivateAsync(int? groupId) {

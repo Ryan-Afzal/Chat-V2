@@ -1,14 +1,14 @@
 ﻿@page
-@model Chat_V2.Pages.ConfirmBanUserModel
+@model Chat_V2.Pages.ConfirmUnbanUserModel
 @{
-    ViewData["Title"] = "Confirm Ban User";
+    ViewData["Title"] = "Confirm Unban User";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            <h3>Are you sure you want to ban this user?</h3>
+            <h3>Are you sure you want to unban this user?</h3>
 
             <div id="group-data" class="container-fluid">
                 <dl class="row">
@@ -27,18 +27,11 @@
                 </dl>
             </div>
 
-            @if (Model.MembershipID != null) {
-                <h4 class="text-danger">This user is a group member!</h4>
-            }
-
             <form method="post" class="form-group">
                 <button type="submit" asp-page-handler="Cancel" class="btn btn-dark">Cancel</button>
                 <button type="submit" asp-page-handler="Confirm" class="btn btn-warning">Confirm</button>
                 <input type="hidden" name="userId" value="@Model.UserID" />
                 <input type="hidden" name="groupId" value="@Model.GroupID" />
-                @if (Model.MembershipID != null) {
-                    <input type="hidden" name="membershipId" value="@Model.MembershipID" />
-                }
             </form>
         </div>
     </div>

@@ -13,13 +13,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Chat_V2.Pages {
 	[Authorize]
-	public class ConfirmBanUserModel : PageModel {
+	public class ConfirmUnbanUserModel : PageModel {
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
-		private readonly ILogger<ConfirmBanUserModel> _logger;
+		private readonly ILogger<ConfirmUnbanUserModel> _logger;
 
-		public ConfirmBanUserModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ConfirmBanUserModel> logger) {
+		public ConfirmUnbanUserModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ConfirmUnbanUserModel> logger) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
@@ -32,8 +32,6 @@ namespace Chat_V2.Pages {
 		public string UserName { get; set; }
 		[BindProperty]
 		public int GroupID { get; set; }
-		[BindProperty]
-		public int? MembershipID { get; set; }
 		
 		public async Task<IActionResult> OnGetAsync(int? userId, int? groupId) {
 			if (userId == null || groupId == null) {
@@ -56,30 +54,10 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			var memberships = group.Memberships
-				.Where(m => m.ChatUserID == user.Id || m.ChatUserID == currentUser.Id);
-
-			Membership other = null;
-			Membership current = null;
-			
-			foreach (var m in memberships) {
-				if (m.ChatUserID == user.Id) {
-					other = m;
-				} else {
-					current = m;
-				}
-			}
+			var current = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
 			if (current == null || current.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
-			}
-
-			if (other == null) {
-				MembershipID = null;
-			} else if (other.Rank >= current.Rank) {
-				return BadRequest();
-			} else {
-				MembershipID = other.MembershipID;
 			}
 
 			UserID = user.Id;
@@ -97,38 +75,24 @@ namespace Chat_V2.Pages {
 			return LocalRedirect("/Group?groupId=" + groupId);
 		}
 
-		public async Task<IActionResult> OnPostConfirmAsync(int? userId, int? groupId, int? membershipId) {
+		public async Task<IActionResult> OnPostConfirmAsync(int? userId, int? groupId) {
 			if (groupId == null || userId == null) {
 				return BadRequest();
 			}
 
 			var group = await _context.Group
-				.Include(g => g.Memberships)
 				.Include(g => g.BannedUsers)
+				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			var currentUser = await _userManager.GetUserAsync(User);
 			var currentMembership = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
-			if (currentMembership == null) {
+			if (currentMembership == null || currentMembership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 
-			Membership membership = null;
-
-			if (membershipId != null) {
-				membership = await _context.Membership.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
-
-				if (currentMembership.Rank <= membership.Rank) {
-					return BadRequest();
-				}
-			}
-
-			if (membership != null) {
-				_context.Membership.Remove(membership);
-			}
-
-			group.BannedUsers.Add(await _context.Users.FirstOrDefaultAsync(u => u.Id == userId));
+			group.BannedUsers.Remove(await _context.Users.FirstOrDefaultAsync(u => u.Id == userId));
 
 			await _context.SaveChangesAsync();
 

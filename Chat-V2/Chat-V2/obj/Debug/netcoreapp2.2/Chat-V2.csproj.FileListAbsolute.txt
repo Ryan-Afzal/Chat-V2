@@ -301,3 +301,7 @@ C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\CreateGroup.g.cshtml.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\Groups.g.cshtml.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\Users.g.cshtml.cs
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\ConfirmBanUser.g.cshtml.cs
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\Groups.g.cshtml.cs
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\Users.g.cshtml.cs
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp2.2\Razor\Pages\ConfirmUnbanUser.g.cshtml.cs
