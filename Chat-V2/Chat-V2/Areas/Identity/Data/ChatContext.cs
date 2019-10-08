@@ -33,7 +33,5 @@ namespace Chat_V2.Models {
 		public DbSet<Membership> Membership { get; set; }
 		public DbSet<ChatMessage> ChatMessage { get; set; }
 
-		public DbSet<Image> Image { get; set; }
-
 	}
 }
