@@ -19,7 +19,6 @@ namespace Chat_V2 {
 
 			using (var scope = host.Services.CreateScope()) {
 				var services = scope.ServiceProvider;
-#if DEBUG
 				try {
 					var context = services.GetRequiredService<ChatContext>();
 					DbInitializer.Initialize(context);
@@ -27,7 +26,6 @@ namespace Chat_V2 {
 					var logger = services.GetRequiredService<ILogger<Program>>();
 					logger.LogError(ex, "An error occurred creating the DB.");
 				}
-#endif
 			}
 
 			host.Run();

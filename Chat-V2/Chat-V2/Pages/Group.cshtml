@@ -57,7 +57,10 @@
                             @Html.DisplayFor(modelItem => item.ChatUser.UserName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => PermissionRank.GetPermissionRankByOrdinal(item.Rank).Name)
+                            @{
+                                PermissionRank rank = PermissionRank.GetPermissionRankByOrdinal(item.Rank);
+                            }
+                            <span class="badge" style="background-color: @rank.Color">@rank.Name</span>
                         </td>
                         @if (Model.ViewModel.IsGroupMember) {
                             <td>

@@ -16,8 +16,6 @@ namespace Chat_V2.Areas.Identity.Data {
 		[PersonalData]
 		public string LastName { get; set; }
 
-		//public Guid ImageID { get; set; }
-
 		public string ProfileDescription { get; set; }
 		
         public bool IsOnline {
@@ -27,8 +25,9 @@ namespace Chat_V2.Areas.Identity.Data {
 		}
 
 		public int NumOnline { get; set; }
+		
+		public byte[] Image { get; set; }
 
-		//public Image Image { get; set; }
 		public ICollection<Membership> Memberships { get; set; }
 		public ICollection<GroupJoinInvitation> GroupJoinInvitations { get; set; }
 
