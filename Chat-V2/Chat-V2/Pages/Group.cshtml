@@ -181,11 +181,44 @@
                         <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
                     </form>
                 </div>
+
+                <h4 class="display-4">Banned Users</h4>
+                <table class="table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                    </tr>
+                    @foreach (var item in Model.ViewModel.Group.BannedUsers) {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserName)
+                            </td>
+                            <td>
+                                <a asp-page="/Profile" asp-route-userId="@item.Id">View</a>
+                            </td>
+                            @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
+                                <td>
+                                    <button asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
+                                    <input type="hidden" name="userId" value="@item.Id" />
+                                    <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
             </div>
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                 <hr />
                 <div id="group-member-officer" class="row">
-                    <!-- TODO add banning members -->
+                    <h4 class="display-4">Ban User by Id</h4>
+                    <form method="post" class="form-group">
+                        <input type="number" name="userId" />
+                        <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
+                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                    </form>
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />

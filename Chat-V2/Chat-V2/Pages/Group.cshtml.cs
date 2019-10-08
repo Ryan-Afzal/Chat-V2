@@ -39,9 +39,9 @@ namespace Chat_V2.Pages {
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
-		private readonly ILogger<ChatModel> _logger;
+		private readonly ILogger<GroupModel> _logger;
 
-		public GroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ChatModel> logger) {
+		public GroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<GroupModel> logger) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
@@ -254,6 +254,22 @@ namespace Chat_V2.Pages {
 			return LocalRedirect("/group?groupId=" + groupId);
 		}
 
+		public async Task<IActionResult> OnPostUnbanUserAsync(int? userId, int? groupId) {
+			if (userId == null || groupId == null) {
+				return BadRequest();
+			}
+
+			return LocalRedirect("./ConfirmUnbanUser?userId=" + userId + "&groupId=" + groupId);
+		}
+
+		public async Task<IActionResult> OnPostBanUserAsync(int? userId, int? groupId) {
+			if (userId == null || groupId == null) {
+				return BadRequest();
+			}
+
+			return LocalRedirect("./ConfirmBanUser?userId=" + userId + "&groupId=" + groupId);
+		}
+
 		public async Task<IActionResult> OnPostMakePrivateAsync(int? groupId) {
 			if (groupId == null) {
 				return LocalRedirect("/");
@@ -298,10 +314,6 @@ namespace Chat_V2.Pages {
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect("/group?groupId=" + groupId);
-		}
-
-		public async Task<IActionResult> OnPostLeaveGroupOwnerAsync(int? groupId) {
-			throw new NotImplementedException();
 		}
 
 		public async Task<IActionResult> OnPostArchiveGroupAsync(int? groupId) {
