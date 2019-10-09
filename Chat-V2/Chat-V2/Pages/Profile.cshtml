@@ -10,7 +10,6 @@
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
             <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications</a>
-            <a class="nav-item nav-link" id="nav-edit-tab" data-toggle="tab" href="#nav-edit" role="tab" aria-controls="nav-edit" aria-selected="false">Edit</a>
         }
     </div>
 </nav>
@@ -21,15 +20,6 @@
     @if (Model.IsThisUser) {
         <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
 
-        </div>
-        <div class="tab-pane fade" id="nav-edit" role="tabpanel" aria-labelledby="nav-edit-tab">
-            <form method="post" class="form-group">
-                <label>Description</label>
-                <textarea asp-for="Input.ProfileDescription">@Model.ChatUser.ProfileDescription</textarea>
-                <button type="submit" asp-page-handler="Cancel" class="btn btn-dark">Cancel</button>
-                <button type="submit" asp-page-handler="Save" class="btn btn-primary">Save Changes</button>
-                <input type="hidden" name="userId" value="@Model.ChatUser.Id" />
-            </form>
         </div>
     }
 </div>

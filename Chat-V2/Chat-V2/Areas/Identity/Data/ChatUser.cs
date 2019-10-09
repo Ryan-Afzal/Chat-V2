@@ -26,10 +26,12 @@ namespace Chat_V2.Areas.Identity.Data {
 
 		public int NumOnline { get; set; }
 
+		public int ProfileImageID { get; set; }
+
 		public ICollection<Membership> Memberships { get; set; }
 		public ICollection<GroupJoinInvitation> GroupJoinInvitations { get; set; }
 
-		public Image Image { get; set; }
+		public AppImage ProfileImage { get; set; }
 
 	}
 

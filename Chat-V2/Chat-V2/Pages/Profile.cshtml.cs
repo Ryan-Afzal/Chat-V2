@@ -17,10 +17,6 @@ namespace Chat_V2.Pages {
 	[Authorize]
 	public class ProfileModel : PageModel {
 
-		public class EditInputModel {
-			public string ProfileDescription { get; set; }
-		}
-
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -37,8 +33,6 @@ namespace Chat_V2.Pages {
 		public ChatUser ChatUser { get; set; }
 		[BindProperty]
 		public bool IsThisUser { get; set; }
-		[BindProperty]
-		public EditInputModel Input { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? userId) {
 			if (userId == null) {
@@ -48,7 +42,7 @@ namespace Chat_V2.Pages {
 			var user = await _context.Users
 				.Include(u => u.Memberships)
 				.Include(u => u.GroupJoinInvitations)
-				.Include(u => u.Image)
+				.Include(u => u.ProfileImage)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 
 			if (user == null) {
@@ -57,37 +51,8 @@ namespace Chat_V2.Pages {
 
 			ChatUser = user;
 			IsThisUser = (await _userManager.GetUserAsync(User)).Id == user.Id;
-			Input = new EditInputModel();
 
 			return Page();
-		}
-
-		public async Task<IActionResult> OnPostCancelAsync(int? userId) {
-			if (userId == null) {
-				return BadRequest();
-			}
-
-			return LocalRedirect("/Profile?userId=" + userId.Value);
-		}
-
-		public async Task<IActionResult> OnPostSaveAsync(int? userId) {
-			if (userId == null) {
-				return BadRequest();
-			}
-
-			var user = await _context.Users
-				.Include(u => u.Memberships)
-				.Include(u => u.GroupJoinInvitations)
-				.Include(u => u.Image)
-				.FirstOrDefaultAsync(u => u.Id == userId.Value);
-
-			if (user == null) {
-				return NotFound();
-			}
-
-
-
-			throw new NotImplementedException();
 		}
 	}
 }

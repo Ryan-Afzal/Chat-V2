@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 	public partial class IndexModel : PageModel {
+		private readonly ChatContext _context;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly IEmailSender _emailSender;
 
-		public IndexModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, IEmailSender emailSender) {
+		public IndexModel(ChatContext context, UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, IEmailSender emailSender) {
+			_context = context;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_emailSender = emailSender;
@@ -26,6 +32,10 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 
 		[TempData]
 		public string StatusMessage { get; set; }
+
+		[Required]
+		[Display(Name = "Profile Image")]
+		public IFormFile ProfileImage { get; set; }
 
 		[BindProperty]
 		public InputModel Input { get; set; }
@@ -40,17 +50,18 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			[EmailAddress]
 			public string Email { get; set; }
 
-			[Required]
 			[Display(Name = "First Name")]
 			public string FirstName { get; set; }
 
-			[Required]
 			[Display(Name = "Last Name")]
 			public string LastName { get; set; }
 
 			[Phone]
 			[Display(Name = "Phone number")]
 			public string PhoneNumber { get; set; }
+
+			[Display(Name = "Profile Description")]
+			public string ProfileDescription { get; set; }
 
 		}
 
@@ -69,7 +80,8 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 				Email = email,
 				FirstName = user.FirstName,
 				LastName = user.LastName,
-				PhoneNumber = phoneNumber
+				PhoneNumber = phoneNumber,
+				ProfileDescription = user.ProfileDescription
 			};
 
 			IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
@@ -117,6 +129,24 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			await _signInManager.RefreshSignInAsync(user);
 			StatusMessage = "Your profile has been updated";
 			return RedirectToPage();
+		}
+
+		public async Task<IActionResult> OnPostUploadAsync() {
+			using (var memoryStream = new MemoryStream()) {
+				await ProfileImage.CopyToAsync(memoryStream);
+
+				if (memoryStream.Length < 2097152) {
+					var user = await _userManager.GetUserAsync(User);
+
+					(await _context.AppImage.FirstOrDefaultAsync()).Data = memoryStream.ToArray();
+
+					await _context.SaveChangesAsync();
+				} else {
+					ModelState.AddModelError("File", "The file is too large.");
+				}
+			}
+
+			return Page();
 		}
 
 		public async Task<IActionResult> OnPostSendVerificationEmailAsync() {
