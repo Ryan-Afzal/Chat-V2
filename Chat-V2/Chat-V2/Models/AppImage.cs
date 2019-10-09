@@ -7,5 +7,6 @@ namespace Chat_V2.Models {
 	public class AppImage {
 		public int AppImageID { get; set; }
 		public byte[] Data { get; set; }
+		public string ContentType { get; set; }
 	}
 }

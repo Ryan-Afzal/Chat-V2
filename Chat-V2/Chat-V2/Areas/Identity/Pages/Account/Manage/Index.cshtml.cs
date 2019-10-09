@@ -134,11 +134,12 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 		public async Task<IActionResult> OnPostUploadAsync() {
 			using (var memoryStream = new MemoryStream()) {
 				await ProfileImage.CopyToAsync(memoryStream);
-
+				
 				if (memoryStream.Length < 2097152) {
 					var user = await _userManager.GetUserAsync(User);
-
-					(await _context.AppImage.FirstOrDefaultAsync()).Data = memoryStream.ToArray();
+					var image = await _context.AppImage.FirstOrDefaultAsync(i => i.AppImageID == user.ProfileImageID);
+					image.Data = memoryStream.ToArray();
+					image.ContentType = ProfileImage.ContentType;
 
 					await _context.SaveChangesAsync();
 				} else {

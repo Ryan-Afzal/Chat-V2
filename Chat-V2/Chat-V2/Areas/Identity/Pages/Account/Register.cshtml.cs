@@ -77,16 +77,17 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
 			returnUrl = returnUrl ?? Url.Content("~/");
 			if (ModelState.IsValid) {
-				var webRoot = _env.ContentRootPath;
-				var filename = Path.Combine(webRoot, "Images/defaultProfileImage.png");
+				var root = _env.ContentRootPath;
+				var filename = Path.Combine(root, "Images\\defaultProfileImage.png");
 
 				FileInfo fileInfo = new FileInfo(filename);
 				long imageFileLength = fileInfo.Length;
-				FileStream fs = System.IO.File.Create(filename);
+				FileStream fs = System.IO.File.OpenRead(filename);
 				BinaryReader br = new BinaryReader(fs);
 
 				var image = new AppImage() {
-					Data = br.ReadBytes((int)imageFileLength)
+					Data = br.ReadBytes((int)imageFileLength),
+					ContentType = fileInfo.Extension
 				};
 
 				br.Dispose();

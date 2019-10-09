@@ -15,7 +15,11 @@
 </nav>
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-
+        @{
+            string img64 = Convert.ToBase64String(Model.ChatUser.ProfileImage.Data);
+            string img64Url = string.Format("data:image/" + Model.ChatUser.ProfileImage.ContentType + ";base64,{0}", img64); //imagetype can be e.g. gif, jpeg, png etc.
+        }
+        <img src="@img64Url" />
     </div>
     @if (Model.IsThisUser) {
         <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
