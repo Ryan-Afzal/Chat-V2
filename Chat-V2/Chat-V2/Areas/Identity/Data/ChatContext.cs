@@ -29,10 +29,10 @@ namespace Chat_V2.Models {
 
 		public ICommandList CommandList { get; private set; }
 
-		public DbSet<Group> Group { get; set; }
-		public DbSet<Membership> Membership { get; set; }
-		public DbSet<ChatMessage> ChatMessage { get; set; }
+		public DbSet<Group> Groups { get; set; }
+		public DbSet<Membership> Memberships { get; set; }
+		public DbSet<ChatMessage> ChatMessages { get; set; }
 
-		public DbSet<AppImage> AppImage { get; set; }
+		public DbSet<AppImage> AppImages { get; set; }
 	}
 }

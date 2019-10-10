@@ -82,7 +82,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task ConnectedToGroup(ConnectedToGroupArgs args) {
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.ThenInclude(g => g.Memberships)
@@ -148,7 +148,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task DisconnectedFromGroup(DisconnectedFromGroupArgs args) {
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
@@ -166,7 +166,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task ActiveInGroup(ActiveInGroupArgs args) {
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.ThenInclude(g => g.Memberships)
@@ -186,7 +186,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task InactiveInGroup(InactiveInGroupArgs args) {
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
@@ -204,7 +204,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task GetPreviousMessages(GetPreviousMessagesArgs args) {
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.ThenInclude(g => g.ChatMessages)
@@ -243,7 +243,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task ProcessCommand(ProcessCommandArgs args) {
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.ThenInclude(g => g.Memberships)
@@ -297,7 +297,7 @@ namespace Chat_V2.Hubs {
 
 		public async Task SendMessage(SendMessageArgs args) {
 			//Load data from database based on args
-			var membership = await ChatContext.Membership
+			var membership = await ChatContext.Memberships
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 				.ThenInclude(g => g.ChatMessages)
@@ -334,7 +334,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		private async Task<Group> GetGroupById(int groupId, bool loadMembers, bool loadMessages, bool tracking) {
-			var query = ChatContext.Group;
+			var query = ChatContext.Groups;
 			if (loadMembers) {
 				query.Include(g => g.Memberships);
 			}

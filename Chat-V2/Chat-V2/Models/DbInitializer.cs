@@ -11,10 +11,10 @@ namespace Chat_V2.Models {
 
 		public static void Initialize(ChatContext context) {
 
-			//context.Database.EnsureDeleted();
+			context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
-			if (context.Group.Any()) {
+			if (context.Groups.Any()) {
 				return;
 			}
 
@@ -25,7 +25,7 @@ namespace Chat_V2.Models {
 				IsArchived = false,
 				Description = "The global chat"
 			};
-			context.Group.Add(globalServerGroup);
+			context.Groups.Add(globalServerGroup);
 			context.SaveChanges();
 
 		}

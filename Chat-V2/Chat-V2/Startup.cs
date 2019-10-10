@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Chat_V2 {
 	public class Startup {
@@ -43,19 +43,23 @@ namespace Chat_V2 {
 				.AddRoles<ChatRole>()
 				.AddEntityFrameworkStores<ChatContext>();
 
-			services.AddMvc()
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
 			services.Configure<ForwardedHeadersOptions>(options => {
 				options.ForwardedHeaders =
 					ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			});
 
-			services.AddSignalR();
+			services.AddSignalR(hubOptions => {
+
+			})
+			.AddJsonProtocol(options => {
+					
+			});
+
+			services.AddRazorPages();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider) {
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider) {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			} else {
@@ -65,13 +69,18 @@ namespace Chat_V2 {
 
 			app.UseForwardedHeaders();
 			app.UseHttpsRedirection();
+
 			app.UseStaticFiles();
+
+			app.UseRouting();
+			app.UseCors();
+
 			app.UseAuthentication();
-			app.UseCookiePolicy();
-			app.UseSignalR(routes => {
-				routes.MapHub<ChatHub>("/chatHub");
+			app.UseAuthorization();
+			app.UseEndpoints(endpoints => {
+				endpoints.MapHub<ChatHub>("/chatHub");
+				endpoints.MapRazorPages();
 			});
-			app.UseMvc();
 		}
 
 	}

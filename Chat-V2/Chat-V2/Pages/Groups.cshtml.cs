@@ -48,7 +48,7 @@ namespace Chat_V2.Pages {
 
 			CurrentFilter = searchString;
 
-			IQueryable<Group> groupsIQ = from s in _context.Group
+			IQueryable<Group> groupsIQ = from s in _context.Groups
 											 select s;
 
 			if (!string.IsNullOrEmpty(searchString)) {

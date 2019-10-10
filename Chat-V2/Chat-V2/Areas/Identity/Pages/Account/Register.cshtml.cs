@@ -92,7 +92,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 
 				br.Dispose();
 
-				await _context.AppImage.AddAsync(image);
+				await _context.AppImages.AddAsync(image);
 				await _context.SaveChangesAsync();
 
 				var user = new ChatUser() {
@@ -106,7 +106,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
-					Group group = await _context.Group.FirstAsync();
+					Group group = await _context.Groups.FirstAsync();
 					MembershipStatus status = new MembershipStatus() {
 						DateIssued = DateTime.Now,
 						Expiration = DateTime.Now,
@@ -122,7 +122,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 						ChatUser = user,
 						MembershipStatus = status
 					};
-					_context.Membership.Add(membership);
+					_context.Memberships.Add(membership);
 					_context.SaveChanges();
 					_logger.LogInformation("User created a new account with password.");
 
