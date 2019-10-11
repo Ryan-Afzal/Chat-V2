@@ -59,7 +59,7 @@ namespace Chat_V2.Pages {
 					IsPrivate = false
 				};
 
-				await _context.Groups.AddAsync(group);
+				await _context.Group.AddAsync(group);
 				await _context.SaveChangesAsync();
 
 				Membership membership = new Membership() {
@@ -75,7 +75,7 @@ namespace Chat_V2.Pages {
 					}
 				};
 
-				await _context.Memberships.AddAsync(membership);
+				await _context.Membership.AddAsync(membership);
 				await _context.SaveChangesAsync();
 
 				return LocalRedirect("/group?groupId=" + group.GroupID);

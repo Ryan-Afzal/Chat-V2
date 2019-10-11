@@ -67,7 +67,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			var group = await _context.Groups
+			var group = await _context.Group
 						.Include(g => g.GroupJoinRequests)
 							.ThenInclude(r => r.ChatUser)
 						.Include(g => g.BannedUsers)
@@ -116,7 +116,7 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId.Value);
@@ -147,13 +147,13 @@ namespace Chat_V2.Pages {
 				return BadRequest();
 			}
 
-			Group group = await _context.Groups
+			Group group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == userId);
 
-			_context.Memberships.Remove(membership);
+			_context.Membership.Remove(membership);
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect("/group?groupId=" + groupId);
@@ -164,7 +164,7 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -192,7 +192,7 @@ namespace Chat_V2.Pages {
 				Rank = PermissionRank.USER.Ordinal
 			};
 
-			await _context.Memberships.AddAsync(membership);
+			await _context.Membership.AddAsync(membership);
 			group.GroupJoinRequests.Remove(request);
 			await _context.SaveChangesAsync();
 
@@ -204,7 +204,7 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -243,7 +243,7 @@ namespace Chat_V2.Pages {
 				return LocalRedirect("/group?groupId=" + groupId);
 			}
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -291,7 +291,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			Group group = await _context.Groups
+			Group group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -314,7 +314,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			Group group = await _context.Groups
+			Group group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 

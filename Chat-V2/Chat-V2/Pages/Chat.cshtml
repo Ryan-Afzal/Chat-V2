@@ -163,7 +163,7 @@
 
     //Get ViewModel data
     const viewmodel = {
-        UserID: '@Model.ViewModel.ChatUser.Id'
+        UserID: @Model.ViewModel.ChatUser.Id
     };
 
     //The number of messages currently displayed. Used for getting previous messages.
@@ -400,7 +400,9 @@
         };
 
         //Send the connection event
-        connection.invoke("Connected", connectionArgs);
+        connection.invoke("Connected", connectionArgs).catch(function (err) {
+            return console.error(err.toString());
+        });
     }).catch(function (err) {
         return console.error(err.toString());
     });

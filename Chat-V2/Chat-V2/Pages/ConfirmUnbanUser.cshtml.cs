@@ -46,7 +46,7 @@ namespace Chat_V2.Pages {
 
 			var currentUser = await _userManager.GetUserAsync(User);
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -80,7 +80,7 @@ namespace Chat_V2.Pages {
 				return BadRequest();
 			}
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.BannedUsers)
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);

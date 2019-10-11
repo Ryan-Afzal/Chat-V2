@@ -48,7 +48,7 @@ namespace Chat_V2.Pages {
 
 			var currentUser = await _userManager.GetUserAsync(User);
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -102,7 +102,7 @@ namespace Chat_V2.Pages {
 				return BadRequest();
 			}
 
-			var group = await _context.Groups
+			var group = await _context.Group
 				.Include(g => g.Memberships)
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
@@ -117,7 +117,7 @@ namespace Chat_V2.Pages {
 			Membership membership = null;
 
 			if (membershipId != null) {
-				membership = await _context.Memberships.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
+				membership = await _context.Membership.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
 
 				if (currentMembership.Rank <= membership.Rank) {
 					return BadRequest();
@@ -125,7 +125,7 @@ namespace Chat_V2.Pages {
 			}
 
 			if (membership != null) {
-				_context.Memberships.Remove(membership);
+				_context.Membership.Remove(membership);
 			}
 
 			group.BannedUsers.Add(await _context.Users.FirstOrDefaultAsync(u => u.Id == userId));

@@ -14,7 +14,7 @@ namespace Chat_V2.Models {
 			//context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
-			if (context.Groups.Any()) {
+			if (context.Group.Any()) {
 				return;
 			}
 
@@ -25,7 +25,7 @@ namespace Chat_V2.Models {
 				IsArchived = false,
 				Description = "The global chat"
 			};
-			context.Groups.Add(globalServerGroup);
+			context.Group.Add(globalServerGroup);
 			context.SaveChanges();
 
 		}
