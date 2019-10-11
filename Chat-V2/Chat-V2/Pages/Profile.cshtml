@@ -15,11 +15,41 @@
 </nav>
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-        @{
-            string img64 = Convert.ToBase64String(Model.ChatUser.ProfileImage.Data);
-            string img64Url = string.Format("data:image/" + Model.ChatUser.ProfileImage.ContentType + ";base64,{0}", img64); //imagetype can be e.g. gif, jpeg, png etc.
-        }
-        <img src="@img64Url" />
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    @{
+                        string img64 = Convert.ToBase64String(Model.ChatUser.ProfileImage.Data);
+                        string img64Url = string.Format("data:image/" + Model.ChatUser.ProfileImage.ContentType + ";base64,{0}", img64); //ContentType can be gif, jpeg, png etc.
+                    }
+                    <img src="@img64Url" width="256" height="256" class="img-thumbnail" />
+                    <h3 class="display-3">@Model.ChatUser.UserName</h3>
+                </div>
+            </div>
+            <dl class="row text-center">
+                <dt class="col-2">
+                    @Html.DisplayNameFor(model => model.ChatUser.Id)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.ChatUser.Id)
+                </dd>
+                <dt class="col-2">
+                    @Html.DisplayNameFor(model => model.ChatUser.FirstName)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.ChatUser.FirstName)
+                </dd>
+                <dt class="col-2">
+                    @Html.DisplayNameFor(model => model.ChatUser.LastName)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.ChatUser.LastName)
+                </dd>
+            </dl>
+            <div class="row">
+
+            </div>
+        </div>
     </div>
     @if (Model.IsThisUser) {
         <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">

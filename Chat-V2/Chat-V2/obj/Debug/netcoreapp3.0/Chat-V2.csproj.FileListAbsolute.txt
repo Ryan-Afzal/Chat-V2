@@ -265,11 +265,8 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\runtimes\unix\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\staticwebassets\Chat-V2.StaticWebAssets.Manifest.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\staticwebassets\Chat-V2.StaticWebAssets.xml
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.RazorAssemblyInfo.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.RazorAssemblyInfo.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.AssemblyInfoInputs.cache
@@ -311,3 +308,6 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csproj.CopyComplete
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.pdb
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache

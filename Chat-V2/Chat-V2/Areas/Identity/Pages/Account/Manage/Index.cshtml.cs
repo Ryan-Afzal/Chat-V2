@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -132,14 +134,33 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 		}
 
 		public async Task<IActionResult> OnPostUploadAsync() {
-			using (var memoryStream = new MemoryStream()) {
-				await ProfileImage.CopyToAsync(memoryStream);
-				
-				if (memoryStream.Length < 2097152) {
+			using (Stream memoryStream = ProfileImage.OpenReadStream()) {
+				if (memoryStream.Length < 10485760) {
 					var user = await _userManager.GetUserAsync(User);
-					var image = await _context.AppImage.FirstOrDefaultAsync(i => i.AppImageID == user.ProfileImageID);
-					image.Data = memoryStream.ToArray();
-					image.ContentType = ProfileImage.ContentType;
+					var appImage = await _context.AppImage.FirstOrDefaultAsync(i => i.AppImageID == user.ProfileImageID);
+
+					Image image = Image.FromStream(memoryStream);
+
+					double aspectRatio = ((double)image.Height) / image.Width;
+
+					int height;
+					int width;
+
+					if (image.Height > image.Width) {
+						height = image.Height > 512 ? 512 : image.Height;
+						width = (int)(height / aspectRatio);
+					} else {
+						width = image.Width > 512 ? 512 : image.Width;
+						height = (int)(aspectRatio * width);
+					}
+
+
+					using MemoryStream ms = new MemoryStream();
+					image.ResizeImage(height, width)
+						.Save(ms, ImageFormat.Png);
+
+					appImage.Data = ms.ToArray();
+					appImage.ContentType = "png";
 
 					await _context.SaveChangesAsync();
 				} else {
