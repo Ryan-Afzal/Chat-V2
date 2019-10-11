@@ -92,7 +92,7 @@
     </dl>
 </div>
 <hr />
-<div class="container-fluid" style="overflow-y: scroll">
+<div class="container-fluid">
     @if (Model.ViewModel.IsGroupMember) {
         <hr />
         <div id="group-member-user" class="row">
@@ -235,8 +235,8 @@
                 <div id="group-member-officer" class="row">
                     <h4>Ban User by Id</h4>
                     <div class="col-12">
-                        <form method="post" class="form-group">
-                            <input type="text" name="userId" />
+                        <form method="post">
+                            <input type="text" name="userId" class="form-control" />
                             <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
                             <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
                         </form>
@@ -245,7 +245,7 @@
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
                     <div id="group-member-admin" class="row">
-                        <div id="change-image">
+                        <div id="change-image" class="col-12">
                             <h4>Change Image</h4>
                             <form enctype="multipart/form-data" method="post">
                                 <dl>
@@ -260,7 +260,8 @@
                                 <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
                             </form>
                         </div>
-                        <div id="toggle-private-public">
+                        <div id="toggle-private-public" class="col-12">
+                            <h4>Toggle Private Group</h4>
                             @if (Model.ViewModel.Group.IsPrivate) {
                                 <button id="private-public toggle" class="btn btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Group Public</button>
 
@@ -317,6 +318,29 @@
                     @if (Model.ViewModel.Membership.Rank > PermissionRank.ADMINISTRATOR.Ordinal) {
                         <hr />
                         <div id="group-member-owner" class="row">
+                            <div class="card border-danger">
+                                <div class="card-header text-danger">
+                                    Change Ownership
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" class="form-group">
+                                        <div asp-validation-summary="All" class="text-danger"></div>
+                                        <div class="form-group">
+                                            <label asp-for="ChangeOwnerInput.UserID"></label>
+                                            <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
+                                            <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="ChangeOwnerInput.UserName"></label>
+                                            <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
+                                            <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
+                                        </div>
+                                        <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
+                                        <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                    </form>
+                                </div>
+                            </div>
+
                             <div class="card border-danger">
                                 <div class="card-header text-danger">
                                     Danger Zone

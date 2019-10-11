@@ -48,6 +48,10 @@ namespace Chat_V2.Pages {
 
 			var currentUser = await _userManager.GetUserAsync(User);
 
+			if (currentUser.Id == userId.Value) {
+				return BadRequest();
+			}
+
 			var group = await _context.Group
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);

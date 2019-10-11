@@ -44,6 +44,12 @@ namespace Chat_V2.Pages {
 			public string Message { get; set; }
 		}
 
+		public class ChangeOwnerInputModel {
+			public int GroupID { get; set; }
+			public int UserID { get; set; }
+			public string UserName { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -64,6 +70,9 @@ namespace Chat_V2.Pages {
 
 		[BindProperty]
 		public InviteToGroupInputModel InviteToGroupInput { get; set; }
+
+		[BindProperty]
+		public ChangeOwnerInputModel ChangeOwnerInput { get; set; }
 
 		[BindProperty]
 		public IFormFile GroupImage { get; set; }
@@ -98,6 +107,7 @@ namespace Chat_V2.Pages {
 
 			JoinGroupInput = new JoinGroupInputModel();
 			InviteToGroupInput = new InviteToGroupInputModel();
+			ChangeOwnerInput = new ChangeOwnerInputModel();
 
 			if (membership == null) {
 				if (group.IsPrivate) {
@@ -379,6 +389,10 @@ namespace Chat_V2.Pages {
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect("/group?groupId=" + groupId);
+		}
+
+		public async Task<IActionResult> OnPostChangeOwnerAsync() {
+			throw new NotImplementedException();
 		}
 
 		public async Task<IActionResult> OnPostArchiveGroupAsync(int? groupId) {
