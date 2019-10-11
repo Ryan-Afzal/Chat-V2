@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -61,6 +65,9 @@ namespace Chat_V2.Pages {
 		[BindProperty]
 		public InviteToGroupInputModel InviteToGroupInput { get; set; }
 
+		[BindProperty]
+		public IFormFile GroupImage { get; set; }
+
 		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (groupId == null) {
 				return NotFound();
@@ -73,6 +80,7 @@ namespace Chat_V2.Pages {
 						.Include(g => g.BannedUsers)
 						.Include(g => g.Memberships)
 							.ThenInclude(m => m.ChatUser)
+						.Include(g => g.GroupImage)
 						.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
@@ -283,6 +291,48 @@ namespace Chat_V2.Pages {
 			}
 
 			return LocalRedirect("/ConfirmBanUser?userId=" + userId + "&groupId=" + groupId);
+		}
+
+		public async Task<IActionResult> OnPostUploadImageAsync(int? groupId) {
+			if (groupId == null) {
+				return BadRequest();
+			}
+
+			var group = await _context.Group.FirstOrDefaultAsync(g => g.GroupID == groupId.Value);
+
+			using (Stream memoryStream = GroupImage.OpenReadStream()) {
+				if (memoryStream.Length < 10485760) {
+					var appImage = await _context.GroupImage.FirstOrDefaultAsync(i => i.GroupImageID == group.GroupImageID);
+
+					Image image = Image.FromStream(memoryStream);
+
+					double aspectRatio = ((double)image.Height) / image.Width;
+
+					int height;
+					int width;
+
+					if (image.Height > image.Width) {
+						height = image.Height > 512 ? 512 : image.Height;
+						width = (int)(height / aspectRatio);
+					} else {
+						width = image.Width > 512 ? 512 : image.Width;
+						height = (int)(aspectRatio * width);
+					}
+
+					using MemoryStream ms = new MemoryStream();
+					image.ResizeImage(height, width)
+						.Save(ms, ImageFormat.Png);
+
+					appImage.Data = ms.ToArray();
+					appImage.ContentType = "png";
+
+					await _context.SaveChangesAsync();
+				} else {
+					ModelState.AddModelError("File", "The file is too large.");
+				}
+			}
+
+			return LocalRedirect("/Group?groupId=" + groupId.Value);
 		}
 
 		public async Task<IActionResult> OnPostMakePrivateAsync(int? groupId) {

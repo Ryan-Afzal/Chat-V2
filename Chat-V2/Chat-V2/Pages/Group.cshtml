@@ -9,6 +9,15 @@
 <h1>Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
 
 <div id="group-data" class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            @{
+                string img64 = Convert.ToBase64String(Model.ViewModel.Group.GroupImage.Data);
+                string img64Url = string.Format("data:image/" + Model.ViewModel.Group.GroupImage.ContentType + ";base64,{0}", img64); //ContentType can be gif, jpeg, png etc.
+            }
+            <img src="@img64Url" width="256" height="256" class="img-thumbnail" />
+        </div>
+    </div>
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ViewModel.Group.GroupID)
@@ -21,6 +30,12 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ViewModel.Group.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ViewModel.Group.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ViewModel.Group.Description)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ViewModel.Group.DateCreated)
@@ -230,6 +245,21 @@
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
                     <div id="group-member-admin" class="row">
+                        <div id="change-image">
+                            <h4>Change Image</h4>
+                            <form enctype="multipart/form-data" method="post">
+                                <dl>
+                                    <dt>
+                                        <label asp-for="GroupImage"></label>
+                                    </dt>
+                                    <dd>
+                                        <input asp-for="GroupImage" type="file">
+                                    </dd>
+                                </dl>
+                                <input asp-page-handler="UploadImage" class="btn btn-primary" type="submit" value="Upload">
+                                <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                            </form>
+                        </div>
                         <div id="toggle-private-public">
                             @if (Model.ViewModel.Group.IsPrivate) {
                                 <button id="private-public toggle" class="btn btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Group Public</button>

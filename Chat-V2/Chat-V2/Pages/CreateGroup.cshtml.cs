@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,12 +19,14 @@ namespace Chat_V2.Pages {
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
 		private readonly ILogger<CreateGroupModel> _logger;
+		private readonly IWebHostEnvironment _env;
 
-		public CreateGroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<CreateGroupModel> logger) {
+		public CreateGroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<CreateGroupModel> logger, IWebHostEnvironment env) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
+			_env = env;
 		}
 
 		[BindProperty]
@@ -51,12 +54,23 @@ namespace Chat_V2.Pages {
 			if (_signInManager.IsSignedIn(User)) {
 				var chatUser = await _userManager.GetUserAsync(User);
 
+				var info = ImageTools.GetFileInfoFromFile("Images\\defaultGroupImage.png", _env);
+
+				var image = new GroupImage() {
+					Data = ImageTools.GetImageFromFile(info),
+					ContentType = info.Extension
+				};
+
+				await _context.GroupImage.AddAsync(image);
+				await _context.SaveChangesAsync();
+
 				Group group = new Group() {
 					Name = Input.Name,
 					Description = Input.Description,
 					DateCreated = DateTime.Now,
 					IsArchived = false,
-					IsPrivate = false
+					IsPrivate = false,
+					GroupImageID = image.GroupImageID
 				};
 
 				await _context.Group.AddAsync(group);

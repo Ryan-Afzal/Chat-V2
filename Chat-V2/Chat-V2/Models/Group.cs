@@ -17,15 +17,12 @@ namespace Chat_V2.Models {
 		[DataType(DataType.Date)]
 		[Display(Name = "Date Created")]
 		public DateTime DateCreated { get; set; }
-		/// <summary>
-		/// Private groups are hidden from public view, and can only be joined with an invitation, one cannot send join requests.
-		/// </summary>
 		[Display(Name = "Private?")]
 		public bool IsPrivate { get; set; }
 		public bool IsArchived { get; set; }
-		//public int SuccessorID { get; set; }
+		public int GroupImageID { get; set; }
 
-		//public ChatUser Successor { get; set; }
+		public GroupImage GroupImage { get; set; }
 
 		public ICollection<ChatUser> BannedUsers { get; set; }
 

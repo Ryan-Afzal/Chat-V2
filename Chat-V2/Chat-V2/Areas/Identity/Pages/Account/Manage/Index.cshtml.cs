@@ -137,7 +137,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			using (Stream memoryStream = ProfileImage.OpenReadStream()) {
 				if (memoryStream.Length < 10485760) {
 					var user = await _userManager.GetUserAsync(User);
-					var appImage = await _context.AppImage.FirstOrDefaultAsync(i => i.AppImageID == user.ProfileImageID);
+					var appImage = await _context.ProfileImage.FirstOrDefaultAsync(i => i.ProfileImageID == user.ProfileImageID);
 
 					Image image = Image.FromStream(memoryStream);
 

@@ -48,8 +48,8 @@ namespace Chat_V2.Pages {
 
 			CurrentFilter = searchString;
 
-			IQueryable<Group> groupsIQ = from s in _context.Group
-											 select s;
+			IQueryable<Group> groupsIQ = _context.Group
+				.Include(u => u.GroupImage);
 
 			if (!string.IsNullOrEmpty(searchString)) {
 				groupsIQ = groupsIQ

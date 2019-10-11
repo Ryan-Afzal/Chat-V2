@@ -31,7 +31,7 @@ namespace Chat_V2.Areas.Identity.Data {
 		public ICollection<Membership> Memberships { get; set; }
 		public ICollection<GroupJoinInvitation> GroupJoinInvitations { get; set; }
 
-		public AppImage ProfileImage { get; set; }
+		public ProfileImage ProfileImage { get; set; }
 
 	}
 

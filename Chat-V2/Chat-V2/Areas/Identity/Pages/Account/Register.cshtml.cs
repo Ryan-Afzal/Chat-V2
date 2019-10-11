@@ -24,9 +24,9 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		private readonly ChatContext _context;
 		private readonly ILogger<RegisterModel> _logger;
 		private readonly IEmailSender _emailSender;
-		private readonly IHostingEnvironment _env;
+		private readonly IWebHostEnvironment _env;
 
-		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<RegisterModel> logger, IEmailSender emailSender, IHostingEnvironment env) {
+		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<RegisterModel> logger, IEmailSender emailSender, IWebHostEnvironment env) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
@@ -75,33 +75,25 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		}
 
 		public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
-			returnUrl = returnUrl ?? Url.Content("~/");
+			returnUrl ??= Url.Content("~/");
 			if (ModelState.IsValid) {
-				var root = _env.ContentRootPath;
-				var filename = Path.Combine(root, "Images\\defaultProfileImage.png");
+				var info = ImageTools.GetFileInfoFromFile("Images\\defaultProfileImage.png", _env);
 
-				FileInfo fileInfo = new FileInfo(filename);
-				long imageFileLength = fileInfo.Length;
-				FileStream fs = System.IO.File.OpenRead(filename);
-				BinaryReader br = new BinaryReader(fs);
-
-				var image = new AppImage() {
-					Data = br.ReadBytes((int)imageFileLength),
-					ContentType = fileInfo.Extension
+				var image = new ProfileImage() {
+					Data = ImageTools.GetImageFromFile(info),
+					ContentType = info.Extension
 				};
 
-				br.Dispose();
-
-				await _context.AppImage.AddAsync(image);
+				await _context.ProfileImage.AddAsync(image);
 				await _context.SaveChangesAsync();
 
 				var user = new ChatUser() {
-					UserName = Input.Username, 
-					Email = Input.Email, 
-					FirstName = Input.FirstName, 
+					UserName = Input.Username,
+					Email = Input.Email,
+					FirstName = Input.FirstName,
 					LastName = Input.LastName,
 					ProfileDescription = "",
-					ProfileImageID = image.AppImageID
+					ProfileImageID = image.ProfileImageID
 				};
 
 				var result = await _userManager.CreateAsync(user, Input.Password);

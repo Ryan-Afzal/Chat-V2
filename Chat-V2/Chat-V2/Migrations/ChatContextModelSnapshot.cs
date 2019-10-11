@@ -15,7 +15,7 @@ namespace Chat_V2.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -23,15 +23,19 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -48,49 +52,72 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccessFailedCount");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("FirstName");
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GroupID");
+                    b.Property<int?>("GroupID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("LastName");
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<int>("NumOnline");
+                    b.Property<int>("NumOnline")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PasswordHash");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("ProfileDescription");
+                    b.Property<string>("ProfileDescription")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecurityStamp");
+                    b.Property<int>("ProfileImageID")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -105,6 +132,8 @@ namespace Chat_V2.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("ProfileImageID");
+
                     b.ToTable("AspNetUsers");
                 });
 
@@ -112,21 +141,29 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("ChatMessageID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ChatUserID");
+                    b.Property<int>("ChatUserID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ChatUserRank");
+                    b.Property<int>("ChatUserRank")
+                        .HasColumnType("int");
 
-                    b.Property<int>("GroupID");
+                    b.Property<int>("GroupID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MinRank");
+                    b.Property<int>("MinRank")
+                        .HasColumnType("int");
 
-                    b.Property<int>("StatusType");
+                    b.Property<int>("StatusType")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeStamp");
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ChatMessageID");
 
@@ -141,36 +178,70 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("GroupID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DateCreated");
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsArchived");
+                    b.Property<int>("GroupImageID")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsPrivate");
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Name");
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GroupID");
 
+                    b.HasIndex("GroupImageID");
+
                     b.ToTable("Group");
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.GroupImage", b =>
+                {
+                    b.Property<int>("GroupImageID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("GroupImageID");
+
+                    b.ToTable("GroupImage");
                 });
 
             modelBuilder.Entity("Chat_V2.Models.GroupJoinInvitation", b =>
                 {
                     b.Property<int>("GroupJoinInvitationID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ChatUserID");
+                    b.Property<int>("ChatUserID")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("DateSent");
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("GroupID");
+                    b.Property<int>("GroupID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GroupJoinInvitationID");
 
@@ -185,15 +256,20 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("GroupJoinRequestID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ChatUserID");
+                    b.Property<int>("ChatUserID")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("DateSent");
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("GroupID");
+                    b.Property<int>("GroupID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Message");
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("GroupJoinRequestID");
 
@@ -208,17 +284,23 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("MembershipID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ChatUserID");
+                    b.Property<int>("ChatUserID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("GroupID");
+                    b.Property<int>("GroupID")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsActiveInGroup");
+                    b.Property<bool>("IsActiveInGroup")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsOnlineInGroup");
+                    b.Property<bool>("IsOnlineInGroup")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Rank");
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
 
                     b.HasKey("MembershipID");
 
@@ -231,30 +313,56 @@ namespace Chat_V2.Migrations
 
             modelBuilder.Entity("Chat_V2.Models.MembershipStatus", b =>
                 {
-                    b.Property<int>("MembershipID");
+                    b.Property<int>("MembershipID")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("DateIssued");
+                    b.Property<DateTime>("DateIssued")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Expiration");
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Type");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("MembershipID");
 
                     b.ToTable("MembershipStatus");
                 });
 
+            modelBuilder.Entity("Chat_V2.Models.ProfileImage", b =>
+                {
+                    b.Property<int>("ProfileImageID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("ProfileImageID");
+
+                    b.ToTable("ProfileImage");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -267,13 +375,17 @@ namespace Chat_V2.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -285,14 +397,18 @@ namespace Chat_V2.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
                     b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
-                    b.Property<string>("ProviderDisplayName");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -303,9 +419,11 @@ namespace Chat_V2.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RoleId");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -316,15 +434,19 @@ namespace Chat_V2.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -333,9 +455,15 @@ namespace Chat_V2.Migrations
 
             modelBuilder.Entity("Chat_V2.Areas.Identity.Data.ChatUser", b =>
                 {
-                    b.HasOne("Chat_V2.Models.Group")
+                    b.HasOne("Chat_V2.Models.Group", null)
                         .WithMany("BannedUsers")
                         .HasForeignKey("GroupID");
+
+                    b.HasOne("Chat_V2.Models.ProfileImage", "ProfileImage")
+                        .WithMany()
+                        .HasForeignKey("ProfileImageID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Chat_V2.Models.ChatMessage", b =>
@@ -343,12 +471,23 @@ namespace Chat_V2.Migrations
                     b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
                         .WithMany()
                         .HasForeignKey("ChatUserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Chat_V2.Models.Group", "Group")
                         .WithMany("ChatMessages")
                         .HasForeignKey("GroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.Group", b =>
+                {
+                    b.HasOne("Chat_V2.Models.GroupImage", "GroupImage")
+                        .WithMany()
+                        .HasForeignKey("GroupImageID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Chat_V2.Models.GroupJoinInvitation", b =>
@@ -356,12 +495,14 @@ namespace Chat_V2.Migrations
                     b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
                         .WithMany("GroupJoinInvitations")
                         .HasForeignKey("ChatUserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Chat_V2.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Chat_V2.Models.GroupJoinRequest", b =>
@@ -369,12 +510,14 @@ namespace Chat_V2.Migrations
                     b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
                         .WithMany()
                         .HasForeignKey("ChatUserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Chat_V2.Models.Group", "Group")
                         .WithMany("GroupJoinRequests")
                         .HasForeignKey("GroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Chat_V2.Models.Membership", b =>
@@ -382,65 +525,74 @@ namespace Chat_V2.Migrations
                     b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
                         .WithMany("Memberships")
                         .HasForeignKey("ChatUserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Chat_V2.Models.Group", "Group")
                         .WithMany("Memberships")
                         .HasForeignKey("GroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Chat_V2.Models.MembershipStatus", b =>
                 {
-                    b.HasOne("Chat_V2.Models.Membership")
+                    b.HasOne("Chat_V2.Models.Membership", null)
                         .WithOne("MembershipStatus")
                         .HasForeignKey("Chat_V2.Models.MembershipStatus", "MembershipID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatRole")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatRole")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

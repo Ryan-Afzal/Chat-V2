@@ -33,7 +33,7 @@ namespace Chat_V2.Models.Command {
 					var membership = user.Memberships
 					.FirstOrDefault(m => m.GroupID == args.Group.GroupID);
 
-					if (args.UserRank.Ordinal < membership.Rank) {
+					if (args.UserRank.Ordinal <= membership.Rank) {
 						await proxy.SendAsync("ReceiveCommandMessage",
 							new ReceiveCommandMessageArgs() {
 								Color = "FF0000",

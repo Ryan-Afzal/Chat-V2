@@ -20,7 +20,8 @@ namespace Chat_V2 {
 				var services = scope.ServiceProvider;
 				try {
 					var context = services.GetRequiredService<ChatContext>();
-					DbInitializer.Initialize(context);
+					var env = services.GetRequiredService<IWebHostEnvironment>();
+					DbInitializer.Initialize(context, env);
 				} catch (Exception ex) {
 					var logger = services.GetRequiredService<ILogger<Program>>();
 					logger.LogError(ex, "An error occurred creating the DB.");
