@@ -41,8 +41,8 @@ namespace Chat_V2.Pages {
 			[Display(Name = "Description")]
 			public string Description { get; set; }
 
-			[Display(Name = "Private?")]
-			public bool IsPrivate { get; set; }
+			[Display(Name = "Public Group?")]
+			public bool IsPublic { get; set; }
 		}
 
 		public async Task<IActionResult> OnGetAsync() {
@@ -69,7 +69,7 @@ namespace Chat_V2.Pages {
 					Description = Input.Description,
 					DateCreated = DateTime.Now,
 					IsArchived = false,
-					IsPrivate = false,
+					IsPrivate = !Input.IsPublic,
 					GroupImageID = image.GroupImageID
 				};
 

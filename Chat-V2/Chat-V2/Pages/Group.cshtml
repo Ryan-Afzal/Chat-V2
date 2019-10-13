@@ -115,7 +115,7 @@
                             This cannot be undone!
                         </div>
                         <div class="modal-footer">
-                            <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                            <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                                 <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                 <button type="submit" asp-page-handler="LeaveGroup" class="btn btn-danger">Leave Group</button>
                                 <input type="hidden" asp-for="LeaveGroupInput.ChatUserID" value="@(Model.ViewModel.ChatUser.Id)" />
@@ -160,7 +160,7 @@
                                             @(request.Message)
                                         </dh>
                                     </dl>
-                                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                                         <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
                                         <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
                                         <input type="hidden" asp-for="JoinRequestInput.GroupID" value="@(request.GroupID)" />
@@ -177,7 +177,7 @@
 
                 <h4>Invite Members</h4>
                 <div id="invite-members" class="col-12">
-                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                         <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="form-group">
@@ -219,7 +219,7 @@
                             </td>
                             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                                 <td>
-                                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                                         <button type="submit" asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
                                         <input type="hidden" asp-for="UnbanUserInput.ChatUserID" value="@item.Id" />
                                         <input type="hidden" asp-for="UnbanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
@@ -235,7 +235,7 @@
                 <div id="group-member-officer" class="row">
                     <h4>Ban User by Id</h4>
                     <div class="col-12">
-                        <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                        <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                             <input asp-for="BanUserInput.ChatUserID" class="form-control" />
                             <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
                             <input type="hidden" asp-for="BanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
@@ -247,7 +247,7 @@
                     <div id="group-member-admin" class="row">
                         <div id="change-image" class="col-12">
                             <h4>Change Image</h4>
-                            <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" enctype="multipart/form-data" method="post">
+                            <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" enctype="multipart/form-data" method="post">
                                 <dl>
                                     <dt>
                                         <label asp-for="UploadImageInput.GroupImage"></label>
@@ -278,7 +278,7 @@
                                                 This will make it discoverable by non-users, and allow them to make join requests.
                                             </div>
                                             <div class="modal-footer">
-                                                <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                                                <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                                                     <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                                     <button type="submit" asp-page-handler="MakePublic" class="btn btn-info">Make Public</button>
                                                     <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
@@ -303,7 +303,7 @@
                                                 This will make it undiscoverable by non-users, and disallow join requests.
                                             </div>
                                             <div class="modal-footer">
-                                                <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                                                <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                                                     <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                                     <button type="submit" asp-page-handler="MakePrivate" class="btn btn-danger">Make Private</button>
                                                     <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
@@ -323,7 +323,7 @@
                                     Change Ownership
                                 </div>
                                 <div class="card-body">
-                                    <!--<form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post" class="form-group">
+                                    <!--<form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post" class="form-group">
                                         <div asp-validation-summary="All" class="text-danger"></div>
                                         <div class="form-group">
                                             <label asp-for="ChangeOwnerInput.UserID"></label>
@@ -377,7 +377,7 @@
                         <h3>You have sent a join request.</h3>
                     } else {
                         <h3>You are not a group member. To become a group member, send a join request.</h3>
-                        <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                        <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)" method="post">
                             <div class="form-group">
                                 <label asp-for="SendJoinRequestInput.Message"></label>
                                 <textarea asp-for="SendJoinRequestInput.Message" class="form-control"></textarea>
