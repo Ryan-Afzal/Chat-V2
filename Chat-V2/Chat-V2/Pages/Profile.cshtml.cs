@@ -17,6 +17,11 @@ namespace Chat_V2.Pages {
 	[Authorize]
 	public class ProfileModel : PageModel {
 
+		public class JoinGroupInvitationInputModel {
+			public int ChatUserID { get; set; }
+			public int InvitationID { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -34,6 +39,9 @@ namespace Chat_V2.Pages {
 		[BindProperty]
 		public bool IsThisUser { get; set; }
 
+		[BindProperty]
+		public JoinGroupInvitationInputModel JoinGroupInvitationInput { get; set; }
+
 		public async Task<IActionResult> OnGetAsync(int? userId) {
 			if (userId == null) {
 				return BadRequest();
@@ -42,6 +50,7 @@ namespace Chat_V2.Pages {
 			var user = await _context.Users
 				.Include(u => u.Memberships)
 				.Include(u => u.GroupJoinInvitations)
+					.ThenInclude(i => i.Group)
 				.Include(u => u.ProfileImage)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 
@@ -51,8 +60,19 @@ namespace Chat_V2.Pages {
 
 			ChatUser = user;
 			IsThisUser = (await _userManager.GetUserAsync(User)).Id == user.Id;
+			JoinGroupInvitationInput = new JoinGroupInvitationInputModel();
 
 			return Page();
+		}
+
+		public async Task<IActionResult> OnPostAcceptJoinInvitationAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
+			throw new NotImplementedException();
+		}
+
+		public async Task<IActionResult> OnPostRejectJoinInvitationAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
+			throw new NotImplementedException();
 		}
 	}
 }

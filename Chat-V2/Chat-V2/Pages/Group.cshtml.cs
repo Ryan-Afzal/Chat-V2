@@ -30,24 +30,48 @@ namespace Chat_V2.Pages {
 			public Membership Membership { get; set; }
 		}
 
-		public class JoinGroupInputModel {
+		public class SendJoinRequestInputModel {
+			public int ChatUserID { get; set; }
+			public int GroupID { get; set; }
 			public string Message { get; set; }
+		}
+
+		public class LeaveGroupInputModel {
+			public int ChatUserID { get; set; }
+			public int GroupID { get; set; }
+		}
+
+		public class JoinRequestInputModel {
+			public int GroupID { get; set; }
+			public int RequestID { get; set; }
 		}
 
 		public class InviteToGroupInputModel {
+			public int GroupID { get; set; }
 			[Required]
 			public int UserID { get; set; }
-
 			[Required]
 			public string UserName { get; set; }
-			
 			public string Message { get; set; }
 		}
 
-		public class ChangeOwnerInputModel {
+		public class UnbanUserInputModel {
+			public int ChatUserID { get; set; }
 			public int GroupID { get; set; }
-			public int UserID { get; set; }
-			public string UserName { get; set; }
+		}
+
+		public class BanUserInputModel {
+			public int ChatUserID { get; set; }
+			public int GroupID { get; set; }
+		}
+
+		public class UploadImageInputModel {
+			public int GroupID { get; set; }
+			public IFormFile GroupImage { get; set; }
+		}
+
+		public class PublicPrivateInputModel {
+			public int GroupID { get; set; }
 		}
 
 		private readonly SignInManager<ChatUser> _signInManager;
@@ -66,16 +90,28 @@ namespace Chat_V2.Pages {
 		public GroupViewModel ViewModel { get; set; }
 
 		[BindProperty]
-		public JoinGroupInputModel JoinGroupInput { get; set; }
+		public SendJoinRequestInputModel SendJoinRequestInput { get; set; }
+
+		[BindProperty]
+		public LeaveGroupInputModel LeaveGroupInput { get; set; }
+
+		[BindProperty]
+		public JoinRequestInputModel JoinRequestInput { get; set; }
 
 		[BindProperty]
 		public InviteToGroupInputModel InviteToGroupInput { get; set; }
 
 		[BindProperty]
-		public ChangeOwnerInputModel ChangeOwnerInput { get; set; }
+		public UnbanUserInputModel UnbanUserInput { get; set; }
 
 		[BindProperty]
-		public IFormFile GroupImage { get; set; }
+		public BanUserInputModel BanUserInput { get; set; }
+
+		[BindProperty]
+		public UploadImageInputModel UploadImageInput { get; set; }
+
+		[BindProperty]
+		public PublicPrivateInputModel PublicPrivateInput { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (groupId == null) {
@@ -105,9 +141,14 @@ namespace Chat_V2.Pages {
 				ChatUser = chatUser
 			};
 
-			JoinGroupInput = new JoinGroupInputModel();
+			SendJoinRequestInput = new SendJoinRequestInputModel();
+			LeaveGroupInput = new LeaveGroupInputModel();
+			JoinRequestInput = new JoinRequestInputModel();
 			InviteToGroupInput = new InviteToGroupInputModel();
-			ChangeOwnerInput = new ChangeOwnerInputModel();
+			UnbanUserInput = new UnbanUserInputModel();
+			BanUserInput = new BanUserInputModel();
+			UploadImageInput = new UploadImageInputModel();
+			PublicPrivateInput = new PublicPrivateInputModel();
 
 			if (membership == null) {
 				if (group.IsPrivate) {
@@ -129,69 +170,60 @@ namespace Chat_V2.Pages {
 			return Page();
 		}
 
-		public async Task<IActionResult> OnPostSendJoinRequestAsync(int? userId, int? groupId) {
-			if (userId == null || groupId == null) {
-				return NotFound();
-			}
-
+		public async Task<IActionResult> OnPostSendJoinRequestAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
 				.Include(g => g.BannedUsers)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId.Value);
+				.FirstOrDefaultAsync(g => g.GroupID == SendJoinRequestInput.GroupID);
 
-			if (group.BannedUsers.FirstOrDefault(u => u.Id == userId.Value) != null) {
+			if (group.BannedUsers.FirstOrDefault(u => u.Id == SendJoinRequestInput.ChatUserID) != null) {
 				return BadRequest();
 			}
 
 			GroupJoinRequest request = new GroupJoinRequest() {
-				ChatUserID = userId.Value,
+				ChatUserID = SendJoinRequestInput.ChatUserID,
 				GroupID = group.GroupID,
-				Message = JoinGroupInput.Message,
+				Message = SendJoinRequestInput.Message,
 				DateSent = DateTime.Now
 			};
 
 			group.GroupJoinRequests.Add(request);
 			await _context.SaveChangesAsync();
 
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostLeaveGroupAsync(int? userId, int? groupId) {
-			if (userId == null || groupId == null) {
-				return NotFound();
-			}
-
-			if ((await _userManager.GetUserAsync(User)).Id != userId) {
+		public async Task<IActionResult> OnPostLeaveGroupAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
+			if ((await _userManager.GetUserAsync(User)).Id != LeaveGroupInput.ChatUserID) {
 				return BadRequest();
 			}
 
 			Group group = await _context.Group
 				.Include(g => g.Memberships)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == LeaveGroupInput.GroupID);
 
-			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == userId);
+			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == LeaveGroupInput.ChatUserID);
 
 			_context.Membership.Remove(membership);
 			await _context.SaveChangesAsync();
 
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(int? groupId, int? requestId) {
-			if (requestId == null || groupId == null) {
-				return NotFound();
-			}
-
+		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == JoinRequestInput.GroupID);
 
 			if (group == null) {
 				return NotFound();
 			}
 
 			var request = group.GroupJoinRequests
-				.FirstOrDefault(r => r.GroupJoinRequestID == requestId);
+				.FirstOrDefault(r => r.GroupJoinRequestID == JoinRequestInput.RequestID);
 
 			if (request == null) {
 				return NotFound();
@@ -214,24 +246,21 @@ namespace Chat_V2.Pages {
 			group.GroupJoinRequests.Remove(request);
 			await _context.SaveChangesAsync();
 
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostRejectJoinRequestAsync(int? groupId, int? requestId) {
-			if (requestId == null || groupId == null) {
-				return NotFound();
-			}
-
+		public async Task<IActionResult> OnPostRejectJoinRequestAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == JoinRequestInput.GroupID);
 
 			if (group == null) {
 				return NotFound();
 			}
 
 			var request = group.GroupJoinRequests
-				.FirstOrDefault(r => r.GroupJoinRequestID == requestId);
+				.FirstOrDefault(r => r.GroupJoinRequestID == JoinRequestInput.RequestID);
 
 			if (request == null) {
 				return NotFound();
@@ -240,13 +269,11 @@ namespace Chat_V2.Pages {
 			group.GroupJoinRequests.Remove(request);
 			await _context.SaveChangesAsync();
 
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostInviteToGroupAsync(int? groupId) {
-			if (groupId == null) {
-				return LocalRedirect("/");
-			}
+		public async Task<IActionResult> OnPostInviteToGroupAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _context.Users
 				.Include(u => u.GroupJoinInvitations)
@@ -254,29 +281,29 @@ namespace Chat_V2.Pages {
 				.FirstOrDefaultAsync(u => u.Id == InviteToGroupInput.UserID);
 
 			if (chatUser == null) {
-				return LocalRedirect("/group?groupId=" + groupId);
+				return LocalRedirect(returnUrl);
 			}
 
 			if (!chatUser.UserName.Equals(InviteToGroupInput.UserName)) {
-				return LocalRedirect("/group?groupId=" + groupId);
+				return LocalRedirect(returnUrl);
 			}
 
 			var group = await _context.Group
 				.Include(g => g.BannedUsers)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == JoinRequestInput.GroupID);
 
 			if (group == null) {
 				return NotFound();
 			}
 
-			if (chatUser.GroupJoinInvitations.FirstOrDefault(i => i.GroupID == groupId.Value) != null
-				|| chatUser.Memberships.FirstOrDefault(m => m.GroupID == groupId) != null
+			if (chatUser.GroupJoinInvitations.FirstOrDefault(i => i.GroupID == group.GroupID) != null
+				|| chatUser.Memberships.FirstOrDefault(m => m.GroupID == group.GroupID) != null
 				|| group.BannedUsers.FirstOrDefault(u => u.Id == chatUser.Id) != null) {
-				return LocalRedirect("/group?groupId=" + groupId);
+				return LocalRedirect(returnUrl);
 			}
 
 			GroupJoinInvitation invitation = new GroupJoinInvitation() {
-				GroupID = groupId.Value,
+				GroupID = group.GroupID,
 				DateSent = DateTime.Now,
 				Message = InviteToGroupInput.Message
 			};
@@ -284,33 +311,26 @@ namespace Chat_V2.Pages {
 			chatUser.GroupJoinInvitations.Add(invitation);
 
 			await _context.SaveChangesAsync();
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostUnbanUserAsync(int? userId, int? groupId) {
-			if (userId == null || groupId == null) {
-				return BadRequest();
-			}
+		public async Task<IActionResult> OnPostUnbanUserAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 
-			return LocalRedirect("/ConfirmUnbanUser?userId=" + userId + "&groupId=" + groupId);
+			return LocalRedirect("/ConfirmUnbanUser?userId=" + UnbanUserInput.ChatUserID + "&groupId=" + UnbanUserInput.GroupID + "&returnUrl=" + returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostBanUserAsync(int? userId, int? groupId) {
-			if (userId == null || groupId == null) {
-				return BadRequest();
-			}
+		public async Task<IActionResult> OnPostBanUserAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 
-			return LocalRedirect("/ConfirmBanUser?userId=" + userId + "&groupId=" + groupId);
+			return LocalRedirect("/ConfirmBanUser?userId=" + BanUserInput.ChatUserID + "&groupId=" + BanUserInput.GroupID + "&returnUrl=" + returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostUploadImageAsync(int? groupId) {
-			if (groupId == null) {
-				return BadRequest();
-			}
+		public async Task<IActionResult> OnPostUploadImageAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
+			var group = await _context.Group.FirstOrDefaultAsync(g => g.GroupID == UploadImageInput.GroupID);
 
-			var group = await _context.Group.FirstOrDefaultAsync(g => g.GroupID == groupId.Value);
-
-			using (Stream memoryStream = GroupImage.OpenReadStream()) {
+			using (Stream memoryStream = UploadImageInput.GroupImage.OpenReadStream()) {
 				if (memoryStream.Length < 10485760) {
 					var appImage = await _context.GroupImage.FirstOrDefaultAsync(i => i.GroupImageID == group.GroupImageID);
 
@@ -342,18 +362,16 @@ namespace Chat_V2.Pages {
 				}
 			}
 
-			return LocalRedirect("/Group?groupId=" + groupId.Value);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostMakePrivateAsync(int? groupId) {
-			if (groupId == null) {
-				return LocalRedirect("/");
-			}
+		public async Task<IActionResult> OnPostMakePrivateAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _userManager.GetUserAsync(User);
 			Group group = await _context.Group
 				.Include(g => g.Memberships)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == PublicPrivateInput.GroupID);
 
 			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
@@ -365,18 +383,16 @@ namespace Chat_V2.Pages {
 			
 			await _context.SaveChangesAsync();
 
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostMakePublicAsync(int? groupId) {
-			if (groupId == null) {
-				return LocalRedirect("/");
-			}
+		public async Task<IActionResult> OnPostMakePublicAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _userManager.GetUserAsync(User);
 			Group group = await _context.Group
 				.Include(g => g.Memberships)
-				.FirstOrDefaultAsync(g => g.GroupID == groupId);
+				.FirstOrDefaultAsync(g => g.GroupID == PublicPrivateInput.GroupID);
 
 			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
@@ -388,18 +404,21 @@ namespace Chat_V2.Pages {
 
 			await _context.SaveChangesAsync();
 
-			return LocalRedirect("/group?groupId=" + groupId);
+			return LocalRedirect(returnUrl);
 		}
 
-		public async Task<IActionResult> OnPostChangeOwnerAsync() {
+		public async Task<IActionResult> OnPostChangeOwnerAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 			throw new NotImplementedException();
 		}
 
-		public async Task<IActionResult> OnPostArchiveGroupAsync(int? groupId) {
+		public async Task<IActionResult> OnPostArchiveGroupAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 			throw new NotImplementedException();
 		}
 
-		public async Task<IActionResult> OnPostDeleteGroupAsync(int? groupId) {
+		public async Task<IActionResult> OnPostDeleteGroupAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
 			throw new NotImplementedException();
 		}
 

@@ -10,6 +10,7 @@
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
             <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications</a>
+            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations</a>
         }
     </div>
 </nav>
@@ -54,6 +55,51 @@
     @if (Model.IsThisUser) {
         <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
 
+        </div>
+        <div class="tab-pane fade" id="nav-invitations" role="tabpanel" aria-labelledby="nav-invitations-tab">
+            <h4>Join Invitations</h4>
+            <div id="join-invitations-list" class="col-12">
+                @if (Model.ChatUser.GroupJoinInvitations.Count == 0) {
+                    <div id="no-invitations" class="card">
+                        <div class="card-header">No Join Invitations</div>
+                    </div>
+                } else {
+                    @foreach (var invitation in Model.ChatUser.GroupJoinInvitations) {
+                        <div id="invitation-group-@(invitation.GroupID)" class="card">
+                            <div class="card-header">@(invitation.Group.Name)</div>
+                            <div class="card-body">
+                                <dl>
+                                    <dt>
+                                        ID
+                                    </dt>
+                                    <dh>
+                                        @(invitation.GroupID)
+                                    </dh>
+                                    <dt>
+                                        Group Name
+                                    </dt>
+                                    <dh>
+                                        @(invitation.Group.Name)
+                                    </dh>
+                                    <dt>
+                                        Message
+                                    </dt>
+                                    <dh>
+                                        @(invitation.Message)
+                                    </dh>
+                                </dl>
+                                <form asp-route-returnUrl="@HttpContext.Request.Path" method="post">
+                                    <button type="submit" asp-page-handler="AcceptJoinInvitation" class="btn btn-success">Accept</button>
+                                    <button type="submit" asp-page-handler="RejectJoinInvitation" class="btn btn-danger">Reject</button>
+                                    <input type="hidden" asp-for="JoinGroupInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
+                                    <input type="hidden" asp-for="JoinGroupInvitationInput.InvitationID" value="@(invitation.GroupJoinInvitationID)" />
+                                </form>
+                            </div>
+                            <div class="card-footer text-muted">@(invitation.DateSent.ToString())</div>
+                        </div>
+                    }
+                }
+            </div>
         </div>
     }
 </div>

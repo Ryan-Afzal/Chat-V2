@@ -115,11 +115,11 @@
                             This cannot be undone!
                         </div>
                         <div class="modal-footer">
-                            <form method="post" class="form-group">
+                            <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
                                 <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                 <button type="submit" asp-page-handler="LeaveGroup" class="btn btn-danger">Leave Group</button>
-                                <input type="hidden" name="userId" value="@(Model.ViewModel.ChatUser.Id)" />
-                                <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                <input type="hidden" asp-for="LeaveGroupInput.ChatUserID" value="@(Model.ViewModel.ChatUser.Id)" />
+                                <input type="hidden" asp-for="LeaveGroupInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                             </form>
                         </div>
                     </div>
@@ -160,11 +160,11 @@
                                             @(request.Message)
                                         </dh>
                                     </dl>
-                                    <form method="post">
+                                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
                                         <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
                                         <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
-                                        <input type="hidden" name="groupId" value="@(request.GroupID)" />
-                                        <input type="hidden" name="requestId" value="@(request.GroupJoinRequestID)" />
+                                        <input type="hidden" asp-for="JoinRequestInput.GroupID" value="@(request.GroupID)" />
+                                        <input type="hidden" asp-for="JoinRequestInput.RequestID" value="@(request.GroupJoinRequestID)" />
                                     </form>
                                 </div>
                                 <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
@@ -177,7 +177,7 @@
 
                 <h4>Invite Members</h4>
                 <div id="invite-members" class="col-12">
-                    <form method="post" class="form-group">
+                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
                         <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="form-group">
@@ -196,7 +196,7 @@
                             <span asp-validation-for="InviteToGroupInput.Message" class="text-danger"></span>
                         </div>
                         <button asp-page-handler="InviteToGroup" type="submit" class="btn btn-primary">Invite</button>
-                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                        <input type="hidden" asp-for="InviteToGroupInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                     </form>
                 </div>
 
@@ -219,10 +219,10 @@
                             </td>
                             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                                 <td>
-                                    <form method="post" class="form-group">
+                                    <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
                                         <button type="submit" asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
-                                        <input type="hidden" name="userId" value="@item.Id" />
-                                        <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                        <input type="hidden" asp-for="UnbanUserInput.ChatUserID" value="@item.Id" />
+                                        <input type="hidden" asp-for="UnbanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                     </form>
                                 </td>
                             }
@@ -235,10 +235,10 @@
                 <div id="group-member-officer" class="row">
                     <h4>Ban User by Id</h4>
                     <div class="col-12">
-                        <form method="post">
-                            <input type="text" name="userId" class="form-control" />
+                        <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                            <input asp-for="BanUserInput.ChatUserID" class="form-control" />
                             <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
-                            <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                            <input type="hidden" asp-for="BanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                         </form>
                     </div>
                 </div>
@@ -247,17 +247,17 @@
                     <div id="group-member-admin" class="row">
                         <div id="change-image" class="col-12">
                             <h4>Change Image</h4>
-                            <form enctype="multipart/form-data" method="post">
+                            <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" enctype="multipart/form-data" method="post">
                                 <dl>
                                     <dt>
-                                        <label asp-for="GroupImage"></label>
+                                        <label asp-for="UploadImageInput.GroupImage"></label>
                                     </dt>
                                     <dd>
-                                        <input asp-for="GroupImage" type="file">
+                                        <input asp-for="UploadImageInput.GroupImage" type="file">
                                     </dd>
                                 </dl>
                                 <input asp-page-handler="UploadImage" class="btn btn-primary" type="submit" value="Upload">
-                                <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                <input type="hidden" asp-for="UploadImageInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                             </form>
                         </div>
                         <div id="toggle-private-public" class="col-12">
@@ -278,10 +278,10 @@
                                                 This will make it discoverable by non-users, and allow them to make join requests.
                                             </div>
                                             <div class="modal-footer">
-                                                <form method="post" class="form-group">
+                                                <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
                                                     <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                                     <button type="submit" asp-page-handler="MakePublic" class="btn btn-info">Make Public</button>
-                                                    <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                                    <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                                 </form>
                                             </div>
                                         </div>
@@ -303,10 +303,10 @@
                                                 This will make it undiscoverable by non-users, and disallow join requests.
                                             </div>
                                             <div class="modal-footer">
-                                                <form method="post" class="form-group">
+                                                <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
                                                     <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
                                                     <button type="submit" asp-page-handler="MakePrivate" class="btn btn-danger">Make Private</button>
-                                                    <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
+                                                    <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                                 </form>
                                             </div>
                                         </div>
@@ -323,7 +323,7 @@
                                     Change Ownership
                                 </div>
                                 <div class="card-body">
-                                    <form method="post" class="form-group">
+                                    <!--<form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post" class="form-group">
                                         <div asp-validation-summary="All" class="text-danger"></div>
                                         <div class="form-group">
                                             <label asp-for="ChangeOwnerInput.UserID"></label>
@@ -337,7 +337,7 @@
                                         </div>
                                         <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
                                         <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                    </form>
+                                    </form>-->
                                 </div>
                             </div>
 
@@ -377,12 +377,14 @@
                         <h3>You have sent a join request.</h3>
                     } else {
                         <h3>You are not a group member. To become a group member, send a join request.</h3>
-                        <form method="post" class="form-group">
-                            <label asp-for="JoinGroupInput.Message"></label>
-                            <textarea asp-for="JoinGroupInput.Message" class="form-control"></textarea>
+                        <form asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.Query)" method="post">
+                            <div class="form-group">
+                                <label asp-for="SendJoinRequestInput.Message"></label>
+                                <textarea asp-for="SendJoinRequestInput.Message" class="form-control"></textarea>
+                            </div>
+                            <input type="hidden" asp-for="SendJoinRequestInput.ChatUserID" value="@(Model.ViewModel.ChatUser.Id)" />
+                            <input type="hidden" asp-for="SendJoinRequestInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                             <button id="send-join-request" type="submit" asp-page-handler="SendJoinRequest" class="btn btn-primary">Send</button>
-                            <input type="hidden" name="userId" value="@(Model.ViewModel.ChatUser.Id)" />
-                            <input type="hidden" name="groupId" value="@(Model.ViewModel.Group.GroupID)" />
                         </form>
                     }
                 </div>
