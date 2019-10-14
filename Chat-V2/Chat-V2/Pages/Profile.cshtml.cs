@@ -17,7 +17,7 @@ namespace Chat_V2.Pages {
 	[Authorize]
 	public class ProfileModel : PageModel {
 
-		public class JoinGroupInvitationInputModel {
+		public class JoinInvitationInputModel {
 			public int ChatUserID { get; set; }
 			public int InvitationID { get; set; }
 		}
@@ -40,7 +40,7 @@ namespace Chat_V2.Pages {
 		public bool IsThisUser { get; set; }
 
 		[BindProperty]
-		public JoinGroupInvitationInputModel JoinGroupInvitationInput { get; set; }
+		public JoinInvitationInputModel JoinInvitationInput { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? userId) {
 			if (userId == null) {
@@ -60,19 +60,69 @@ namespace Chat_V2.Pages {
 
 			ChatUser = user;
 			IsThisUser = (await _userManager.GetUserAsync(User)).Id == user.Id;
-			JoinGroupInvitationInput = new JoinGroupInvitationInputModel();
+			JoinInvitationInput = new JoinInvitationInputModel();
 
 			return Page();
 		}
 
 		public async Task<IActionResult> OnPostAcceptJoinInvitationAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
-			throw new NotImplementedException();
+			var chatUser = await _context.Users
+				.Include(u => u.GroupJoinInvitations)
+				.FirstOrDefaultAsync(g => g.Id == JoinInvitationInput.ChatUserID);
+
+			if (chatUser == null) {
+				return NotFound();
+			}
+
+			var invitation = chatUser.GroupJoinInvitations
+				.FirstOrDefault(i => i.GroupJoinInvitationID == JoinInvitationInput.InvitationID);
+
+			if (invitation == null) {
+				return NotFound();
+			}
+
+			Membership membership = new Membership() {
+				ChatUserID = invitation.ChatUserID,
+				GroupID = invitation.GroupID,
+				IsActiveInGroup = false,
+				IsOnlineInGroup = false,
+				MembershipStatus = new MembershipStatus() {
+					DateIssued = DateTime.Now,
+					Expiration = DateTime.Now,
+					Type = MembershipStatusType.NONE
+				},
+				Rank = PermissionRank.USER.Ordinal
+			};
+
+			await _context.Membership.AddAsync(membership);
+			chatUser.GroupJoinInvitations.Remove(invitation);
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect(returnUrl);
 		}
 
 		public async Task<IActionResult> OnPostRejectJoinInvitationAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
-			throw new NotImplementedException();
+			var chatUser = await _context.Users
+				.Include(u => u.GroupJoinInvitations)
+				.FirstOrDefaultAsync(g => g.Id == JoinInvitationInput.ChatUserID);
+
+			if (chatUser == null) {
+				return NotFound();
+			}
+
+			var invitation = chatUser.GroupJoinInvitations
+				.FirstOrDefault(i => i.GroupJoinInvitationID == JoinInvitationInput.InvitationID);
+
+			if (invitation == null) {
+				return NotFound();
+			}
+
+			chatUser.GroupJoinInvitations.Remove(invitation);
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect(returnUrl);
 		}
 	}
 }

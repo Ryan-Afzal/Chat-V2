@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+    var returnUrl = (HttpContext.Request.Path.Value + HttpContext.Request.QueryString.Value);
 }
 
 <nav>
@@ -88,11 +89,12 @@
                                         @(invitation.Message)
                                     </dh>
                                 </dl>
-                                <form asp-route-returnUrl="@HttpContext.Request.Path" method="post">
+                                <form method="post">
                                     <button type="submit" asp-page-handler="AcceptJoinInvitation" class="btn btn-success">Accept</button>
                                     <button type="submit" asp-page-handler="RejectJoinInvitation" class="btn btn-danger">Reject</button>
-                                    <input type="hidden" asp-for="JoinGroupInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
-                                    <input type="hidden" asp-for="JoinGroupInvitationInput.InvitationID" value="@(invitation.GroupJoinInvitationID)" />
+                                    <input type="hidden" asp-for="JoinInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
+                                    <input type="hidden" asp-for="JoinInvitationInput.InvitationID" value="@(invitation.GroupJoinInvitationID)" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
                                 </form>
                             </div>
                             <div class="card-footer text-muted">@(invitation.DateSent.ToString())</div>
