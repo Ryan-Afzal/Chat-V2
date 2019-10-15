@@ -251,22 +251,51 @@
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
                     <div id="group-member-admin" class="row">
+                        <div id="change-name" class="col-12">
+                            <h4>Change Group Name</h4>
+                            <form method="post">
+                                <div class="form-group">
+                                    <label asp-for="ChangeGroupNameInput.Name"></label>
+                                    <input asp-for="ChangeGroupNameInput.Name" class="form-control" />
+                                </div>
+                                <button asp-page-handler="ChangeGroupName" class="btn btn-primary" type="submit">Change Group Name</button>
+                                <input type="hidden" asp-for="ChangeGroupNameInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            </form>
+                        </div>
+
+                        <br />
+
+                        <div id="change-description" class="col-12">
+                            <h4>Change Group Description</h4>
+                            <form method="post">
+                                <div class="form-group">
+                                    <label asp-for="ChangeGroupDescriptionInput.Description"></label>
+                                    <textarea asp-for="ChangeGroupDescriptionInput.Description" class="form-control"></textarea>
+                                </div>
+                                <button asp-page-handler="ChangeGroupDescription" class="btn btn-primary" type="submit">Change Group Description</button>
+                                <input type="hidden" asp-for="ChangeGroupDescriptionInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            </form>
+                        </div>
+
+                        <br />
+
                         <div id="change-image" class="col-12">
                             <h4>Change Image</h4>
                             <form enctype="multipart/form-data" method="post">
-                                <dl>
-                                    <dt>
-                                        <label asp-for="UploadImageInput.GroupImage"></label>
-                                    </dt>
-                                    <dd>
-                                        <input asp-for="UploadImageInput.GroupImage" type="file">
-                                    </dd>
-                                </dl>
-                                <input asp-page-handler="UploadImage" class="btn btn-primary" type="submit" value="Upload">
+                                <div class="form-group">
+                                    <label asp-for="UploadImageInput.GroupImage"></label>
+                                    <input asp-for="UploadImageInput.GroupImage" type="file" class="form-control" />
+                                </div>
+                                <button asp-page-handler="UploadImage" class="btn btn-primary" type="submit">Upload</button>
                                 <input type="hidden" asp-for="UploadImageInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                 <input type="hidden" name="returnUrl" value="@returnUrl" />
                             </form>
                         </div>
+
+                        <br />
+
                         <div id="toggle-private-public" class="col-12">
                             <h4>Toggle Private Group</h4>
                             @if (Model.ViewModel.Group.IsPrivate) {

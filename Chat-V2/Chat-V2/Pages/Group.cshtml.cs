@@ -65,6 +65,16 @@ namespace Chat_V2.Pages {
 			public int GroupID { get; set; }
 		}
 
+		public class ChangeGroupNameInputModel {
+			public int GroupID { get; set; }
+			public string Name { get; set; }
+		}
+
+		public class ChangeGroupDescriptionInputModel {
+			public int GroupID { get; set; }
+			public string Description { get; set; }
+		}
+
 		public class UploadImageInputModel {
 			public int GroupID { get; set; }
 			public IFormFile GroupImage { get; set; }
@@ -106,6 +116,12 @@ namespace Chat_V2.Pages {
 
 		[BindProperty]
 		public BanUserInputModel BanUserInput { get; set; }
+
+		[BindProperty]
+		public ChangeGroupNameInputModel ChangeGroupNameInput { get; set; }
+
+		[BindProperty]
+		public ChangeGroupDescriptionInputModel ChangeGroupDescriptionInput { get; set; }
 
 		[BindProperty]
 		public UploadImageInputModel UploadImageInput { get; set; }
@@ -290,7 +306,7 @@ namespace Chat_V2.Pages {
 
 			var group = await _context.Group
 				.Include(g => g.BannedUsers)
-				.FirstOrDefaultAsync(g => g.GroupID == JoinRequestInput.GroupID);
+				.FirstOrDefaultAsync(g => g.GroupID == InviteToGroupInput.GroupID);
 
 			if (group == null) {
 				return NotFound();
@@ -324,6 +340,48 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			return LocalRedirect("/ConfirmBanUser?userId=" + BanUserInput.ChatUserID + "&groupId=" + BanUserInput.GroupID + "&returnUrl=" + returnUrl);
+		}
+
+		public async Task<IActionResult> OnPostChangeGroupNameAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
+
+			var chatUser = await _userManager.GetUserAsync(User);
+			Group group = await _context.Group
+				.Include(g => g.Memberships)
+				.FirstOrDefaultAsync(g => g.GroupID == ChangeGroupNameInput.GroupID);
+
+			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+
+			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
+				return BadRequest();
+			}
+
+			group.Name = ChangeGroupNameInput.Name;
+
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect(returnUrl);
+		}
+
+		public async Task<IActionResult> OnPostChangeGroupDescriptionAsync(string returnUrl = null) {
+			returnUrl ??= Url.Content("~/");
+
+			var chatUser = await _userManager.GetUserAsync(User);
+			Group group = await _context.Group
+				.Include(g => g.Memberships)
+				.FirstOrDefaultAsync(g => g.GroupID == ChangeGroupDescriptionInput.GroupID);
+
+			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+
+			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
+				return BadRequest();
+			}
+
+			group.Description = ChangeGroupDescriptionInput.Description;
+
+			await _context.SaveChangesAsync();
+
+			return LocalRedirect(returnUrl);
 		}
 
 		public async Task<IActionResult> OnPostUploadImageAsync(string returnUrl = null) {
