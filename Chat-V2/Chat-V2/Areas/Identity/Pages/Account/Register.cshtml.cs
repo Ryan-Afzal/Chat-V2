@@ -77,7 +77,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
 			if (ModelState.IsValid) {
-				var info = ImageTools.GetFileInfoFromFile("Images\\defaultProfileImage.png", _env);
+				var info = ImageTools.GetFileInfoFromFile("Images/defaultProfileImage.png", _env);
 
 				var image = new ProfileImage() {
 					Data = ImageTools.GetImageFromFile(info),

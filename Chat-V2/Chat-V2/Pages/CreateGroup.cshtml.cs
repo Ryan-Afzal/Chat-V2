@@ -54,7 +54,7 @@ namespace Chat_V2.Pages {
 			if (_signInManager.IsSignedIn(User)) {
 				var chatUser = await _userManager.GetUserAsync(User);
 
-				var info = ImageTools.GetFileInfoFromFile("Images\\defaultGroupImage.png", _env);
+				var info = ImageTools.GetFileInfoFromFile("Images/defaultGroupImage.png", _env);
 
 				var image = new GroupImage() {
 					Data = ImageTools.GetImageFromFile(info),

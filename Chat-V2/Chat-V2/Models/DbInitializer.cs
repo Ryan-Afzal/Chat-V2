@@ -19,7 +19,7 @@ namespace Chat_V2.Models {
 				return;
 			}
 
-			var info = ImageTools.GetFileInfoFromFile("Images\\defaultGroupImage.png", env);
+			var info = ImageTools.GetFileInfoFromFile("Images/defaultGroupImage.png", env);
 
 			var image = new GroupImage() {
 				Data = ImageTools.GetImageFromFile(info),
