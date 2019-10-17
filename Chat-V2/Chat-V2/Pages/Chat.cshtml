@@ -294,10 +294,10 @@
 
         if (membershipID != -1) {
             var args = {
-            MembershipID: membershipID
-        };
+                MembershipID: membershipID
+            };
 
-        connection.invoke("DisconnectedFromGroup", args);
+            connection.invoke("DisconnectedFromGroup", args);
         }
 
         numMessages = 0;
@@ -307,6 +307,7 @@
 
     function newGroupMessage(groupId) {
         //Signal new Group Message
+        appendMessage("h", "red", "h", "h");
     }
 
     function switchGroupTo(groupId, membershipId) {

@@ -300,7 +300,7 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
-				.ThenInclude(g => g.ChatMessages)
+					.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
@@ -317,7 +317,7 @@ namespace Chat_V2.Hubs {
 				MinRank = minRank.Ordinal
 			};
 			group.ChatMessages.Add(chatMessage);
-			ChatContext.SaveChanges();
+			await ChatContext.SaveChangesAsync();
 
 			//Distribute the message
 			await GetClientsInGroup(group, minRank)

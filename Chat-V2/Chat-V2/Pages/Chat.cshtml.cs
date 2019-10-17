@@ -39,17 +39,13 @@ namespace Chat_V2.Pages {
 		public ChatViewModel ViewModel { get; private set; }
 
 		public async Task<IActionResult> OnGetAsync() {
-			if (_signInManager.IsSignedIn(User)) {
-                var chatUser = await _userManager.GetUserAsync(User);
+			var chatUser = await _userManager.GetUserAsync(User);
 
-				ViewModel = new ChatViewModel() {
-					ChatUser = chatUser
-				};
+			ViewModel = new ChatViewModel() {
+				ChatUser = chatUser
+			};
 
-				return Page();
-			} else {
-				return LocalRedirect("/Identity/Account/Login");
-			}
+			return Page();
 		}
 
 	}
