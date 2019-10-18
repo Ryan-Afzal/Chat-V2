@@ -39,7 +39,7 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">NAME</th>
-                                    <!--<th scope="col">ONLINE</th>-->
+                                   <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody id="groups-list">
@@ -307,7 +307,16 @@
 
     function newGroupMessage(groupId) {
         //Signal new Group Message
-        appendMessage("h", "red", "h", "h");
+        var newBadge = document.createElement("span");
+        newBadge.setAttribute("class", "badge badge-success");
+        newBadge.textContent = "NEW";
+
+        document.getElementById("group-data-new-" + groupId)
+            .appendChild(newBadge);
+    }
+
+    function removeNewGroupMessage(groupId) {
+        $("group-data-new-" + groupId).empty();
     }
 
     function switchGroupTo(groupId, membershipId) {
@@ -321,6 +330,8 @@
         };
 
         connection.invoke("ConnectedToGroup", args);
+
+        removeNewGroupMessage(groupId);
     }
 
     function addGroup(groupId, groupName, membershipId) {
@@ -345,6 +356,10 @@
         name.setAttribute("class", "group-data-name");
         name.textContent = groupName;
         container.appendChild(name);
+
+        var n = document.createElement("td");
+        n.setAttribute("id", "group-data-new-" + groupId);
+        container.appendChild(n);
 
         //var numOnline = document.createElement("td");
         //numOnline.setAttribute("class", "group-data-online");
