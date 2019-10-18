@@ -486,7 +486,7 @@
             if (message.trim() != "") {
                 var args = {
                     MembershipID: membershipID,
-                    MinRank: viewmodel.Rank,
+                    MinRank: 0,
                     Message: message
                 };
                 connection.invoke("SendMessage", args).catch(function (err) {

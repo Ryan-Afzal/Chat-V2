@@ -85,8 +85,8 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
-				.ThenInclude(g => g.Memberships)
-				.ThenInclude(m => m.ChatUser)
+					.ThenInclude(g => g.Memberships)
+						.ThenInclude(m => m.ChatUser)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
 			membership.IsOnlineInGroup = true;
@@ -151,6 +151,7 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
+					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
 			membership.IsOnlineInGroup = false;
@@ -169,8 +170,8 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
-				.ThenInclude(g => g.Memberships)
-				.ThenInclude(m => m.ChatUser)
+					.ThenInclude(g => g.Memberships)
+						.ThenInclude(m => m.ChatUser)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
 			membership.IsActiveInGroup = true;
@@ -189,6 +190,7 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
+					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
 			membership.IsActiveInGroup = false;
@@ -246,7 +248,7 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
-				.ThenInclude(g => g.Memberships)
+					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 			ChatUser sender = membership.ChatUser;
@@ -301,6 +303,8 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 					.ThenInclude(g => g.ChatMessages)
+				.Include(m => m.Group)
+					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
