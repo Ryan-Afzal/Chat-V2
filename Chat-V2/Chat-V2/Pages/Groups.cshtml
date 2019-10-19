@@ -81,14 +81,14 @@
     var nextDisabled = !Model.Groups.HasNextPage ? "disabled" : "";
 }
 
-<a asp-page="./Index"
+<a asp-page="./Groups"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.Groups.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
    class="btn btn-primary @prevDisabled">
     Previous
 </a>
-<a asp-page="./Index"
+<a asp-page="./Groups"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.Groups.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"

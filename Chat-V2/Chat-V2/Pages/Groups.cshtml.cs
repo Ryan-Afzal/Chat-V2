@@ -72,7 +72,7 @@ namespace Chat_V2.Pages {
 					break;
 			}
 
-			int pageSize = 3;
+			int pageSize = 10;
 			Groups = await PaginatedList<Group>.CreateAsync(
 				groupsIQ.AsNoTracking(), pageIndex ?? 1, pageSize);
 		}
