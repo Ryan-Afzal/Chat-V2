@@ -27,6 +27,7 @@
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "3.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "3.0.0",
           "Microsoft.AspNetCore.Identity.UI": "3.0.0",
+          "Microsoft.CodeAnalysis.FxCopAnalyzers": "2.9.6",
           "Microsoft.EntityFrameworkCore.Design": "3.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "3.0.0",
           "Microsoft.EntityFrameworkCore.Tools": "3.0.0",
@@ -585,6 +586,14 @@
           "lib/netstandard2.0/Microsoft.CodeAnalysis.CSharp.Workspaces.dll": {}
         }
       },
+      "Microsoft.CodeAnalysis.FxCopAnalyzers/2.9.6": {
+        "dependencies": {
+          "Microsoft.CodeAnalysis.VersionCheckAnalyzer": "2.9.6",
+          "Microsoft.CodeQuality.Analyzers": "2.9.6",
+          "Microsoft.NetCore.Analyzers": "2.9.6",
+          "Microsoft.NetFramework.Analyzers": "2.9.6"
+        }
+      },
       "Microsoft.CodeAnalysis.Razor/3.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Razor.Language": "3.0.0",
@@ -601,6 +610,7 @@
           "lib/netstandard2.0/Microsoft.CodeAnalysis.Razor.dll": {}
         }
       },
+      "Microsoft.CodeAnalysis.VersionCheckAnalyzer/2.9.6": {},
       "Microsoft.CodeAnalysis.Workspaces.Common/3.3.0": {
         "dependencies": {
           "Microsoft.CodeAnalysis.Common": "3.3.0",
@@ -657,6 +667,7 @@
           "lib/netstandard2.0/Microsoft.CodeAnalysis.Workspaces.dll": {}
         }
       },
+      "Microsoft.CodeQuality.Analyzers/2.9.6": {},
       "Microsoft.CSharp/4.6.0": {},
       "Microsoft.Data.SqlClient/1.0.19249.1": {
         "dependencies": {
@@ -866,8 +877,10 @@
           }
         }
       },
+      "Microsoft.NetCore.Analyzers/2.9.6": {},
       "Microsoft.NETCore.Platforms/3.0.0": {},
       "Microsoft.NETCore.Targets/1.1.0": {},
+      "Microsoft.NetFramework.Analyzers/2.9.6": {},
       "Microsoft.VisualStudio.Web.CodeGeneration/3.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "3.0.0",
@@ -3930,6 +3943,13 @@
       "path": "microsoft.codeanalysis.csharp.workspaces/3.3.0",
       "hashPath": "microsoft.codeanalysis.csharp.workspaces.3.3.0.nupkg.sha512"
     },
+    "Microsoft.CodeAnalysis.FxCopAnalyzers/2.9.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GBZV6P8u3uIXYrlapvbpaaaB5LpF3hk+I2ThIcoVyENr8krNOovFyJhi6FQHgnxd0XLPj9J9Nt35iuqwVe/XJw==",
+      "path": "microsoft.codeanalysis.fxcopanalyzers/2.9.6",
+      "hashPath": "microsoft.codeanalysis.fxcopanalyzers.2.9.6.nupkg.sha512"
+    },
     "Microsoft.CodeAnalysis.Razor/3.0.0": {
       "type": "package",
       "serviceable": true,
@@ -3937,12 +3957,26 @@
       "path": "microsoft.codeanalysis.razor/3.0.0",
       "hashPath": "microsoft.codeanalysis.razor.3.0.0.nupkg.sha512"
     },
+    "Microsoft.CodeAnalysis.VersionCheckAnalyzer/2.9.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Q5rRN0+9TJsfsXaGKnzDjGkUZ4Rd8ZKmpSND1j49jsmLacCspp4ZaJ31nJn76B/W0qrb4GkEBxKtj3U9lo2gqg==",
+      "path": "microsoft.codeanalysis.versioncheckanalyzer/2.9.6",
+      "hashPath": "microsoft.codeanalysis.versioncheckanalyzer.2.9.6.nupkg.sha512"
+    },
     "Microsoft.CodeAnalysis.Workspaces.Common/3.3.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-XqnerOQKZkDFGPqg+G1xwadwVfvEx+NJ7OLK66C4kg5zr7ITM5vIigJl6z/avMVutYwLH97DpHvyKru5O1gfmw==",
       "path": "microsoft.codeanalysis.workspaces.common/3.3.0",
       "hashPath": "microsoft.codeanalysis.workspaces.common.3.3.0.nupkg.sha512"
+    },
+    "Microsoft.CodeQuality.Analyzers/2.9.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jND04w/FPgfBYKkLLnosmvgHs8NMpMvQ7LQqyiCjMlKOM+MT6edgvTU0vAAowxGuLGceC6pjJm0kUVkG9qT3CQ==",
+      "path": "microsoft.codequality.analyzers/2.9.6",
+      "hashPath": "microsoft.codequality.analyzers.2.9.6.nupkg.sha512"
     },
     "Microsoft.CSharp/4.6.0": {
       "type": "package",
@@ -4119,6 +4153,13 @@
       "path": "microsoft.identity.client/3.0.8",
       "hashPath": "microsoft.identity.client.3.0.8.nupkg.sha512"
     },
+    "Microsoft.NetCore.Analyzers/2.9.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YPcQ+gCt66btt9jNHNi4vrRK6AAP7EIO17quwUeHLUw7vhc6q18r2RYVTLKQvOQuOXs1UEYHArENpppwFP4MLA==",
+      "path": "microsoft.netcore.analyzers/2.9.6",
+      "hashPath": "microsoft.netcore.analyzers.2.9.6.nupkg.sha512"
+    },
     "Microsoft.NETCore.Platforms/3.0.0": {
       "type": "package",
       "serviceable": true,
@@ -4132,6 +4173,13 @@
       "sha512": "sha512-aOZA3BWfz9RXjpzt0sRJJMjAscAUm3Hoa4UWAfceV9UTYxgwZ1lZt5nO2myFf+/jetYQo4uTP7zS8sJY67BBxg==",
       "path": "microsoft.netcore.targets/1.1.0",
       "hashPath": "microsoft.netcore.targets.1.1.0.nupkg.sha512"
+    },
+    "Microsoft.NetFramework.Analyzers/2.9.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8VyWe53rtUkgJFAkbCZY5KT2t1tEmRrdK1Z+zbyRlzoKVEHyMs0+WNBeJ8d2YB/NjXaYAlaVG2CGZFnQUrwY6A==",
+      "path": "microsoft.netframework.analyzers/2.9.6",
+      "hashPath": "microsoft.netframework.analyzers.2.9.6.nupkg.sha512"
     },
     "Microsoft.VisualStudio.Web.CodeGeneration/3.0.0": {
       "type": "package",

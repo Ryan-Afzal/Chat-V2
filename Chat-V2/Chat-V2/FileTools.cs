@@ -59,7 +59,7 @@ namespace Chat_V2 {
 
 		internal static void LoadDataFromConfig(WebHostBuilderContext context) {
 			FileSavePath = context.Configuration["FileTools:FileSavePath"];
-			DefaultImagePath = context.Configuration["FileTools:DefaultImagePath"];
+			DefaultImagePath = context.Configuration["FileTools:DefaultFilePath"];
 			DefaultUserProfileImage = context.Configuration["FileTools:DefaultUserProfileImage"];
 			DefaultGroupImage = context.Configuration["FileTools:DefaultGroupImage"];
 		}

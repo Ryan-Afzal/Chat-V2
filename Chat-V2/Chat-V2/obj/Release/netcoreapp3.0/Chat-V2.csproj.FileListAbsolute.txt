@@ -155,5 +155,5 @@
 /home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp3.0/Chat-V2.csproj.CopyComplete
 /home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp3.0/Chat-V2.dll
 /home/ryan/Chat-V2/Chat-V2/Chat-V2/obj/Release/netcoreapp3.0/Chat-V2.pdb
-/home/ryan/Chat-V2/Chat-V2/Chat-V2/bin/Release/netcoreapp3.0/Images/defaultGroupImage.png
-/home/ryan/Chat-V2/Chat-V2/Chat-V2/bin/Release/netcoreapp3.0/Images/defaultProfileImage.png
+/home/ryan/Chat-V2/Chat-V2/Chat-V2/bin/Release/netcoreapp3.0/DefaultFiles/defaultGroupImage.png
+/home/ryan/Chat-V2/Chat-V2/Chat-V2/bin/Release/netcoreapp3.0/DefaultFiles/defaultProfileImage.png
