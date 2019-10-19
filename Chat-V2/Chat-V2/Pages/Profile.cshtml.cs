@@ -51,7 +51,6 @@ namespace Chat_V2.Pages {
 				.Include(u => u.Memberships)
 				.Include(u => u.GroupJoinInvitations)
 					.ThenInclude(i => i.Group)
-				.Include(u => u.ProfileImage)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 
 			if (user == null) {

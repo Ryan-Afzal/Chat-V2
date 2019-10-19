@@ -77,23 +77,13 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
 			if (ModelState.IsValid) {
-				var info = ImageTools.GetFileInfoFromFile("Images/defaultProfileImage.png", _env);
-
-				var image = new ProfileImage() {
-					Data = ImageTools.GetImageFromFile(info),
-					ContentType = info.Extension
-				};
-
-				await _context.ProfileImage.AddAsync(image);
-				await _context.SaveChangesAsync();
-
 				var user = new ChatUser() {
 					UserName = Input.Username,
 					Email = Input.Email,
 					FirstName = Input.FirstName,
 					LastName = Input.LastName,
 					ProfileDescription = "",
-					ProfileImageID = image.ProfileImageID
+					ProfileImage = FileTools.SaveFileFromDefault(FileTools.DefaultUserProfileImage)
 				};
 
 				var result = await _userManager.CreateAsync(user, Input.Password);

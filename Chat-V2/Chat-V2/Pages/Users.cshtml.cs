@@ -48,8 +48,7 @@ namespace Chat_V2.Pages {
 
 			CurrentFilter = searchString;
 
-			IQueryable<ChatUser> UsersIQ = _context.Users
-				.Include(u => u.ProfileImage);
+			IQueryable<ChatUser> UsersIQ = _context.Users;
 
 			if (!string.IsNullOrEmpty(searchString)) {
 				UsersIQ = UsersIQ

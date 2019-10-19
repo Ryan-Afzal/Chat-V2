@@ -8,6 +8,23 @@ using System.Threading.Tasks;
 namespace Chat_V2 {
 	public static class Extensions {
 
+		public static Image ResizeImageToFitSquare(this Image image, int sideLength) {
+			double aspectRatio = ((double)image.Height) / image.Width;
+
+			int height;
+			int width;
+
+			if (image.Height > image.Width) {
+				height = image.Height > sideLength ? sideLength : image.Height;
+				width = (int)(height / aspectRatio);
+			} else {
+				width = image.Width > sideLength ? sideLength : image.Width;
+				height = (int)(aspectRatio * width);
+			}
+
+			return image.ResizeImage(height, width);
+		}
+
 		/// <summary>
 		/// This will dispose of the image being resized
 		/// </summary>

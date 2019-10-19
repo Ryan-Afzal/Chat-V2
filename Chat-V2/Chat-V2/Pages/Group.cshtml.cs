@@ -141,7 +141,6 @@ namespace Chat_V2.Pages {
 						.Include(g => g.BannedUsers)
 						.Include(g => g.Memberships)
 							.ThenInclude(m => m.ChatUser)
-						.Include(g => g.GroupImage)
 						.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			if (group == null) {
@@ -388,36 +387,20 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 			var group = await _context.Group.FirstOrDefaultAsync(g => g.GroupID == UploadImageInput.GroupID);
 
-			using (Stream memoryStream = UploadImageInput.GroupImage.OpenReadStream()) {
-				if (memoryStream.Length < 10485760) {
-					var appImage = await _context.GroupImage.FirstOrDefaultAsync(i => i.GroupImageID == group.GroupImageID);
-
-					Image image = Image.FromStream(memoryStream);
-
-					double aspectRatio = ((double)image.Height) / image.Width;
-
-					int height;
-					int width;
-
-					if (image.Height > image.Width) {
-						height = image.Height > 512 ? 512 : image.Height;
-						width = (int)(height / aspectRatio);
-					} else {
-						width = image.Width > 512 ? 512 : image.Width;
-						height = (int)(aspectRatio * width);
-					}
-
-					using MemoryStream ms = new MemoryStream();
-					image.ResizeImage(height, width)
-						.Save(ms, ImageFormat.Png);
-
-					appImage.Data = ms.ToArray();
-					appImage.ContentType = "png";
-
-					await _context.SaveChangesAsync();
+			if (UploadImageInput.GroupImage.Length < 10485760L) {//10 MB
+				if (!UploadImageInput.GroupImage.ValidateFileAsImage()) {
+					ModelState.AddModelError("File", "Invalid file type.");
 				} else {
-					ModelState.AddModelError("File", "The file is too large.");
+					using Stream memoryStream = UploadImageInput.GroupImage.OpenReadStream();
+					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
+
+					string output = FileTools.SaveFile(image, UploadImageInput.GroupImage.FileName);
+					FileTools.DeleteFile(group.GroupImage);
+					group.GroupImage = output;
+					await _context.SaveChangesAsync();
 				}
+			} else {
+				ModelState.AddModelError("File", "The file is too large.");
 			}
 
 			return LocalRedirect(returnUrl);

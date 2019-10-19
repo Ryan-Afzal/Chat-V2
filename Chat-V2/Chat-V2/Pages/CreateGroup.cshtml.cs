@@ -54,23 +54,13 @@ namespace Chat_V2.Pages {
 			if (_signInManager.IsSignedIn(User)) {
 				var chatUser = await _userManager.GetUserAsync(User);
 
-				var info = ImageTools.GetFileInfoFromFile("Images/defaultGroupImage.png", _env);
-
-				var image = new GroupImage() {
-					Data = ImageTools.GetImageFromFile(info),
-					ContentType = info.Extension
-				};
-
-				await _context.GroupImage.AddAsync(image);
-				await _context.SaveChangesAsync();
-
 				Group group = new Group() {
 					Name = Input.Name,
 					Description = Input.Description,
 					DateCreated = DateTime.Now,
 					IsArchived = false,
 					IsPrivate = !Input.IsPublic,
-					GroupImageID = image.GroupImageID
+					GroupImage = FileTools.SaveFileFromDefault(FileTools.DefaultGroupImage)
 				};
 
 				await _context.Group.AddAsync(group);

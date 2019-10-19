@@ -20,9 +20,7 @@ namespace Chat_V2.Models {
 		[Display(Name = "Private?")]
 		public bool IsPrivate { get; set; }
 		public bool IsArchived { get; set; }
-		public int GroupImageID { get; set; }
-
-		public GroupImage GroupImage { get; set; }
+		public string GroupImage { get; set; }
 
 		public ICollection<ChatUser> BannedUsers { get; set; }
 

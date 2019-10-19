@@ -9,6 +9,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
+	[Authorize]
 	public partial class IndexModel : PageModel {
 		private readonly ChatContext _context;
 		private readonly UserManager<ChatUser> _userManager;
@@ -134,38 +136,22 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 		}
 
 		public async Task<IActionResult> OnPostUploadAsync() {
-			using (Stream memoryStream = ProfileImage.OpenReadStream()) {
-				if (memoryStream.Length < 10485760) {
-					var user = await _userManager.GetUserAsync(User);
-					var appImage = await _context.ProfileImage.FirstOrDefaultAsync(i => i.ProfileImageID == user.ProfileImageID);
+			var chatUser = await _userManager.GetUserAsync(User);
 
-					Image image = Image.FromStream(memoryStream);
-
-					double aspectRatio = ((double)image.Height) / image.Width;
-
-					int height;
-					int width;
-
-					if (image.Height > image.Width) {
-						height = image.Height > 512 ? 512 : image.Height;
-						width = (int)(height / aspectRatio);
-					} else {
-						width = image.Width > 512 ? 512 : image.Width;
-						height = (int)(aspectRatio * width);
-					}
-
-
-					using MemoryStream ms = new MemoryStream();
-					image.ResizeImage(height, width)
-						.Save(ms, ImageFormat.Png);
-
-					appImage.Data = ms.ToArray();
-					appImage.ContentType = "png";
-
-					await _context.SaveChangesAsync();
+			if (ProfileImage.Length < 10485760L) {//10 MB
+				if (!ProfileImage.ValidateFileAsImage()) {
+					ModelState.AddModelError("File", "Invalid file type.");
 				} else {
-					ModelState.AddModelError("File", "The file is too large.");
+					using Stream memoryStream = ProfileImage.OpenReadStream();
+					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
+
+					string output = FileTools.SaveFile(image, ProfileImage.FileName);
+					FileTools.DeleteFile(chatUser.ProfileImage);
+					chatUser.ProfileImage = output;
+					await _context.SaveChangesAsync();
 				}
+			} else {
+				ModelState.AddModelError("File", "The file is too large.");
 			}
 
 			return Page();

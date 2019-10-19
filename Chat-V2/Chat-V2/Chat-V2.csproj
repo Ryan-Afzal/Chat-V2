@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\new-message.mp3" />
+    <None Include="wwwroot\media\new-message.mp3" />
   </ItemGroup>
   
   <ItemGroup> 
@@ -14,8 +14,17 @@
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
   </Content> 
 </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="DefaultImages\defaultGroupImage.png" />
+    <Content Include="DefaultImages\defaultProfileImage.png" />
+  </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
@@ -25,6 +34,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Images\" />
   </ItemGroup>
 
 </Project>
