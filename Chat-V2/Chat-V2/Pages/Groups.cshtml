@@ -56,11 +56,7 @@
         @foreach (var item in Model.Groups) {
         <tr>
             <td>
-                @{
-                    string img64 = Convert.ToBase64String(item.GroupImage.Data);
-                    string img64Url = string.Format("data:image/" + item.GroupImage.ContentType + ";base64,{0}", img64); //ContentType can be gif, jpeg, png etc.
-                }
-                <img src="@img64Url" width="64" height="64" class="img-thumbnail" />
+                <img src="@(FileTools.FileSavePath + item.GroupImage)" width="64" height="64" class="img-thumbnail" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.GroupID)

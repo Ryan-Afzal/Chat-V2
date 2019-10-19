@@ -394,7 +394,7 @@ namespace Chat_V2.Pages {
 					using Stream memoryStream = UploadImageInput.GroupImage.OpenReadStream();
 					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
 
-					string output = FileTools.SaveFile(image, UploadImageInput.GroupImage.FileName);
+					string output = FileTools.SaveFile(image, UploadImageInput.GroupImage.Name);
 					FileTools.DeleteFile(group.GroupImage);
 					group.GroupImage = output;
 					await _context.SaveChangesAsync();

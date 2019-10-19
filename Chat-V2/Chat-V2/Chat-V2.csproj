@@ -6,18 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\media\new-message.mp3" />
-  </ItemGroup>
-  
-  <ItemGroup> 
-  <Content Include="Images\**"> 
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
-  </Content> 
-</ItemGroup>
-  
-  <ItemGroup>
-    <Content Include="DefaultImages\defaultGroupImage.png" />
-    <Content Include="DefaultImages\defaultProfileImage.png" />
+    <Content Include="DefaultFiles\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Images\" />
+    <Folder Include="Files\" />
   </ItemGroup>
 
 </Project>

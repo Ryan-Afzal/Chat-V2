@@ -12,11 +12,7 @@
 <div id="group-data" class="container-fluid">
     <div class="row">
         <div class="col-12 text-center">
-            @{
-                string img64 = Convert.ToBase64String(Model.ViewModel.Group.GroupImage.Data);
-                string img64Url = string.Format("data:image/" + Model.ViewModel.Group.GroupImage.ContentType + ";base64,{0}", img64); //ContentType can be gif, jpeg, png etc.
-            }
-            <img src="@img64Url" width="256" height="256" class="img-thumbnail" />
+            <img src="@(FileTools.FileSavePath + Model.ViewModel.Group.GroupImage)" width="256" height="256" class="img-thumbnail" />
         </div>
     </div>
     <dl class="row">

@@ -145,7 +145,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 					using Stream memoryStream = ProfileImage.OpenReadStream();
 					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
 
-					string output = FileTools.SaveFile(image, ProfileImage.FileName);
+					string output = FileTools.SaveFile(image, ProfileImage.Name);
 					FileTools.DeleteFile(chatUser.ProfileImage);
 					chatUser.ProfileImage = output;
 					await _context.SaveChangesAsync();

@@ -11,34 +11,66 @@ using System.Threading.Tasks;
 namespace Chat_V2 {
 	public static class FileTools {
 
-		public static readonly string FileSavePath = "~/Images/";
-		public static readonly string DefaultImagePath = "~/DefaultImages/";
+		private static string fileSavePath = "Files/";
+		private static string defaultImagePath = "DefaultFiles/";
 
-		public static readonly string DefaultUserProfileImage = "defaultProfileImage.png";
-		public static readonly string DefaultGroupImage = "defaultGroupImage.png";
+		private static string defaultUserProfileImage = "defaultProfileImage.png";
+		private static string defaultGroupImage = "defaultGroupImage.png";
 
-		[Obsolete]
-		public static byte[] GetImageFromFile(FileInfo info) {
-			long imageFileLength = info.Length;
-			using FileStream fs = System.IO.File.OpenRead(info.FullName);
-			using BinaryReader br = new BinaryReader(fs);
+		public static string FileSavePath {
+			get {
+				return fileSavePath;
+			}
 
-			return br.ReadBytes((int)imageFileLength);
+			private set {
+				fileSavePath = value;
+			}
 		}
 
-		[Obsolete]
-		public static FileInfo GetFileInfoFromFile(string filename, IWebHostEnvironment env) {
-			return new FileInfo(Path.Combine(env.ContentRootPath, filename));
+		public static string DefaultImagePath {
+			get {
+				return defaultImagePath;
+			}
+
+			private set {
+				defaultImagePath = value;
+			}
+		}
+
+		public static string DefaultUserProfileImage {
+			get {
+				return defaultUserProfileImage;
+			}
+
+			private set {
+				defaultUserProfileImage = value;
+			}
+		}
+
+		public static string DefaultGroupImage {
+			get {
+				return defaultGroupImage;
+			}
+
+			private set {
+				defaultGroupImage = value;
+			}
+		}
+
+		internal static void LoadDataFromConfig(WebHostBuilderContext context) {
+			FileSavePath = context.Configuration["FileTools:FileSavePath"];
+			DefaultImagePath = context.Configuration["FileTools:DefaultImagePath"];
+			DefaultUserProfileImage = context.Configuration["FileTools:DefaultUserProfileImage"];
+			DefaultGroupImage = context.Configuration["FileTools:DefaultGroupImage"];
 		}
 
 		public static bool ValidateFileAsImage(this IFormFile formFile) {
 			return formFile.ValidateFile(
 					new string[] {
-						"png",
-						"jpg",
-						"jpeg",
-						"bmp",
-						"gif"
+						"image/png",
+						"image/jpg",
+						"image/jpeg",
+						"image/bmp"
 					}
 				);
 		}
@@ -59,11 +91,11 @@ namespace Chat_V2 {
 		/// <param name="formFile"></param>
 		/// <returns>Returns the saved file name</returns>
 		public static string SaveFile(Image image, string fileName) {
-			fileName = Guid.NewGuid().ToString() + "_" + fileName;
-			var filePath = Path.Combine(FileSavePath, fileName);
+			fileName = Guid.NewGuid().ToString() + "_" + fileName + ".png";
+			string filePath = Path.Combine(FileSavePath, fileName);
 
 			using FileStream stream = File.Create(filePath);
-			image.Save(stream, image.RawFormat);
+			image.Save(stream, ImageFormat.Png);
 
 			return fileName;
 		}

@@ -12,7 +12,7 @@ namespace Chat_V2.Models {
 
 		public static void Initialize(ChatContext context, IWebHostEnvironment env) {
 
-			context.Database.EnsureDeleted();
+			//context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
 
 			if (context.Group.Any()) {

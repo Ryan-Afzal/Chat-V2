@@ -20,11 +20,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
-                    @{
-                        string img64 = Convert.ToBase64String(Model.ChatUser.ProfileImage.Data);
-                        string img64Url = string.Format("data:image/" + Model.ChatUser.ProfileImage.ContentType + ";base64,{0}", img64); //ContentType can be gif, jpeg, png etc.
-                    }
-                    <img src="@img64Url" width="256" height="256" class="img-thumbnail" />
+                    <img src="@(FileTools.FileSavePath + Model.ChatUser.ProfileImage)" width="256" height="256" class="img-thumbnail" />
                     <h3 class="display-3">@Model.ChatUser.UserName</h3>
                 </div>
             </div>
