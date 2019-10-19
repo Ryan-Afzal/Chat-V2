@@ -64,8 +64,8 @@ namespace Chat_V2 {
 			DefaultGroupImage = context.Configuration["FileTools:DefaultGroupImage"];
 		}
 
-		public static bool ValidateFileAsImage(this IFormFile formFile) {
-			return formFile.ValidateFile(
+		public static bool ValidateFileTypeAsImage(this IFormFile formFile) {
+			return formFile.ValidateFileType(
 					new string[] {
 						"image/png",
 						"image/jpg",
@@ -75,7 +75,7 @@ namespace Chat_V2 {
 				);
 		}
 
-		private static bool ValidateFile(this IFormFile formFile, string[] types) {
+		private static bool ValidateFileType(this IFormFile formFile, string[] types) {
 			foreach (var i in types) {
 				if (formFile.ContentType.Equals(i)) {
 					return true;
@@ -85,12 +85,7 @@ namespace Chat_V2 {
 			return false;
 		}
 
-		/// <summary>
-		/// Saves the given file to a random name, and returns the file name
-		/// </summary>
-		/// <param name="formFile"></param>
-		/// <returns>Returns the saved file name</returns>
-		public static string SaveFile(Image image, string fileName) {
+		public static string SaveImageToFile(Image image, string fileName) {
 			fileName = Guid.NewGuid().ToString() + "_" + fileName + ".png";
 			string filePath = Path.Combine(FileSavePath, fileName);
 
@@ -99,6 +94,8 @@ namespace Chat_V2 {
 
 			return fileName;
 		}
+
+		//public static string SaveFile()
 
 		public static string SaveFileFromDefault(string defaultName) {
 			var oldPath = Path.Combine(DefaultImagePath, defaultName);

@@ -139,13 +139,13 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			var chatUser = await _userManager.GetUserAsync(User);
 
 			if (ProfileImage.Length < 10485760L) {//10 MB
-				if (!ProfileImage.ValidateFileAsImage()) {
+				if (!ProfileImage.ValidateFileTypeAsImage()) {
 					ModelState.AddModelError("File", "Invalid file type.");
 				} else {
 					using Stream memoryStream = ProfileImage.OpenReadStream();
 					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
 
-					string output = FileTools.SaveFile(image, ProfileImage.Name);
+					string output = FileTools.SaveImageToFile(image, ProfileImage.Name);
 					FileTools.DeleteFile(chatUser.ProfileImage);
 					chatUser.ProfileImage = output;
 					await _context.SaveChangesAsync();

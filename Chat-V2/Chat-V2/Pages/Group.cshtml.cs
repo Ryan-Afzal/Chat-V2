@@ -388,13 +388,13 @@ namespace Chat_V2.Pages {
 			var group = await _context.Group.FirstOrDefaultAsync(g => g.GroupID == UploadImageInput.GroupID);
 
 			if (UploadImageInput.GroupImage.Length < 10485760L) {//10 MB
-				if (!UploadImageInput.GroupImage.ValidateFileAsImage()) {
+				if (!UploadImageInput.GroupImage.ValidateFileTypeAsImage()) {
 					ModelState.AddModelError("File", "Invalid file type.");
 				} else {
 					using Stream memoryStream = UploadImageInput.GroupImage.OpenReadStream();
 					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
 
-					string output = FileTools.SaveFile(image, UploadImageInput.GroupImage.Name);
+					string output = FileTools.SaveImageToFile(image, UploadImageInput.GroupImage.Name);
 					FileTools.DeleteFile(group.GroupImage);
 					group.GroupImage = output;
 					await _context.SaveChangesAsync();
