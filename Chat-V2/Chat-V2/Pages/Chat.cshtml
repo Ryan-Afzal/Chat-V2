@@ -114,6 +114,8 @@
     /* The output area for the message terminal */
     #messages-list {
         height: 75vh;
+        width: auto;
+        overflow: auto;
     }
 
     /* The input area for the message terminal */
@@ -181,20 +183,22 @@
 
         var header = document.createElement("span");
         header.setAttribute("class", "message-header");
-        header.setAttribute("style", "color: #" + senderRankColor + ";");
+        //header.setAttribute("style", "color: #" + senderRankColor + ";");
+        header.setAttribute("style", "color: #" + "000000" + ";"); // black messages
         header.textContent = head;
         container.appendChild(header);
 
         var content = document.createElement("span");
         content.setAttribute("class", "message-content");
-        content.setAttribute("style", "color: #" + senderRankColor + ";");
+        //content.setAttribute("style", "color: #" + senderRankColor + ";");
+        content.setAttribute("style", "color: #" + "000000" + ";"); // black messages
         content.textContent = msg;
         container.appendChild(content);
 
         var messagesList = document.getElementById("messages-list");
 
         messagesList.appendChild(container);
-        messagesList.scrollTop = messagesList.scrollHeight;
+        messagesList.scrollTop = messagesList.scrollHeight; // this should work, not sure why it isn't
     }
 
     function prependMessage(senderName, senderRankColor, message, timestamp) {
