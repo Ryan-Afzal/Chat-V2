@@ -183,22 +183,20 @@
 
         var header = document.createElement("span");
         header.setAttribute("class", "message-header");
-        //header.setAttribute("style", "color: #" + senderRankColor + ";");
-        header.setAttribute("style", "color: #" + "000000" + ";"); // black messages
+        header.setAttribute("style", "color: #" + senderRankColor + ";");
         header.textContent = head;
         container.appendChild(header);
 
         var content = document.createElement("span");
         content.setAttribute("class", "message-content");
-        //content.setAttribute("style", "color: #" + senderRankColor + ";");
-        content.setAttribute("style", "color: #" + "000000" + ";"); // black messages
+        content.setAttribute("style", "color: #" + senderRankColor + ";");
         content.textContent = msg;
         container.appendChild(content);
 
         var messagesList = document.getElementById("messages-list");
 
         messagesList.appendChild(container);
-        messagesList.scrollTop = messagesList.scrollHeight; // this should work, not sure why it isn't
+        messagesList.scrollTop = messagesList.scrollHeight;
     }
 
     function prependMessage(senderName, senderRankColor, message, timestamp) {
@@ -223,6 +221,7 @@
         var messagesList = document.getElementById("messages-list");
 
         messagesList.prepend(container);
+        messagesList.scrollTop = messagesList.scrollHeight;
     }
 
     function clearMessages() {

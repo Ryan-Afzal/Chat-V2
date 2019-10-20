@@ -13,11 +13,11 @@ namespace Chat_V2.Models {
 		private static readonly List<PermissionRank> ranksByOrdinal = new List<PermissionRank>();
 
 		public static readonly PermissionRank USER = new PermissionRank("user", "000000");//Regular user (default)
-		public static readonly PermissionRank MODERATOR = new PermissionRank("moderator", "FF30A0");//Moderator of a group
-		public static readonly PermissionRank OFFICER = new PermissionRank("officer", "00FFFF");//Officer of a group (Improved Moderator)
+		public static readonly PermissionRank MODERATOR = new PermissionRank("moderator", "CC30A0");//Moderator of a group
+		public static readonly PermissionRank OFFICER = new PermissionRank("officer", "00DDDD");//Officer of a group (Improved Moderator)
 		public static readonly PermissionRank ADMINISTRATOR = new PermissionRank("administrator", "FFAA00");//Administrator of a group.
-		public static readonly PermissionRank OWNER = new PermissionRank("owner", "00FF00");//Owner of a group
-		public static readonly PermissionRank SUPERUSER = new PermissionRank("superuser", "FF0000");//Administrator of Global chat group
+		public static readonly PermissionRank OWNER = new PermissionRank("owner", "00CC00");//Owner of a group
+		public static readonly PermissionRank SUPERUSER = new PermissionRank("superuser", "FF0000");//Superuser
 
 		private PermissionRank(string name, string color) {
 			Ordinal = ranksByOrdinal.Count;
@@ -50,6 +50,10 @@ namespace Chat_V2.Models {
 		}
 
 		public int CompareTo(PermissionRank other) {
+			if (other is null) {
+				throw new ArgumentNullException(nameof(other));
+			}
+
 			return Ordinal - other.Ordinal;
 		}
 
@@ -64,6 +68,34 @@ namespace Chat_V2.Models {
 		private static void AddPermissionRank(PermissionRank rank) {
 			ranksByName.Add(rank.Name, rank);
 			ranksByOrdinal.Add(rank);
+		}
+
+		public static bool operator ==(PermissionRank left, PermissionRank right) {
+			if (left is null) {
+				return right is null;
+			}
+
+			return left.Equals(right);
+		}
+
+		public static bool operator !=(PermissionRank left, PermissionRank right) {
+			return !(left == right);
+		}
+
+		public static bool operator <(PermissionRank left, PermissionRank right) {
+			return left is null ? right is object : left.CompareTo(right) < 0;
+		}
+
+		public static bool operator <=(PermissionRank left, PermissionRank right) {
+			return left is null || left.CompareTo(right) <= 0;
+		}
+
+		public static bool operator >(PermissionRank left, PermissionRank right) {
+			return left is object && left.CompareTo(right) > 0;
+		}
+
+		public static bool operator >=(PermissionRank left, PermissionRank right) {
+			return left is null ? right is null : left.CompareTo(right) >= 0;
 		}
 	}
 
