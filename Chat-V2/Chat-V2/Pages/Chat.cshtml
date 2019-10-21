@@ -66,14 +66,14 @@
     .message-header {
         font-family: Consolas;
         font-size: small;
-        word-wrap: normal;
+        overflow-wrap: break-word;
     }
 
     .message-content {
         font-family: Consolas;
         font-size: medium;
         color: #000000;
-        word-wrap: normal;
+        overflow-wrap: break-word;
     }
 
     .user-data-container {
@@ -487,7 +487,7 @@
             newGroupMessage(args.groupID);
         }
 
-        if (args.UserID != viewmodel.UserID) {
+        if ((args.UserID != viewmodel.UserID) && (play_sound == true)) {
             sound.play();
         }
 
