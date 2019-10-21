@@ -9,6 +9,9 @@
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-6">
+            <div class="text-center">
+                <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
+            </div>
             <div id="messages-list" class="console-output">
 
             </div>
@@ -315,8 +318,11 @@
         newBadge.setAttribute("class", "badge badge-success");
         newBadge.textContent = "NEW";
 
-        document.getElementById("group-data-new-" + groupId)
-            .appendChild(newBadge);
+        var node = document.getElementById("group-data-new-" + groupId);
+
+        if (!node.hasChildNodes()) {
+            node.appendChild(newBadge);
+        }
     }
 
     function removeNewGroupMessage(groupId) {
@@ -405,6 +411,16 @@
         });
     }
 
+    function loadPreviousMessages(startIndex, count) {
+        var args = {
+            MembershipID: membershipID,
+            StartIndex: startIndex,
+            Count: count
+        };
+
+        connection.invoke("GetPreviousMessages", args);
+    }
+
     //Start SignalR connection
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
@@ -467,6 +483,13 @@
 
         play_sound = true;
 
+    });
+
+    //Load Previous Messages
+    document.getElementById("load-previous-messages-button").addEventListener("click", function (event) {
+        if (membershipID != -1) {
+            loadPreviousMessages(numMessages, 50);
+        }
     });
 
     //Receive Previous Messages

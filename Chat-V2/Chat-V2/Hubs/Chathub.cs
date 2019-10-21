@@ -95,7 +95,7 @@ namespace Chat_V2.Hubs {
 			await GetPreviousMessages(new GetPreviousMessagesArgs() {
 				MembershipID = args.MembershipID,
 				StartIndex = 0,
-				EndIndex = 50
+				Count = 50
 			});
 
 			foreach (var _m in membership.Group.Memberships) {
@@ -214,28 +214,26 @@ namespace Chat_V2.Hubs {
 
 			//basic test code that just gets every single previous message regardless of prevStart and prevEnd.
 			LinkedList<ReceiveMessageArgs> list = new LinkedList<ReceiveMessageArgs>();
-			int i = membership.Group.ChatMessages.Count - 1;
-			foreach (var m in membership.Group.ChatMessages) {
+			int i = 0;
+			foreach (var m in membership.Group.ChatMessages.AsQueryable().Reverse().Skip(args.StartIndex)) {
 				var user = await UserManager.FindByIdAsync(m.ChatUserID + "");
 				var rank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
 
 				if (rank.CompareTo(PermissionRank.GetPermissionRankByOrdinal(m.MinRank)) >= 0) {
-					if (i < args.EndIndex) {
-						if (i < args.StartIndex) {
-							break;
-						}
-
-						list.AddFirst(new ReceiveMessageArgs() {
-							SenderID = user.Id,
-							SenderName = user.UserName,
-							SenderRankColor = messageRank.Color,
-							Message = m.Message,
-							Timestamp = m.TimeStamp.ToString()
-						});
+					if (i >= args.Count) {
+						break;
 					}
 
-					i--;
+					list.AddLast(new ReceiveMessageArgs() {
+						SenderID = user.Id,
+						SenderName = user.UserName,
+						SenderRankColor = messageRank.Color,
+						Message = m.Message,
+						Timestamp = m.TimeStamp.ToString()
+					});
+
+					i++;
 				}
 			}
 

@@ -39,8 +39,14 @@ namespace Chat_V2.Models {
 
 	public class GetPreviousMessagesArgs {
 		public int MembershipID { get; set; }
+		/// <summary>
+		/// Index relative to the most recent message
+		/// </summary>
 		public int StartIndex { get; set; }
-		public int EndIndex { get; set; }
+		/// <summary>
+		/// Number of messages to get
+		/// </summary>
+		public int Count { get; set; }
 	}
 
 	public class ProcessCommandArgs {
