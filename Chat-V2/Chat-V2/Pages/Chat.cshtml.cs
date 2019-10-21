@@ -41,6 +41,10 @@ namespace Chat_V2.Pages {
 		public async Task<IActionResult> OnGetAsync() {
 			var chatUser = await _userManager.GetUserAsync(User);
 
+			if (chatUser is null) {
+				return BadRequest();
+			}
+
 			ViewModel = new ChatViewModel() {
 				ChatUser = chatUser
 			};
