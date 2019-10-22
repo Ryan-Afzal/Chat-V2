@@ -13,7 +13,7 @@
                 <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
             </div>
             <div id="messages-list" class="console-output">
-
+                
             </div>
 
             <br />
@@ -75,6 +75,7 @@
         font-family: Consolas;
         font-size: medium;
         color: #000000;
+        word-wrap: normal;
     }
 
     .user-data-container {
@@ -176,54 +177,18 @@
     var currentGroupID = -1;
     var membershipID = -1;
 
-    function appendMessage(senderName, senderRankColor, message, timestamp) {
-        var head = "[" + timestamp + "] " + senderName + ": ";
-        var msg = message;
+    function appendMessage(message) {
+        var messagesList = $("#messages-list");
 
-        var container = document.createElement("div");
-        container.setAttribute("class", "message");
-
-        var header = document.createElement("span");
-        header.setAttribute("class", "message-header text-wrap");
-        header.setAttribute("style", "color: #" + senderRankColor + ";");
-        header.textContent = head;
-        container.appendChild(header);
-
-        var content = document.createElement("span");
-        content.setAttribute("class", "message-content text-wrap");
-        content.setAttribute("style", "color: #" + senderRankColor + ";");
-        content.textContent = msg;
-        container.appendChild(content);
-
-        var messagesList = document.getElementById("messages-list");
-
-        messagesList.appendChild(container);
-        messagesList.scrollTop = messagesList.scrollHeight;
+        messagesList.append(message);
+        messagesList.scrollTop(messagesList[0].scrollHeight);
     }
 
-    function prependMessage(senderName, senderRankColor, message, timestamp) {
-        var head = "[" + timestamp + "] " + senderName + ": ";
-        var msg = message;
+    function prependMessage(message) {
+        var messagesList = $("#messages-list");
 
-        var container = document.createElement("div");
-        container.setAttribute("class", "message");
-
-        var header = document.createElement("span");
-        header.setAttribute("class", "message-header text-wrap");
-        header.setAttribute("style", "color: #" + senderRankColor + ";");
-        header.textContent = head;
-        container.appendChild(header);
-
-        var content = document.createElement("span");
-        content.setAttribute("class", "message-content text-wrap");
-        content.setAttribute("style", "color: #" + senderRankColor + ";");
-        content.textContent = msg;
-        container.appendChild(content);
-
-        var messagesList = document.getElementById("messages-list");
-
-        messagesList.prepend(container);
-        messagesList.scrollTop = messagesList.scrollHeight;
+        messagesList.prepend(message);
+        messagesList.scrollTop(messagesList[0].scrollHeight);
     }
 
     function clearMessages() {
@@ -494,7 +459,7 @@
     connection.on("ReceivePreviousMessages", function (messages) {
         $.each(messages, function () {
             var args = this;
-            prependMessage(args.senderName, args.senderRankColor, args.message, args.timestamp);
+            prependMessage(args.message);
             numMessages++;
         });
     });
@@ -502,7 +467,7 @@
     //Receive Message
     connection.on("ReceiveMessage", function (args) {
         if (args.groupID == currentGroupID) {
-            appendMessage(args.senderName, args.senderRankColor, args.message, args.timestamp);
+            appendMessage(args.message);
             numMessages++;
         } else {
             newGroupMessage(args.groupID);

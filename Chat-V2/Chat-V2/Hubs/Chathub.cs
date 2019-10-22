@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Hubs {
@@ -226,11 +227,9 @@ namespace Chat_V2.Hubs {
 					}
 
 					list.AddLast(new ReceiveMessageArgs() {
-						SenderID = user.Id,
-						SenderName = user.UserName,
-						SenderRankColor = messageRank.Color,
-						Message = m.Message,
-						Timestamp = m.TimeStamp.ToString()
+						SenderID = m.ChatUserID,
+						GroupID = m.GroupID,
+						Message = m.Message
 					});
 
 					i++;
@@ -295,6 +294,44 @@ namespace Chat_V2.Hubs {
 					);
 		}
 
+		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message, int minRank) {
+			ChatMessage output = new ChatMessage() {
+				ChatUserID = membership.ChatUserID,
+				GroupID = membership.GroupID,
+				TimeStamp = DateTime.Now,
+				ChatUserRank = membership.Rank,
+				MinRank = minRank
+			};
+
+			StringBuilder builder = new StringBuilder();
+
+			builder.Append("<div class=\"message\">");
+
+			builder.Append("<span class=\"message-header text-wrap\" style=\"color:#");
+			builder.Append(PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Color);
+			builder.Append(";\">");
+
+			builder.Append("[");
+			builder = builder.Append(output.TimeStamp.ToString());
+			builder.Append("] ");
+
+			builder.Append(membership.ChatUser.UserName);
+			builder.Append(": ");
+
+			builder.Append("</span>");
+			builder.Append("<span class=\"message-content text-wrap\">");
+
+			builder.Append(message);
+
+			builder.Append("</span>");
+
+			builder.Append("</div>");
+
+			output.Message = builder.ToString();
+
+			return output;
+		}
+
 		public async Task SendMessage(SendMessageArgs args) {
 			//Load data from database based on args
 			var membership = await ChatContext.Membership
@@ -310,14 +347,7 @@ namespace Chat_V2.Hubs {
 			Group group = membership.Group;
 
 			//Log the message
-			ChatMessage chatMessage = new ChatMessage() {
-				ChatUserID = sender.Id,
-				GroupID = group.GroupID,
-				TimeStamp = DateTime.Now,
-				Message = args.Message,
-				ChatUserRank = senderRank.Ordinal,
-				MinRank = minRank.Ordinal
-			};
+			ChatMessage chatMessage = await ProcessMessageAsync(membership, args.Message, args.MinRank);
 			group.ChatMessages.Add(chatMessage);
 			await ChatContext.SaveChangesAsync();
 
@@ -326,12 +356,9 @@ namespace Chat_V2.Hubs {
 				.SendAsync(
 					"ReceiveMessage",
 					new ReceiveMessageArgs() {
-						SenderID = sender.Id,
-						GroupID = group.GroupID,
-						SenderName = sender.UserName,
-						SenderRankColor = senderRank.Color,
-						Message = args.Message, 
-						Timestamp = chatMessage.TimeStamp.ToLocalTime().ToString()
+						SenderID = chatMessage.ChatUserID,
+						GroupID = chatMessage.GroupID,
+						Message = chatMessage.Message
 					});
 		}
 

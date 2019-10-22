@@ -91,10 +91,7 @@ namespace Chat_V2.Models {
 	public class ReceiveMessageArgs {
         public int SenderID { get; set; }
         public int GroupID { get; set; }
-        public string SenderName { get; set; }
-        public string SenderRankColor { get; set; }
 		public string Message { get; set; }
-		public string Timestamp { get; set; }
     }
 
     public class ReceiveCommandMessageArgs {
