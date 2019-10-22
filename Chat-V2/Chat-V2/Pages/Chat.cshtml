@@ -178,7 +178,7 @@
 
     function appendMessage(senderName, senderRankColor, message, timestamp) {
         var head = "[" + timestamp + "] " + senderName + ": ";
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var msg = message;
 
         var container = document.createElement("div");
         container.setAttribute("class", "message");
@@ -203,7 +203,7 @@
 
     function prependMessage(senderName, senderRankColor, message, timestamp) {
         var head = "[" + timestamp + "] " + senderName + ": ";
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var msg = message;
 
         var container = document.createElement("div");
         container.setAttribute("class", "message");
