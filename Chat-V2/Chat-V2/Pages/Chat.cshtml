@@ -69,14 +69,12 @@
     .message-header {
         font-family: Consolas;
         font-size: small;
-        overflow-wrap: break-word;
     }
 
     .message-content {
         font-family: Consolas;
         font-size: medium;
         color: #000000;
-        overflow-wrap: break-word;
     }
 
     .user-data-container {
@@ -180,19 +178,19 @@
 
     function appendMessage(senderName, senderRankColor, message, timestamp) {
         var head = "[" + timestamp + "] " + senderName + ": ";
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var msg = message;
 
         var container = document.createElement("div");
         container.setAttribute("class", "message");
 
         var header = document.createElement("span");
-        header.setAttribute("class", "message-header");
+        header.setAttribute("class", "message-header text-wrap");
         header.setAttribute("style", "color: #" + senderRankColor + ";");
         header.textContent = head;
         container.appendChild(header);
 
         var content = document.createElement("span");
-        content.setAttribute("class", "message-content");
+        content.setAttribute("class", "message-content text-wrap");
         content.setAttribute("style", "color: #" + senderRankColor + ";");
         content.textContent = msg;
         container.appendChild(content);
@@ -205,19 +203,19 @@
 
     function prependMessage(senderName, senderRankColor, message, timestamp) {
         var head = "[" + timestamp + "] " + senderName + ": ";
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var msg = message;
 
         var container = document.createElement("div");
         container.setAttribute("class", "message");
 
         var header = document.createElement("span");
-        header.setAttribute("class", "message-header");
+        header.setAttribute("class", "message-header text-wrap");
         header.setAttribute("style", "color: #" + senderRankColor + ";");
         header.textContent = head;
         container.appendChild(header);
 
         var content = document.createElement("span");
-        content.setAttribute("class", "message-content");
+        content.setAttribute("class", "message-content text-wrap");
         content.setAttribute("style", "color: #" + senderRankColor + ";");
         content.textContent = msg;
         container.appendChild(content);
