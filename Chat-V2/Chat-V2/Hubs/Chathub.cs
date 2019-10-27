@@ -365,7 +365,7 @@ namespace Chat_V2.Hubs {
 			}
 
 			builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
-			builder.Append("\" width=\"32\" height=\"32\" class=\"img-thumbnail\" />");
+			builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
 
 			builder.Append("[");
 			builder.Append(message.TimeStamp.ToString());
