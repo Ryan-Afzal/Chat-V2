@@ -206,6 +206,38 @@ namespace Chat_V2.Hubs {
 				});
 		}
 
+		public async Task UserTyping(UserTypingArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(g => g.Group)
+					.ThenInclude(g => g.Memberships)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			await GetClientsInGroup(membership.Group, PermissionRank.USER)
+				.SendAsync(
+					"OtherUserTyping", 
+					new OtherUserTypingArgs() { 
+						UserID = membership.ChatUserID,
+						GroupID = membership.GroupID,
+						UserProfileImage = membership.ChatUser.ProfileImage
+					});
+		}
+
+		public async Task UserNotTyping(UserNotTypingArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(g => g.Group)
+					.ThenInclude(g => g.Memberships)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			await GetClientsInGroup(membership.Group, PermissionRank.USER)
+				.SendAsync(
+					"OtherUserNotTyping",
+					new OtherUserNotTypingArgs() {
+						UserID = membership.ChatUserID,
+						GroupID = membership.GroupID
+					});
+		}
+
 		public async Task GetPreviousMessages(GetPreviousMessagesArgs args) {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
@@ -226,11 +258,7 @@ namespace Chat_V2.Hubs {
 						break;
 					}
 
-					list.AddLast(new ReceiveMessageArgs() {
-						SenderID = m.ChatUserID,
-						GroupID = m.GroupID,
-						Message = m.Message
-					});
+					list.AddLast(await GetArgsFromChatMessageAsync(m, user, membership));
 
 					i++;
 				}
@@ -305,23 +333,51 @@ namespace Chat_V2.Hubs {
 
 			StringBuilder builder = new StringBuilder();
 
+			builder.Append(message);
+
+			output.Message = builder.ToString();
+
+			return output;
+		}
+
+		private async Task<ReceiveMessageArgs> GetArgsFromChatMessageAsync(ChatMessage message, ChatUser chatUser, Membership membership) {
+			ReceiveMessageArgs output = new ReceiveMessageArgs {
+				SenderID = message.ChatUserID,
+				GroupID = message.GroupID
+			};
+
+			bool userDeleted = chatUser is null;
+
+			StringBuilder builder = new StringBuilder();
+
 			builder.Append("<div class=\"message\">");
 
 			builder.Append("<span class=\"message-header text-wrap\" style=\"color:#");
-			builder.Append(PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Color);
+			builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
 			builder.Append(";\">");
 
+			builder.Append("<img src=\"");
+			
+			if (userDeleted) {
+				builder.Append(FileTools.DefaultImagePath + " / ");
+			} else {
+				builder.Append(FileTools.FileSavePath + "/");
+			}
+
+			builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
+			builder.Append("\" width=\"32\" height=\"32\" class=\"img-thumbnail\" />");
+
 			builder.Append("[");
-			builder = builder.Append(output.TimeStamp.ToString());
+			builder.Append(message.TimeStamp.ToString());
 			builder.Append("] ");
 
-			builder.Append(membership.ChatUser.UserName);
+			builder.Append(chatUser?.UserName ?? message.ChatUserName);
 			builder.Append(": ");
 
 			builder.Append("</span>");
 			builder.Append("<span class=\"message-content text-wrap\">");
 
-			builder.Append(message);
+			builder.Append(message.Message);
 
 			builder.Append("</span>");
 
@@ -355,11 +411,7 @@ namespace Chat_V2.Hubs {
 			await GetClientsInGroup(group, minRank)
 				.SendAsync(
 					"ReceiveMessage",
-					new ReceiveMessageArgs() {
-						SenderID = chatMessage.ChatUserID,
-						GroupID = chatMessage.GroupID,
-						Message = chatMessage.Message
-					});
+					await GetArgsFromChatMessageAsync(chatMessage, sender, membership));
 		}
 
 		private async Task<Group> GetGroupById(int groupId, bool loadMembers, bool loadMessages, bool tracking) {

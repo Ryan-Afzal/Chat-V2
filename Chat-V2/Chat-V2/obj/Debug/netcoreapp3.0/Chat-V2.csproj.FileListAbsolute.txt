@@ -633,3 +633,4 @@ C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.dll
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.pdb
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache
