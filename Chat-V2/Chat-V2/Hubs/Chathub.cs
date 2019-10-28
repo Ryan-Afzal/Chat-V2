@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Hubs {
@@ -205,6 +206,38 @@ namespace Chat_V2.Hubs {
 				});
 		}
 
+		public async Task UserTyping(UserTypingArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(m => m.ChatUser)
+				.Include(g => g.Group)
+					.ThenInclude(g => g.Memberships)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			await GetClientsInGroup(membership.Group, PermissionRank.USER)
+				.SendAsync(
+					"OtherUserTyping", 
+					new OtherUserTypingArgs() { 
+						UserID = membership.ChatUserID,
+						GroupID = membership.GroupID,
+						UserProfileImage = membership.ChatUser.ProfileImage
+					});
+		}
+
+		public async Task UserNotTyping(UserNotTypingArgs args) {
+			var membership = await ChatContext.Membership
+				.Include(g => g.Group)
+					.ThenInclude(g => g.Memberships)
+				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+
+			await GetClientsInGroup(membership.Group, PermissionRank.USER)
+				.SendAsync(
+					"OtherUserNotTyping",
+					new OtherUserNotTypingArgs() {
+						UserID = membership.ChatUserID,
+						GroupID = membership.GroupID
+					});
+		}
+
 		public async Task GetPreviousMessages(GetPreviousMessagesArgs args) {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
@@ -225,13 +258,7 @@ namespace Chat_V2.Hubs {
 						break;
 					}
 
-					list.AddLast(new ReceiveMessageArgs() {
-						SenderID = user.Id,
-						SenderName = user.UserName,
-						SenderRankColor = messageRank.Color,
-						Message = m.Message,
-						Timestamp = m.TimeStamp.ToString()
-					});
+					list.AddLast(await GetArgsFromChatMessageAsync(m, user, membership));
 
 					i++;
 				}
@@ -295,6 +322,72 @@ namespace Chat_V2.Hubs {
 					);
 		}
 
+		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message, int minRank) {
+			ChatMessage output = new ChatMessage() {
+				ChatUserID = membership.ChatUserID,
+				GroupID = membership.GroupID,
+				TimeStamp = DateTime.Now,
+				ChatUserRank = membership.Rank,
+				MinRank = minRank
+			};
+
+			StringBuilder builder = new StringBuilder();
+
+			builder.Append(message);
+
+			output.Message = builder.ToString();
+
+			return output;
+		}
+
+		private async Task<ReceiveMessageArgs> GetArgsFromChatMessageAsync(ChatMessage message, ChatUser chatUser, Membership membership) {
+			ReceiveMessageArgs output = new ReceiveMessageArgs {
+				SenderID = message.ChatUserID,
+				GroupID = message.GroupID
+			};
+
+			bool userDeleted = chatUser is null;
+
+			StringBuilder builder = new StringBuilder();
+
+			builder.Append("<div class=\"message\">");
+
+			builder.Append("<span class=\"message-header text-wrap\" style=\"color:#");
+			builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
+			builder.Append(";\">");
+
+			builder.Append("<img src=\"");
+			
+			if (userDeleted) {
+				builder.Append(FileTools.DefaultImagePath + " / ");
+			} else {
+				builder.Append(FileTools.FileSavePath + "/");
+			}
+
+			builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
+			builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
+
+			builder.Append("[");
+			builder.Append(message.TimeStamp.ToString());
+			builder.Append("] ");
+
+			builder.Append(chatUser?.UserName ?? message.ChatUserName);
+			builder.Append(": ");
+
+			builder.Append("</span>");
+			builder.Append("<span class=\"message-content text-wrap\">");
+
+			builder.Append(message.Message);
+
+			builder.Append("</span>");
+
+			builder.Append("</div>");
+
+			output.Message = builder.ToString();
+
+			return output;
+		}
+
 		public async Task SendMessage(SendMessageArgs args) {
 			//Load data from database based on args
 			var membership = await ChatContext.Membership
@@ -310,14 +403,7 @@ namespace Chat_V2.Hubs {
 			Group group = membership.Group;
 
 			//Log the message
-			ChatMessage chatMessage = new ChatMessage() {
-				ChatUserID = sender.Id,
-				GroupID = group.GroupID,
-				TimeStamp = DateTime.Now,
-				Message = args.Message,
-				ChatUserRank = senderRank.Ordinal,
-				MinRank = minRank.Ordinal
-			};
+			ChatMessage chatMessage = await ProcessMessageAsync(membership, args.Message, args.MinRank);
 			group.ChatMessages.Add(chatMessage);
 			await ChatContext.SaveChangesAsync();
 
@@ -325,14 +411,7 @@ namespace Chat_V2.Hubs {
 			await GetClientsInGroup(group, minRank)
 				.SendAsync(
 					"ReceiveMessage",
-					new ReceiveMessageArgs() {
-						SenderID = sender.Id,
-						GroupID = group.GroupID,
-						SenderName = sender.UserName,
-						SenderRankColor = senderRank.Color,
-						Message = args.Message, 
-						Timestamp = chatMessage.TimeStamp.ToLocalTime().ToString()
-					});
+					await GetArgsFromChatMessageAsync(chatMessage, sender, membership));
 		}
 
 		private async Task<Group> GetGroupById(int groupId, bool loadMembers, bool loadMessages, bool tracking) {

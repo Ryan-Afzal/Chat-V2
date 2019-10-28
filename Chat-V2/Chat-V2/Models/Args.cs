@@ -31,6 +31,14 @@ namespace Chat_V2.Models {
 		public int MembershipID { get; set; }
 	}
 
+	public class UserTypingArgs {
+		public int MembershipID { get; set; }
+	}
+
+	public class UserNotTypingArgs {
+		public int MembershipID { get; set; }
+	}
+
 	public class SendMessageArgs {
 		public int MembershipID { get; set; }
 		public int MinRank { get; set; }
@@ -88,13 +96,21 @@ namespace Chat_V2.Models {
 		public int UserID { get; set; }
 	}
 
+	public class OtherUserTypingArgs {
+		public int UserID { get; set; }
+		public int GroupID { get; set; }
+		public string UserProfileImage { get; set; }
+	}
+
+	public class OtherUserNotTypingArgs {
+		public int UserID { get; set; }
+		public int GroupID { get; set; }
+	}
+
 	public class ReceiveMessageArgs {
         public int SenderID { get; set; }
         public int GroupID { get; set; }
-        public string SenderName { get; set; }
-        public string SenderRankColor { get; set; }
 		public string Message { get; set; }
-		public string Timestamp { get; set; }
     }
 
     public class ReceiveCommandMessageArgs {

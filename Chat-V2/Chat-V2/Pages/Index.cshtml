@@ -13,6 +13,8 @@
     @if (SignInManager.IsSignedIn(User)) {
         <p>Welcome @UserManager.GetUserName(User)!</p>
 
+        <h2 class="text-danger">If you are not authorized by RooLLC, terminate your account and leave the site immediately.</h2>
+
         <a href="~/chat">Go to Chat</a>
     } else {
         <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use RooChat.</p>
