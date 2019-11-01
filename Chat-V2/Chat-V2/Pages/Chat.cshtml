@@ -23,35 +23,31 @@
 
         <div class="col-1"></div>
 
-        <div id="data-pane" class="col-5">
-            <div id="command-output-list" class="console-output h-25">
+        <div id="data-pane" class="col-5 card">
+            <div class="card-body">
+                <div id="command-output-list" class="console-output h-25">
 
-            </div>
+                </div>
 
-            <br />
+                <br />
 
-            <input type="text" id="command-input" class="console-input form-control" placeholder="Enter commands here. Type 'help' for a list of commands." />
+                <input type="text" id="command-input" class="console-input form-control" placeholder="Enter commands here. Type 'help' for a list of commands." />
 
-            <hr />
+                <hr />
 
-            <div id="info-pane" class="container-fluid">
-                <div class="row">
-                    <div class="col-6">
-                        <table class="table h-100">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">NAME</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="groups-list">
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-6">
-                        <ul id="online-members-list" class="list-group h-100">
-                        </ul>
+                <div id="info-pane" class="container-fluid">
+                    <div class="row">
+                        <div class="col-6">
+                            <ul id="groups-list" class="list-group">
+                                <li class="list-group-item">
+
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul id="online-members-list" class="list-group h-100">
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,8 +130,6 @@
 
     /* The panel containing the command terminal and info pane */
     #data-pane {
-        border: solid 5px #00FFBB;
-        border-radius: 10px 50px;
         height: 75vh;
     }
 
@@ -315,8 +309,8 @@
     }
 
     function addGroup(groupId, groupName, membershipId) {
-        var container = document.createElement("tr");
-        container.setAttribute("class", "group-data-container");
+        var container = document.createElement("li");
+        container.setAttribute("class", "group-data-container list-group-item");
         container.setAttribute("id", "group-" + groupId);
         container.setAttribute("groupId", groupId);
         container.setAttribute("membershipId", membershipId);
@@ -327,17 +321,16 @@
             );
         });
 
-        var id = document.createElement("th");
-        id.setAttribute("scope", "row");
-        id.textContent = groupId;
+        var id = document.createElement("span");
+        id.textContent = "#" + groupId;
         container.appendChild(id);
 
-        var name = document.createElement("td");
+        var name = document.createElement("span");
         name.setAttribute("class", "group-data-name");
         name.textContent = groupName;
         container.appendChild(name);
 
-        var n = document.createElement("td");
+        var n = document.createElement("span");
         n.setAttribute("id", "group-data-new-" + groupId);
         container.appendChild(n);
 
@@ -347,8 +340,7 @@
         //container.appendChild(numOnline);
 
         var groupsList = document.getElementById("groups-list");
-
-        groupsList.prepend(container);
+        groupsList.append(container);
     }
 
     function removeGroup(groupId) {
