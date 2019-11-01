@@ -32,21 +32,26 @@
                 <br />
 
                 <input type="text" id="command-input" class="console-input form-control" placeholder="Enter commands here. Type 'help' for a list of commands." />
-
-                <hr />
-
-                <div id="info-pane" class="container-fluid">
+                <div class=" container">
                     <div class="row">
-                        <div class="col-6">
-                            <ul id="groups-list" class="list-group">
-                                <li class="list-group-item">
-
-                                </li>
-                            </ul>
+                        <div class="col-12">
+                            <hr />
                         </div>
-                        <div class="col-6">
-                            <ul id="online-members-list" class="list-group h-100">
-                            </ul>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="info-pane" class="container">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <ul id="groups-list" class="list-group">
+                                        </ul>
+                                    </div>
+                                    <div class="col-6">
+                                        <ul id="online-members-list" class="list-group h-100">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -308,7 +313,7 @@
         removeNewGroupMessage(groupId);
     }
 
-    function addGroup(groupId, groupName, membershipId) {
+    function addGroup(groupId, groupImage, groupName, membershipId) {
         var container = document.createElement("li");
         container.setAttribute("class", "group-data-container list-group-item");
         container.setAttribute("id", "group-" + groupId);
@@ -321,23 +326,21 @@
             );
         });
 
-        var id = document.createElement("span");
-        id.textContent = "#" + groupId;
-        container.appendChild(id);
+        var img = document.createElement("img");
+        img.setAttribute("src", groupImage);
+        img.setAttribute("width", "32");
+        img.setAttribute("height", "32");
+        img.setAttribute("class", "rounded-circle img");
+        container.appendChild(img);
 
         var name = document.createElement("span");
         name.setAttribute("class", "group-data-name");
-        name.textContent = groupName;
+        name.textContent = groupName + " ";
         container.appendChild(name);
 
         var n = document.createElement("span");
         n.setAttribute("id", "group-data-new-" + groupId);
         container.appendChild(n);
-
-        //var numOnline = document.createElement("td");
-        //numOnline.setAttribute("class", "group-data-online");
-        //numOnline.textContent = 1;
-        //container.appendChild(numOnline);
 
         var groupsList = document.getElementById("groups-list");
         groupsList.append(container);
@@ -602,7 +605,7 @@
     });
 
     connection.on("AddGroup", function (args) {
-        addGroup(args.groupID, args.groupName, args.membershipID);
+        addGroup(args.groupID, args.groupImage, args.groupName, args.membershipID);
     });
 
     connection.on("RemoveGroup", function (args) {

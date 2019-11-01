@@ -72,7 +72,8 @@ namespace Chat_V2.Hubs {
 					new AddGroupArgs() {
 						GroupID = m.GroupID,
 						MembershipID = m.MembershipID,
-						GroupName = m.Group.Name
+						GroupName = m.Group.Name,
+						GroupImage = FileTools.FileSavePath + "/" + m.Group.GroupImage
 					});
 			}
 		}

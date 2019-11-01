@@ -68,6 +68,7 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 		public int MembershipID { get; set; }
 		public string GroupName { get; set; }
+		public string GroupImage { get; set; }
 	}
 
 	public class RemoveGroupArgs {
