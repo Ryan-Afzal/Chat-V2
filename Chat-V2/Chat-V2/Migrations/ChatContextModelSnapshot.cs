@@ -143,6 +143,9 @@ namespace Chat_V2.Migrations
                     b.Property<int>("ChatUserID")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ChatUserName")
+                        .HasColumnType("text");
+
                     b.Property<int>("ChatUserRank")
                         .HasColumnType("integer");
 

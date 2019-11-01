@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chat_V2.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    [Migration("20191019215812_InitialCreate")]
+    [Migration("20191028024412_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,6 +144,9 @@ namespace Chat_V2.Migrations
 
                     b.Property<int>("ChatUserID")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ChatUserName")
+                        .HasColumnType("text");
 
                     b.Property<int>("ChatUserRank")
                         .HasColumnType("integer");

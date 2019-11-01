@@ -44,6 +44,11 @@ namespace Chat_V2.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
+                name: "ChatUserName",
+                table: "ChatMessage",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
                 name: "ProfileImage",
                 table: "AspNetUsers",
                 nullable: true);
@@ -54,6 +59,10 @@ namespace Chat_V2.Migrations
             migrationBuilder.DropColumn(
                 name: "GroupImage",
                 table: "Group");
+
+            migrationBuilder.DropColumn(
+                name: "ChatUserName",
+                table: "ChatMessage");
 
             migrationBuilder.DropColumn(
                 name: "ProfileImage",
