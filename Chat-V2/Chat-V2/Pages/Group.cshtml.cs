@@ -84,6 +84,10 @@ namespace Chat_V2.Pages {
 			public int GroupID { get; set; }
 		}
 
+		public class DangerZoneInputModel {
+			public int GroupID { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -128,6 +132,9 @@ namespace Chat_V2.Pages {
 
 		[BindProperty]
 		public PublicPrivateInputModel PublicPrivateInput { get; set; }
+
+		[BindProperty]
+		public DangerZoneInputModel DangerZoneInput { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? groupId) {
 			if (groupId == null) {
@@ -187,6 +194,7 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostSendJoinRequestAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
+
 			var group = await _context.Group
 				.Include(g => g.GroupJoinRequests)
 				.Include(g => g.BannedUsers)
@@ -460,7 +468,8 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostDeleteGroupAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
-			throw new NotImplementedException();
+
+			return LocalRedirect("/ConfirmDeleteGroup?groupId=" + DangerZoneInput.GroupID + "&returnUrl=" + returnUrl);
 		}
 
 		private bool JoinRequestSent(Group group, int userId) {

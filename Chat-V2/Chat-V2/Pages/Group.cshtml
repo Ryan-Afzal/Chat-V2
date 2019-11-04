@@ -381,9 +381,14 @@
                                     Danger Zone
                                 </div>
                                 <div class="card-body">
-                                    <form method="post" class="form-group">
-                                        <button type="submit" asp-page-handler="ArchiveGroup" class="btn btn-warning disabled">Archive</button>
-                                        <button type="submit" asp-page-handler="DeleteGroup" class="btn btn-danger disabled">Delete</button>
+                                    <form method="post">
+                                        <div class="form-group">
+                                            <button type="submit" asp-page-handler="ArchiveGroup" class="btn btn-warning disabled">Archive</button>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" asp-page-handler="DeleteGroup" class="btn btn-danger">Delete</button>
+                                        </div>
+                                        <input type="hidden" asp-for="DangerZoneInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                         <input type="hidden" name="returnUrl" value="@returnUrl" />
                                     </form>
                                 </div>

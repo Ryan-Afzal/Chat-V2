@@ -1,0 +1,41 @@
+﻿@page
+@model Chat_V2.Pages.ConfirmDeleteGroupModel
+@{
+    ViewData["Title"] = "Confirm Ban User";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var returnUrl = (HttpContext.Request.Path.Value + HttpContext.Request.QueryString.Value);
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h3>Are you sure you want to delete this group?</h3>
+
+            <div id="group-data" class="container-fluid">
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Group.GroupID)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Group.GroupID)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Group.Name)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Group.Name)
+                    </dd>
+                </dl>
+            </div>
+
+            <h1 class="text-danger display-1">This cannot be undone!</h1>
+
+            <form method="post" class="form-group">
+                <button type="submit" asp-page-handler="Cancel" class="btn btn-dark">Cancel</button>
+                <button type="submit" asp-page-handler="Confirm" class="btn btn-danger">Confirm</button>
+                <input type="hidden" asp-for="@Model.MembershipIDInput" value="@Model.MembershipID" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+            </form>
+        </div>
+    </div>
+</div>
