@@ -352,36 +352,35 @@ namespace Chat_V2.Hubs {
 			StringBuilder builder = new StringBuilder();
 
 			builder.Append("<div class=\"message\">");
+				builder.Append("<div class=\"message-image\">");
+					builder.Append("<img src=\"");
 
-			builder.Append("<span class=\"message-header text-wrap\" style=\"color:#");
-			builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
-			builder.Append(";\">");
+					if (userDeleted) {
+						builder.Append(FileTools.DefaultImagePath + " / ");
+					} else {
+						builder.Append(FileTools.FileSavePath + "/");
+					}
 
-			builder.Append("<img src=\"");
-			
-			if (userDeleted) {
-				builder.Append(FileTools.DefaultImagePath + " / ");
-			} else {
-				builder.Append(FileTools.FileSavePath + "/");
-			}
+					builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
+					builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
+				builder.Append("</div>");
 
-			builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
-			builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
-
-			builder.Append("[");
-			builder.Append(message.TimeStamp.ToString());
-			builder.Append("] ");
-
-			builder.Append(chatUser?.UserName ?? message.ChatUserName);
-			builder.Append(": ");
-
-			builder.Append("</span>");
-			builder.Append("<span class=\"message-content text-wrap\">");
-
-			builder.Append(message.Message);
-
-			builder.Append("</span>");
-
+				builder.Append("<div class=\"message-container\">");
+					builder.Append("<span class=\"message-header text-wrap\">");
+					builder.Append("<span class=\"message-username\" style=\"color:#");
+					builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
+					builder.Append(";\">");
+					builder.Append(chatUser?.UserName ?? message.ChatUserName);
+					builder.Append("</span>");
+					builder.Append("<span class=\"message-timestamp\">");
+					builder.Append(message.TimeStamp.ToString());
+					builder.Append("</span>");
+					builder.Append("</span>");
+					
+					builder.Append("<span class=\"message-content text-wrap\">");
+					builder.Append(message.Message);
+					builder.Append("</span>");
+				builder.Append("</div>");
 			builder.Append("</div>");
 
 			output.Message = builder.ToString();
