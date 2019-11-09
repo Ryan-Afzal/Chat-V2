@@ -351,35 +351,40 @@ namespace Chat_V2.Hubs {
 
 			StringBuilder builder = new StringBuilder();
 
-			builder.Append("<div class=\"message\">");
-				builder.Append("<div class=\"message-image\">");
-					builder.Append("<img src=\"");
+			builder.Append("<div class=\"message container\">");
+				builder.Append("<div class=\"row\">");
+					builder.Append("<div class=\"message-image col-auto\">");
+						builder.Append("<img src=\"");
 
-					if (userDeleted) {
-						builder.Append(FileTools.DefaultImagePath + " / ");
-					} else {
-						builder.Append(FileTools.FileSavePath + "/");
-					}
+						if (userDeleted) {
+							builder.Append(FileTools.DefaultImagePath + " / ");
+						} else {
+							builder.Append(FileTools.FileSavePath + "/");
+						}
 
-					builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
-					builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
-				builder.Append("</div>");
+						builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
+						builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
+					builder.Append("</div>");
 
-				builder.Append("<div class=\"message-container\">");
-					builder.Append("<span class=\"message-header text-wrap\">");
-					builder.Append("<span class=\"message-username\" style=\"color:#");
-					builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
-					builder.Append(";\">");
-					builder.Append(chatUser?.UserName ?? message.ChatUserName);
-					builder.Append("</span>");
-					builder.Append("<span class=\"message-timestamp\">");
-					builder.Append(message.TimeStamp.ToString());
-					builder.Append("</span>");
-					builder.Append("</span>");
-					
-					builder.Append("<span class=\"message-content text-wrap\">");
-					builder.Append(message.Message);
-					builder.Append("</span>");
+					builder.Append("<div class=\"message-container col\">");
+						builder.Append("<div class=\"message-header text-wrap row\">");
+							builder.Append("<span class=\"message-username\" style=\"color:#");
+							builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
+							builder.Append(";\">");
+									builder.Append(chatUser?.UserName ?? message.ChatUserName);
+							builder.Append("</span>");
+							builder.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+							builder.Append("<span class=\"message-timestamp text-muted\">");
+								builder.Append(message.TimeStamp.ToString());
+							builder.Append("</span>");
+						builder.Append("</div>");
+
+						builder.Append("<div class=\"row\">");
+							builder.Append("<span class=\"message-content\">");
+								builder.Append(message.Message);
+							builder.Append("</span>");
+						builder.Append("</div>");
+					builder.Append("</div>");
 				builder.Append("</div>");
 			builder.Append("</div>");
 

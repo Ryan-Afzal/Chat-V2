@@ -62,11 +62,12 @@
 <style>
 
     .message {
-        display: inline;
+        padding: 4px 4px 4px 4px;
+        word-break: break-word;
     }
 
     .message-image {
-        margin: 4px 8px 4px 4px;
+        
     }
 
     .message-container {
@@ -74,8 +75,6 @@
     }
 
     .message-header {
-        font-family: Consolas;
-        font-size: 11px;
         display: inline;
     }
 
@@ -84,14 +83,11 @@
     }
 
     .message-timestamp {
-
+        font-size: 11px;
     }
 
     .message-content {
-        font-family: Consolas;
         font-size: 13px;
-        color: #000000;
-        word-wrap: normal;
     }
 
     .user-data-container {
@@ -127,12 +123,14 @@
     }
 
     .group-data-name {
+
     }
 
     /* The output area for the message terminal */
     #messages-list {
         height: 75vh;
-        width: auto;
+        width: 100%;
+        overflow-x: hidden;
     }
 
     /* The input area for the message terminal */
