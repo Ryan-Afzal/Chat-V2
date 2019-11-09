@@ -5,9 +5,26 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid" style="overflow: auto;">
+<div class="container">
     <div class="row">&nbsp;</div>
     <div class="row">
+        <div id="left-pane" class="col-3 card">
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <ul id="groups-list" class="list-group">
+                                <li class="group-data-container list-group-item">
+                                    <img src="/defaultFiles/defaultGroupImage.png" width="32" height="32" class="rounded-circle img" />
+                                    <span class="group-data-name">Sample Group Name </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-6">
             <div class="text-center">
                 <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
@@ -21,37 +38,21 @@
             <input type="text" id="message-input" class="console-input form-control" placeholder="Enter message here" />
         </div>
 
-        <div class="col-1"></div>
-
-        <div id="data-pane" class="col-5 card">
+        <div id="right-pane" class="col-3 card">
             <div class="card-body">
-                <div id="command-output-list" class="console-output h-25">
-
-                </div>
-
-                <br />
-
-                <input type="text" id="command-input" class="console-input form-control" placeholder="Enter commands here. Type 'help' for a list of commands." />
-                <div class=" container">
+                <div class="container">
                     <div class="row">
                         <div class="col-12">
-                            <hr />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div id="info-pane" class="container">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <ul id="groups-list" class="list-group">
-                                        </ul>
+                            <ul id="online-members-list" class="list-group">
+                                <li class="list-group-item list-group-item-primary user-data-container">
+                                    <div class="user-data-name">
+                                        Sample User Name
                                     </div>
-                                    <div class="col-6">
-                                        <ul id="online-members-list" class="list-group h-100">
-                                        </ul>
+                                    <div class="user-data-rank">
+                                        Sample User Rank
                                     </div>
-                                </div>
-                            </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -67,7 +68,6 @@
     }
 
     .message-image {
-        
     }
 
     .message-container {
@@ -123,37 +123,24 @@
     }
 
     .group-data-name {
-
     }
 
     /* The output area for the message terminal */
     #messages-list {
-        height: 75vh;
         width: 100%;
         overflow-x: hidden;
     }
 
     /* The input area for the message terminal */
     #message-input {
-
     }
 
-    /* The output area for the command terminal */
-    #command-output-list {
-        margin-top: 15px;
+    #left-pane {
+        height: 100%;
     }
 
-    /* The input area for the command terminal */
-    #command-input {
-    }
-
-    /* The panel containing the command terminal and info pane */
-    #data-pane {
-        height: 75vh;
-    }
-
-    /* The panel containing group data */
-    #info-pane {
+    #right-pane {
+        height: 100%;
     }
 
     /* The list of online group members */
@@ -165,7 +152,7 @@
         overflow: auto;
     }
 </style>
-<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="lib/signalr/dist/browser/signalr.js"></script>
 <script type="text/javascript">
     "use strict";
 
@@ -200,31 +187,6 @@
 
     function clearMessages() {
         $("#messages-list").empty();
-    }
-
-    function appendCommandMessage(color, message) {
-        var head = "$ ";
-        var msg = message;
-
-        var container = document.createElement("div");
-        container.setAttribute("class", "message");
-
-        var header = document.createElement("span");
-        header.setAttribute("class", "message-header");
-        header.setAttribute("style", "color: #" + color + ";");
-        header.textContent = head;
-        container.appendChild(header);
-
-        var content = document.createElement("span");
-        content.setAttribute("class", "message-content");
-        content.setAttribute("style", "color: #" + color + ";");
-        content.textContent = msg;
-        container.appendChild(content);
-
-        var messagesList = document.getElementById("command-output-list");
-
-        messagesList.appendChild(container);
-        messagesList.scrollTop = messagesList.scrollHeight;
     }
 
     function userConnected(userId, userName, userRankName) {
@@ -546,31 +508,6 @@
 
     //Typing Indicator
     document.getElementById("message-input").addEventListener("keydown", isTypingCallback);
-
-    //Receive Command-Related Message
-    connection.on("ReceiveCommandMessage", function (args) {
-        appendCommandMessage(args.color, args.message);
-    });
-
-    //Send Command
-    document.getElementById("command-input").addEventListener("keyup", function (event) {
-        if (event.keyCode == 13) {
-            var element = document.getElementById("command-input");
-            var text = element.value;
-
-            var args = {
-                MembershipID: membershipID,
-                Message: text
-            };
-            connection.invoke("ProcessCommand", args).catch(function (err) {
-                return console.error(err.toString());
-            });
-
-            element.value = "";
-
-            event.preventDefault();
-        }
-    });
 
     //On User Connected to system. May not be for the active group!
     connection.on("OtherUserConnectedToGroup", function (args) {
