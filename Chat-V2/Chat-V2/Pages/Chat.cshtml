@@ -5,10 +5,13 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">&nbsp;</div>
     <div class="row">
         <div id="left-pane" class="col-3 card">
+            <div class="card-header">
+
+            </div>
             <div class="card-body">
                 <div class="container">
                     <div class="row">
@@ -39,18 +42,19 @@
         </div>
 
         <div id="right-pane" class="col-3 card">
+            <div class="card-header">
+
+            </div>
             <div class="card-body">
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
                             <ul id="online-members-list" class="list-group">
-                                <li class="list-group-item list-group-item-primary user-data-container">
-                                    <div class="user-data-name">
-                                        Sample User Name
-                                    </div>
-                                    <div class="user-data-rank">
-                                        Sample User Rank
-                                    </div>
+                                <li class="user-data-container list-group-item">
+                                    <img src="/defaultFiles/defaultGroupImage.png" width="32" height="32" class="rounded-circle img" />
+                                    <span class="user-data-name">Sample User Name </span>
+                                    <span class="badge badge-dark text-wrap">Sample User Rank</span>
+                                    <span class="badge badge-success">Online</span>
                                 </li>
                             </ul>
                         </div>
