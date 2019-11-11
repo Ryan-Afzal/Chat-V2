@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="col-6">
+        <div id="center-pane" class="col-6">
             <div class="text-center">
                 <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
             </div>
@@ -132,19 +132,25 @@
     /* The output area for the message terminal */
     #messages-list {
         width: 100%;
+        height: 75vh;
         overflow-x: hidden;
     }
 
     /* The input area for the message terminal */
     #message-input {
+
+    }
+
+    #center-pane {
+        height: 100%;
     }
 
     #left-pane {
-        height: 100%;
+        height: 75vh;
     }
 
     #right-pane {
-        height: 100%;
+        height: 75vh;
     }
 
     /* The list of online group members */
