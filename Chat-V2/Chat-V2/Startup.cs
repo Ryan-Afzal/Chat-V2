@@ -54,7 +54,7 @@ namespace Chat_V2 {
 
 			})
 			.AddJsonProtocol(options => {
-					
+
 			});
 
 			services.AddRazorPages();
@@ -77,6 +77,13 @@ namespace Chat_V2 {
 				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Files")),
 				RequestPath = "/Files"
 			});
+
+			if (env.IsDevelopment()) {
+				app.UseStaticFiles(new StaticFileOptions {
+					FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "DefaultFiles")),
+					RequestPath = "/DefaultFiles"
+				});
+			}
 
 			app.UseRouting();
 			app.UseCors();
