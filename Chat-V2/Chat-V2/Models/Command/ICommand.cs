@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Chat_V2.Models.Command {
+	[Obsolete]
 	public interface ICommand {
 		Task Execute(CommandArgs args);
 

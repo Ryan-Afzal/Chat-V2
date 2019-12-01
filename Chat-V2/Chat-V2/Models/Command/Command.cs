@@ -6,6 +6,7 @@ using Chat_V2.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chat_V2.Models.Command {
+	[Obsolete]
 	public abstract class Command : ICommand {
 
 		public Command(int minRank, string name, string desc, string usage) {

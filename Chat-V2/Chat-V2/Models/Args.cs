@@ -57,11 +57,6 @@ namespace Chat_V2.Models {
 		public int Count { get; set; }
 	}
 
-	public class ProcessCommandArgs {
-		public int MembershipID { get; set; }
-		public string Message { get; set; }
-	}
-
 	//To Client
 
 	public class AddGroupArgs {
@@ -108,15 +103,25 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 	}
 
+	public class OtherUserAddedToGroupArgs {
+		public int GroupID { get; set; }
+	}
+
+	public class OtherUserRemovedFromGroupArgs {
+		public int UserID { get; set; }
+		public int GroupID { get; set; }
+	}
+
+	public class ReceiveGroupDataArgs {
+		public int GroupID { get; set; }
+		public string GroupName { get; set; }
+		public int NumUsers { get; set; }
+	}
+
 	public class ReceiveMessageArgs {
         public int SenderID { get; set; }
         public int GroupID { get; set; }
 		public string Message { get; set; }
-    }
-
-    public class ReceiveCommandMessageArgs {
-        public string Message { get; set; }
-        public string Color { get; set; }
     }
 
 	public class ClientBannedFromGroupArgs {

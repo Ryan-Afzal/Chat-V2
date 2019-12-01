@@ -21,6 +21,7 @@ namespace Chat_V2.Models {
 		public bool IsPrivate { get; set; }
 		public bool IsArchived { get; set; }
 		public string GroupImage { get; set; }
+		public int NumOnline { get; set; }
 
 		public ICollection<ChatUser> BannedUsers { get; set; }
 

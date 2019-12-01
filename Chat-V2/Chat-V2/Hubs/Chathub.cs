@@ -24,6 +24,12 @@ namespace Chat_V2.Hubs {
 			ChatContext = context;
 		}
 
+		/// <summary>
+		/// Called when the client begins the SignalR connection.
+		/// 
+		/// It increases the count of online threads for a user.
+		/// </summary>
+		/// <returns></returns>
 		public override async Task OnConnectedAsync() {
 			await base.OnConnectedAsync();
 
@@ -32,6 +38,13 @@ namespace Chat_V2.Hubs {
 			await ChatContext.SaveChangesAsync();
 		}
 
+		/// <summary>
+		/// Called when the client disconnects from the SignalR connection.
+		/// 
+		/// It decreases the count of online threads for a user, and sends the OtherUserDisconnected event to the users in other groups.
+		/// </summary>
+		/// <param name="exception"></param>
+		/// <returns></returns>
 		public override async Task OnDisconnectedAsync(Exception exception) {
 			await base.OnDisconnectedAsync(exception);
 
@@ -59,6 +72,13 @@ namespace Chat_V2.Hubs {
 			await ChatContext.SaveChangesAsync();
 		}
 
+		/// <summary>
+		/// Called when the client connects to the server (after <c>OnConnectedAsync()</c>).
+		/// 
+		/// Used to pass any data needed for connection.
+		/// </summary>
+		/// <param name="args"></param>
+		/// <returns></returns>
 		public async Task Connected(ConnectedArgs args) {
 			var chatUser = await ChatContext.Users
 				.Include(u => u.Memberships)
@@ -78,9 +98,16 @@ namespace Chat_V2.Hubs {
 			}
 		}
 
+		/// <summary>
+		/// Called when the client disconnects from the server (before <c>OnDisconnectedAsync()</c>).
+		/// 
+		/// Used to pass any data needed for normal disconnection.
+		/// </summary>
+		/// <param name="args"></param>
+		/// <returns></returns>
+
 		public async Task Disconnected(DisconnectedArgs args) {
-			//var chatUser = await UserManager.GetUserAsync(Context.User);
-			//await ChatContext.SaveChangesAsync();
+			
 		}
 
 		public async Task ConnectedToGroup(ConnectedToGroupArgs args) {
@@ -99,6 +126,12 @@ namespace Chat_V2.Hubs {
 				StartIndex = 0,
 				Count = 50
 			});
+
+			await Clients.Caller.SendAsync(
+					"ReceiveGroupData",
+					new ReceiveGroupDataArgs() {
+					
+					});
 
 			foreach (var _m in membership.Group.Memberships) {
 				if (_m.IsOnlineInGroup) {
@@ -207,6 +240,9 @@ namespace Chat_V2.Hubs {
 				});
 		}
 
+		//UserAddedToGroup
+		//UserRemovedFromGroup
+
 		public async Task UserTyping(UserTypingArgs args) {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
@@ -254,15 +290,13 @@ namespace Chat_V2.Hubs {
 				var rank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
 
-				if (rank.CompareTo(PermissionRank.GetPermissionRankByOrdinal(m.MinRank)) >= 0) {
-					if (i >= args.Count) {
-						break;
-					}
-
-					list.AddLast(await GetArgsFromChatMessageAsync(m, user, membership));
-
-					i++;
+				if (i >= args.Count) {
+					break;
 				}
+
+				list.AddLast(await GetArgsFromChatMessageAsync(m, user, membership));
+
+				i++;
 			}
 
 			await Clients.Caller.SendAsync(
@@ -270,66 +304,12 @@ namespace Chat_V2.Hubs {
 				list);
 		}
 
-		public async Task ProcessCommand(ProcessCommandArgs args) {
-			var membership = await ChatContext.Membership
-				.Include(m => m.ChatUser)
-				.Include(m => m.Group)
-					.ThenInclude(g => g.Memberships)
-				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
-			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
-			ChatUser sender = membership.ChatUser;
-			Group group = membership.Group;
-			string text = args.Message;
-
-			await Clients.User(Context.UserIdentifier)
-				.SendAsync(
-					"ReceiveCommandMessage",
-					new ReceiveCommandMessageArgs() {
-						Color = "000000",
-						Message = text
-					}
-					);
-
-			string[] splitText = text.Split(' ');
-			if (ChatContext.CommandList.DoesCommandExist(splitText[0])) {
-				ICommand command = ChatContext.CommandList.GetCommandByName(splitText[0]);
-				if (command.MinRank <= senderRank.Ordinal) {
-					string[] textArgs = new string[splitText.Length - 1];
-					for (int i = 1; i < splitText.Length; i++) {
-						textArgs[i - 1] = splitText[i];
-					}
-
-					await command.Execute(
-						new CommandArgs() {
-							Args = textArgs,
-							Hub = this,
-							Group = group,
-							User = sender,
-							UserRank = senderRank
-						}
-						);
-
-					return;
-				}
-			}
-
-			await Clients.User(Context.UserIdentifier)
-				.SendAsync(
-					"ReceiveCommandMessage",
-					new ReceiveCommandMessageArgs() {
-						Color = "FF0000",
-						Message = $"ERROR: {splitText[0]} is not a valid or accessible command."
-					}
-					);
-		}
-
-		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message, int minRank) {
+		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message) {
 			ChatMessage output = new ChatMessage() {
 				ChatUserID = membership.ChatUserID,
 				GroupID = membership.GroupID,
 				TimeStamp = DateTime.Now,
-				ChatUserRank = membership.Rank,
-				MinRank = minRank
+				ChatUserRank = membership.Rank
 			};
 
 			StringBuilder builder = new StringBuilder();
@@ -408,7 +388,7 @@ namespace Chat_V2.Hubs {
 			Group group = membership.Group;
 
 			//Log the message
-			ChatMessage chatMessage = await ProcessMessageAsync(membership, args.Message, args.MinRank);
+			ChatMessage chatMessage = await ProcessMessageAsync(membership, args.Message);
 			group.ChatMessages.Add(chatMessage);
 			await ChatContext.SaveChangesAsync();
 

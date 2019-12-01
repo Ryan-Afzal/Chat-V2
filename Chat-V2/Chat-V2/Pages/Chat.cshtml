@@ -42,14 +42,26 @@
         </div>
 
         <div id="right-pane" class="col-3 card">
-            <div class="card-header">
-
+            <div id="current-group-name" class="card-header bg-primary">
+                No Group Selected
             </div>
             <div class="card-body">
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
-                            <ul id="online-members-list" class="list-group">
+                            <div id="current-group-members-count">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <ul id="online-members-list" class="list-group h-100">
                                 <li class="user-data-container list-group-item">
                                     <img src="/DefaultFiles/defaultGroupImage.png" width="32" height="32" class="rounded-circle img" />
                                     <span class="user-data-name">Sample User Name </span>
@@ -215,11 +227,15 @@
         container.appendChild(rank);
 
         document.getElementById("online-members-list").appendChild(container);
+        var count = document.getElementById("current-group-members-count");
+        count.textContent = parseInt(count.textContent) + 1;
     }
 
     function userDisconnected(userId) {
         document.getElementById("online-members-list")
             .removeChild(document.getElementById("user-" + userId));
+        var count = document.getElementById("current-group-members-count");
+        count.textContent = parseInt(count.textContent) - 1;
     }
 
     function userActive(userId) {
@@ -339,27 +355,6 @@
         if (groupId == currentGroupID) {
             clear();
         }
-    }
-
-    function blockedGroup(groupId) {
-        var group = document.getElementById("group-" + groupId);
-        group.setAttribute("class", "group-data-container-blocked");
-        group.removeEventListener("click");
-
-        if (groupId == currentGroupID) {
-            clear();
-        }
-    }
-
-    function unblockedGroup(groupId) {
-        var group = document.getElementById("group-" + groupId);
-        group.setAttribute("class", "group-data-container");
-        group.addEventListener("click", function () {
-            switchGroupTo(
-                parseInt(container.getAttribute("groupId")),
-                parseInt(container.getAttribute("membershipId"))
-            );
-        });
     }
 
     function loadPreviousMessages(startIndex, count) {
@@ -519,16 +514,17 @@
     //Typing Indicator
     document.getElementById("message-input").addEventListener("keydown", isTypingCallback);
 
+    connection.on("ReceiveGroupData", function (args) {
+        if (args.groupID == currentGroupID) {
+
+        }
+    });
+
     //On User Connected to system. May not be for the active group!
     connection.on("OtherUserConnectedToGroup", function (args) {
         if (args.userID != parseInt(viewmodel.UserID)) {
             if (args.groupID == currentGroupID) {
                 userConnected(args.userID, args.userName, args.userRankName);
-            } else {
-                //var node = document.getElementById("group-" + args.groupID)
-                //        .getElementsByClassName("group-data-online")
-                //        .item(0);
-                //    node.textContent = parseInt(node.textContent) + 1;
             }
         }
     });
@@ -538,11 +534,6 @@
         if (args.userID != parseInt(viewmodel.UserID)) {
             if (args.groupID == currentGroupID) {
                 userDisconnected(args.userID);
-            } else {
-                //var node = document.getElementById("group-" + args.groupID)
-                //        .getElementsByClassName("group-data-online")
-                //        .item(0);
-                //    node.textContent = parseInt(node.textContent) - 1;
             }
         }
     });
@@ -575,14 +566,6 @@
 
     connection.on("ClientBannedFromGroup", function (args) {
         removeGroup(args.groupID);
-    });
-
-    connection.on("ClientBlockedFromGroup", function (args) {
-        blockedGroup(args.groupID);
-    });
-
-    connection.on("ClientUnblockedFromGroup", function (args) {
-        unblockedGroup(args.groupID);
     });
 
     connection.on("OtherUserTyping", function (args) {
