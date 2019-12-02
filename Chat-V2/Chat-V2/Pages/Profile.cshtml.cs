@@ -86,11 +86,6 @@ namespace Chat_V2.Pages {
 				GroupID = invitation.GroupID,
 				IsActiveInGroup = false,
 				IsOnlineInGroup = false,
-				MembershipStatus = new MembershipStatus() {
-					DateIssued = DateTime.Now,
-					Expiration = DateTime.Now,
-					Type = MembershipStatusType.NONE
-				},
 				Rank = PermissionRank.USER.Ordinal
 			};
 

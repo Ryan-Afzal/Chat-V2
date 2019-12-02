@@ -1,6 +1,5 @@
 ﻿using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
-using Chat_V2.Models.Command;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -130,7 +129,9 @@ namespace Chat_V2.Hubs {
 			await Clients.Caller.SendAsync(
 					"ReceiveGroupData",
 					new ReceiveGroupDataArgs() {
-					
+						GroupID = membership.Group.GroupID,
+						GroupName = membership.Group.Name,
+						NumUsers = membership.Group.Memberships.Count
 					});
 
 			foreach (var _m in membership.Group.Memberships) {

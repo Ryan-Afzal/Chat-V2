@@ -56,9 +56,6 @@
                     <th>ID</th>
                     <th>UserName</th>
                     <th>Rank</th>
-                    @if (Model.ViewModel.IsGroupMember) {
-                        <th>Status</th>
-                    }
                 </tr>
                 @foreach (var item in Model.ViewModel.Group.Memberships.OrderByDescending(membership => membership.Rank)) {
                     <tr>
@@ -74,11 +71,6 @@
                             }
                             <span class="badge" style="background-color: @rank.Color">@rank.Name</span>
                         </td>
-                        @if (Model.ViewModel.IsGroupMember) {
-                            <td>
-                                @Html.DisplayFor(modelItem => item.MembershipStatus.Type)
-                            </td>
-                        }
                         <td>
                             <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
                         </td>

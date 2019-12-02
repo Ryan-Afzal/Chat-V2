@@ -71,12 +71,7 @@ namespace Chat_V2.Pages {
 					GroupID = group.GroupID,
 					IsActiveInGroup = false,
 					IsOnlineInGroup = false,
-					Rank = PermissionRank.OWNER.Ordinal,
-					MembershipStatus = new MembershipStatus() {
-						DateIssued = DateTime.Now,
-						Expiration = DateTime.Now,
-						Type = MembershipStatusType.NONE
-					}
+					Rank = PermissionRank.OWNER.Ordinal
 				};
 
 				await _context.Membership.AddAsync(membership);

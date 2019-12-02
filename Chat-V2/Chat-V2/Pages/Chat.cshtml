@@ -48,10 +48,13 @@
             <div class="card-body">
                 <div class="container">
                     <div class="row">
-                        <div class="col-12">
-                            <div id="current-group-members-count">
-                                
-                            </div>
+                        <div class="col-auto">Members:&nbsp;</div>
+                        <div id="current-group-members-count" class="col">
+                            N/A
+                        </div>
+                        <div class="col-auto">Online:&nbsp;</div>
+                        <div id="current-group-online-count" class="col">
+                            N/A
                         </div>
                     </div>
                     <div class="row">
@@ -264,11 +267,24 @@
 
     }
 
+    function updateGroupData(groupID, groupName, numUsers) {
+        $("current-group-name").textContent = groupName;
+        $("current-group-members-count").textContent = numUsers;
+        $("current-group-online-count").textContent = "0";
+    }
+
+    function clearData() {
+        $("current-group-name").textContent = "No No Group Selected";
+        $("current-group-members-count").textContent = "N/A";
+        $("current-group-online-count").textContent = "N/A";
+    }
+
     //Clears messages, clears users, disconnects from the current group, and resets data.
     function clear() {
         clearMessages();
         clearUsers();
         clearTyping();
+        clearData();
 
         if (membershipID != -1) {
             var args = {
@@ -516,7 +532,7 @@
 
     connection.on("ReceiveGroupData", function (args) {
         if (args.groupID == currentGroupID) {
-
+            updateGroupData(args.groupID, args.groupName, args.numUsers);
         }
     });
 

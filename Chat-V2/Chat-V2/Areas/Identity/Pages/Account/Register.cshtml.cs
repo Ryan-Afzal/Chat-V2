@@ -89,11 +89,6 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
 					Group group = await _context.Group.FirstAsync();
-					MembershipStatus status = new MembershipStatus() {
-						DateIssued = DateTime.Now,
-						Expiration = DateTime.Now,
-						Type = MembershipStatusType.NONE
-					};
 					Membership membership = new Membership() {
 						GroupID = group.GroupID,
 						ChatUserID = user.Id,
@@ -101,8 +96,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 						IsOnlineInGroup = false,
 						IsActiveInGroup = false,
 						Group = group,
-						ChatUser = user,
-						MembershipStatus = status
+						ChatUser = user
 					};
 					_context.Membership.Add(membership);
 					_context.SaveChanges();
