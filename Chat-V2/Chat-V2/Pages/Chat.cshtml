@@ -230,14 +230,14 @@
         container.appendChild(rank);
 
         document.getElementById("online-members-list").appendChild(container);
-        var count = document.getElementById("current-group-members-count");
+        var count = document.getElementById("current-group-online-count");
         count.textContent = parseInt(count.textContent) + 1;
     }
 
     function userDisconnected(userId) {
         document.getElementById("online-members-list")
             .removeChild(document.getElementById("user-" + userId));
-        var count = document.getElementById("current-group-members-count");
+        var count = document.getElementById("current-group-online-count");
         count.textContent = parseInt(count.textContent) - 1;
     }
 
@@ -268,15 +268,15 @@
     }
 
     function updateGroupData(groupID, groupName, numUsers) {
-        $("current-group-name").textContent = groupName;
-        $("current-group-members-count").textContent = numUsers;
-        $("current-group-online-count").textContent = "0";
+        document.getElementById("current-group-name").textContent = groupName;
+        document.getElementById("current-group-members-count").textContent = numUsers;
+        document.getElementById("current-group-online-count").textContent = "1";
     }
 
     function clearData() {
-        $("current-group-name").textContent = "No No Group Selected";
-        $("current-group-members-count").textContent = "N/A";
-        $("current-group-online-count").textContent = "N/A";
+        document.getElementById("current-group-name").textContent = "No Group Selected";
+        document.getElementById("current-group-members-count").textContent = "N/A";
+        document.getElementById("current-group-online-count").textContent = "N/A";
     }
 
     //Clears messages, clears users, disconnects from the current group, and resets data.
