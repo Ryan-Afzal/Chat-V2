@@ -42,8 +42,10 @@
         </div>
 
         <div id="right-pane" class="col-3 card">
-            <div id="current-group-name" class="card-header bg-primary">
-                No Group Selected
+            <div class="card-header bg-primary">
+                <a href="/Group?groupID=-1" id="current-group-name" class="text-dark">
+                    No Group Selected
+                </a>
             </div>
             <div class="card-body">
                 <div class="container">
@@ -168,6 +170,18 @@
         height: 75vh;
     }
 
+    #current-group-name {
+
+    }
+
+    #current-group-members-count {
+
+    }
+
+    #current-group-online-count {
+
+    }
+
     /* The list of online group members */
     #online-members-list {
         overflow: auto;
@@ -268,13 +282,17 @@
     }
 
     function updateGroupData(groupID, groupName, numUsers) {
-        document.getElementById("current-group-name").textContent = groupName;
+        var name = document.getElementById("current-group-name");
+        name.textContent = groupName;
+        name.setAttribute("href", "/Group?groupID=" + groupID);
         document.getElementById("current-group-members-count").textContent = numUsers;
         document.getElementById("current-group-online-count").textContent = "1";
     }
 
     function clearData() {
-        document.getElementById("current-group-name").textContent = "No Group Selected";
+        var name = document.getElementById("current-group-name");
+        name.textContent = "No Group Selected";
+        name.setAttribute("groupID", -1);
         document.getElementById("current-group-members-count").textContent = "N/A";
         document.getElementById("current-group-online-count").textContent = "N/A";
     }
