@@ -136,4 +136,34 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 	}
 
+	//Notification
+	
+	public class AddNotificationArgs {
+		public int ChatUserID { get; set; }
+		public string Text { get; set; }
+		public string ViewURL { get; set; }
+	}
+
+	public class RemoveNotificationArgs {
+		public int ChatUserID { get; set; }
+		public int NotificationID { get; set; }
+	}
+
+	public class GetNotificationsArgs {
+		public int ChatUserID { get; set; }
+	}
+
+
+
+	public class NewNotificationArgs {
+		public int ChatUserID { get; set; }
+	}
+
+	public class ReceiveNotificationArgs {
+		public int ChatUserID { get; set; }
+		public int NotificationID { get; set; }
+		public string Text { get; set; }
+		public string ViewURL { get; set; }
+	}
+
 }

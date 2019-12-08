@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Chat_V2.Areas.Identity.Data
+@using Microsoft.AspNetCore.SignalR
 @inject SignInManager<ChatUser> SignInManager
 @inject UserManager<ChatUser> UserManager
 
@@ -10,6 +11,7 @@
             </li>
             <li class="nav-item">
                 <a id="profile" class="nav-link text-dark" asp-page="/Profile" asp-route-userId="@UserManager.GetUserId(User)" title="Profile">Profile</a>
+                <span id="notif-new"></span>
             </li>
             <li class="nav-item">
                 <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
@@ -27,21 +29,32 @@
     </ul>
     @if (SignInManager.IsSignedIn(User)) {
         <script>
+            "use strict";
+
             //Start SignalR connection
-            const connection = new signalR.HubConnectionBuilder()
+            const notifConnection = new signalR.HubConnectionBuilder()
                 .withUrl("/notifHub")
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
             
             //On connection established
-            connection.start().then(function () {
+            notifConnection.start().then(function () {
                 console.log("connected to notification hub");
             }).catch(function (err) {
                 return console.error(err.toString());
             });
 
-            connection.on("NewNotification", function (args) {
+            notifConnection.on("NewNotification", function (args) {
                 //New Notification
+                var newBadge = document.createElement("span");
+                newBadge.setAttribute("class", "badge badge-success");
+                newBadge.textContent = "NEW";
+
+                var node = document.getElementById("notif-new");
+
+                if (!node.hasChildNodes()) {
+                    node.appendChild(newBadge);
+                }
             });
         </script>
     }
