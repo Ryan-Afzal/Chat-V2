@@ -17,12 +17,12 @@ namespace Chat_V2.Hubs {
 	/// <summary>
 	/// Manages Notifications. Sends a NewNotification event when a notification is added to the user
 	/// </summary>
-	public class Notifhub : Hub {
+	public class NotifHub : Hub {
 
 		public UserManager<ChatUser> UserManager { get; }
 		public ChatContext ChatContext { get; }
 
-		public Notifhub(UserManager<ChatUser> userManager, ChatContext context) {
+		public NotifHub(UserManager<ChatUser> userManager, ChatContext context) {
 			UserManager = userManager;
 			ChatContext = context;
 		}

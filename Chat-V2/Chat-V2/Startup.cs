@@ -91,6 +91,7 @@ namespace Chat_V2 {
 			app.UseAuthentication();
 			app.UseAuthorization();
 			app.UseEndpoints(endpoints => {
+				endpoints.MapHub<NotifHub>("/notifHub");
 				endpoints.MapHub<ChatHub>("/chatHub");
 				endpoints.MapRazorPages();
 			});

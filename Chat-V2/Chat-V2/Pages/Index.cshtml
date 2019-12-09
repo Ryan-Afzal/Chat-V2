@@ -16,6 +16,20 @@
         <h2 class="text-danger">If you are not authorized by RooLLC, terminate your account and leave the site immediately.</h2>
 
         <a href="~/chat">Go to Chat</a>
+        <button id="NotifButton">
+            Add a Notif
+        </button>
+        <!--<script>
+            document.getElementById("NotifButton").addEventListener("click", function (event) {
+                var args = {
+                    ChatUserID: @UserManager.GetUserId(User),
+                    Text: "Hi",
+                    ViewURL: "chat"
+                };
+
+                notifConnection.invoke("AddNotification", args);
+            });
+        </script>-->
     } else {
         <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use RooChat.</p>
     }
