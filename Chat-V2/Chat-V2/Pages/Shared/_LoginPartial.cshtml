@@ -9,7 +9,7 @@
             <li class="nav-item">
                 <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" style="display: inline">
                 <a id="profile" class="nav-link text-dark" asp-page="/Profile" asp-route-userId="@UserManager.GetUserId(User)" title="Profile">Profile</a>
                 <span id="notif-new"></span>
             </li>
@@ -46,6 +46,10 @@
 
             notifConnection.on("NewNotification", function (args) {
                 //New Notification
+                addBadge();
+            });
+
+            function addBadge() {
                 var newBadge = document.createElement("span");
                 newBadge.setAttribute("class", "badge badge-primary");
                 newBadge.textContent = "NEW";
@@ -55,6 +59,6 @@
                 if (!node.hasChildNodes()) {
                     node.appendChild(newBadge);
                 }
-            });
+            }
         </script>
     }

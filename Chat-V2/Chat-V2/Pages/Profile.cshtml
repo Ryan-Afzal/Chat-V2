@@ -54,17 +54,34 @@
             <h1 class="text-center">Notifications are a Work In Progress</h1>
             <h2 class="text-center">Check back later!</h2>
 
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="notifications-list">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                </div>
+            </div>
+
             <script>
                 "use strict";
 
                 var getNotifsArgs = {
-                    ChatUserID: '@Model.ChatUser.Id';
+                    ChatUserID: '@Model.ChatUser.Id'
                 };
 
                 notifConnection.invoke("GetNotifications", getNotifsArgs);
 
-                notifConnection.on("ReceiveNotification", function (args) {
-                    console.log("New Notif: " + args.text);
+                notifConnection.on("ReceiveNotifications", function (list) {
+                    $.each(list, function () {
+                        var args = this;
+
+                        console.log(args.text);
+                    });
                 });
             </script>
         </div>

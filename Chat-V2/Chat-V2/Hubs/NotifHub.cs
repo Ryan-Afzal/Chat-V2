@@ -27,6 +27,24 @@ namespace Chat_V2.Hubs {
 			ChatContext = context;
 		}
 
+		public override async Task OnConnectedAsync() {
+			await base.OnConnectedAsync();
+
+			int id = int.Parse(Context.UserIdentifier);
+			var chatUser = await ChatContext.Users
+				.Include(u => u.Notifications)
+				.FirstOrDefaultAsync(u => u.Id == id);
+
+			if (chatUser.Notifications.Any()) {
+				IClientProxy proxy = Clients.User(Context.UserIdentifier);
+
+				await proxy.SendAsync("NewNotification",
+					new NewNotificationArgs() {
+						ChatUserID = chatUser.Id
+					});
+			}
+		}
+
 		public async Task AddNotification(AddNotificationArgs args) {
 			if ((args.ChatUserID + "") != Context.UserIdentifier) {
 				throw new ArgumentException(nameof(args.ChatUserID));
@@ -48,6 +66,7 @@ namespace Chat_V2.Hubs {
 			};
 
 			chatUser.Notifications.Add(notif);
+			await ChatContext.SaveChangesAsync();
 
 			IClientProxy proxy = Clients.User(args.ChatUserID + "");
 
@@ -71,6 +90,7 @@ namespace Chat_V2.Hubs {
 			}
 
 			chatUser.Notifications.Remove(chatUser.Notifications.FirstOrDefault(n => n.NotificationID == args.NotificationID));
+			await ChatContext.SaveChangesAsync();
 		}
 
 		public async Task GetNotifications(GetNotificationsArgs args) {
@@ -86,7 +106,13 @@ namespace Chat_V2.Hubs {
 				throw new ArgumentException(nameof(args.ChatUserID));
 			}
 
-			throw new NotImplementedException();
+			await Clients.Caller.SendAsync(
+				"ReceiveNotifications",
+				await chatUser.Notifications
+					.AsQueryable()
+					.Select(n => new ReceiveNotificationArgs() { ChatUserID = chatUser.Id, NotificationID = n.NotificationID, Text = n.Text, ViewURL = n.ViewURL })
+					.ToListAsync()
+				);
 		}
 
 	}

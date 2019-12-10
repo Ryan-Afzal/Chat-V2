@@ -19,7 +19,7 @@
         <button id="NotifButton">
             Add a Notif
         </button>
-        <!--<script>
+        <script>
             document.getElementById("NotifButton").addEventListener("click", function (event) {
                 var args = {
                     ChatUserID: @UserManager.GetUserId(User),
@@ -29,7 +29,7 @@
 
                 notifConnection.invoke("AddNotification", args);
             });
-        </script>-->
+        </script>
     } else {
         <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index")">Login</a> to use RooChat.</p>
     }
