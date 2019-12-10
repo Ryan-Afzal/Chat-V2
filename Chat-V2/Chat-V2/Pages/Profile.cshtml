@@ -70,11 +70,17 @@
             <script>
                 "use strict";
 
-                var getNotifsArgs = {
-                    ChatUserID: '@Model.ChatUser.Id'
-                };
+                notifConnectionPromise.then(function () {
+                    var getNotifsArgs = {
+                        ChatUserID: @Model.ChatUser.Id
+                    };
 
-                notifConnection.invoke("GetNotifications", getNotifsArgs);
+                    notifConnection.invoke("GetNotifications", getNotifsArgs).catch(function (err) {
+                        return console.error(err.toString());
+                    });
+                }).catch(function (err) {
+                    return console.error(err.toString());
+                });
 
                 notifConnection.on("ReceiveNotifications", function (list) {
                     $.each(list, function () {

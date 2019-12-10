@@ -38,7 +38,7 @@
                 .build();
             
             //On connection established
-            notifConnection.start().then(function () {
+            var notifConnectionPromise = notifConnection.start().then(function () {
                 console.log("connected to notification hub");
             }).catch(function (err) {
                 return console.error(err.toString());

@@ -94,6 +94,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task GetNotifications(GetNotificationsArgs args) {
+			//GetNotificationsArgs args = x as GetNotificationsArgs;
 			if ((args.ChatUserID + "") != Context.UserIdentifier) {
 				throw new ArgumentException(nameof(args.ChatUserID));
 			}
@@ -108,11 +109,11 @@ namespace Chat_V2.Hubs {
 
 			await Clients.Caller.SendAsync(
 				"ReceiveNotifications",
-				await chatUser.Notifications
+				chatUser.Notifications
 					.AsQueryable()
 					.Select(n => new ReceiveNotificationArgs() { ChatUserID = chatUser.Id, NotificationID = n.NotificationID, Text = n.Text, ViewURL = n.ViewURL })
-					.ToListAsync()
-				);
+					.ToList()
+			);
 		}
 
 	}
