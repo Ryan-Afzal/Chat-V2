@@ -341,6 +341,10 @@ namespace Chat_V2.Pages {
 		public async Task<IActionResult> OnPostBanUserAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
 
+			if (_userManager.GetUserId(User).Equals(BanUserInput.ChatUserID + "")) {
+				return LocalRedirect(returnUrl);
+			}
+
 			return LocalRedirect("/ConfirmBanUser?userId=" + BanUserInput.ChatUserID + "&groupId=" + BanUserInput.GroupID + "&returnUrl=" + returnUrl);
 		}
 
