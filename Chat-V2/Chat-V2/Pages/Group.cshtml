@@ -246,10 +246,10 @@
                             <form method="post" class="form-inline">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupNameInput.Name"></label>
-                                    <input asp-for="ChangeGroupNameInput.Name" />
+                                    <input asp-for="ChangeGroupNameInput.Name" class="form-control" />
                                 </div>
                                 <div class="form-group">
-                                    <button asp-page-handler="ChangeGroupName" class="btn btn-primary" type="submit">Change Group Name</button>
+                                    <button asp-page-handler="ChangeGroupName" class="btn btn-primary form-control" type="submit">Change Group Name</button>
                                 </div>
                                 <input type="hidden" asp-for="ChangeGroupNameInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                 <input type="hidden" name="returnUrl" value="@returnUrl" />
