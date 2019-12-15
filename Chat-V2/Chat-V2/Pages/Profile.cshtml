@@ -66,35 +66,6 @@
 
                 </div>
             </div>
-
-            <script>
-                "use strict";
-
-                notifConnectionPromise.then(function () {
-                    var getNotifsArgs = {
-                        ChatUserID: @Model.ChatUser.Id
-                    };
-
-                    notifConnection.invoke("GetNotifications", getNotifsArgs).catch(function (err) {
-                        return console.error(err.toString());
-                    });
-                }).catch(function (err) {
-                    return console.error(err.toString());
-                });
-
-                notifConnection.on("ReceiveNotifications", function (list) {
-                    $.each(list, function () {
-                        var args = this;
-
-                        console.log(args.text);
-
-                        //var card = document.createElement("div");
-                        //card.setAttribute("class", "card");
-                        //card.setAttribute("id", "notif-" + args.notificationID);
-                        //card.setAttribute("notificationID", args.notificationID);
-                    });
-                });
-            </script>
         </div>
         <div class="tab-pane fade" id="nav-invitations" role="tabpanel" aria-labelledby="nav-invitations-tab">
             <h4>Join Invitations</h4>
@@ -128,7 +99,7 @@
                                         @(invitation.Message)
                                     </dh>
                                 </dl>
-                                <form method="post">
+                                <form method="post" onsubmit="decrementInvitationsCount()">
                                     <button type="submit" asp-page-handler="AcceptJoinInvitation" class="btn btn-success">Accept</button>
                                     <button type="submit" asp-page-handler="RejectJoinInvitation" class="btn btn-danger">Reject</button>
                                     <input type="hidden" asp-for="JoinInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
@@ -142,5 +113,68 @@
                 }
             </div>
         </div>
+        <script>
+            "use strict";
+
+            notifConnectionPromise.then(function () {
+                var getNotifsArgs = {
+                    ChatUserID: @Model.ChatUser.Id
+                };
+
+                notifConnection.invoke("GetNotifications", getNotifsArgs).catch(function (err) {
+                    return console.error(err.toString());
+                });
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            notifConnection.on("ReceiveNotifications", function (list) {
+                $.each(list, function () {
+                    var args = this;
+
+                    incrementNotifsCount();
+
+                    console.log(args.text);
+
+                    //var card = document.createElement("div");
+                    //card.setAttribute("class", "card");
+                    //card.setAttribute("id", "notif-" + args.notificationID);
+                    //card.setAttribute("notificationID", args.notificationID);
+                });
+            });
+
+            function decrementInvitationsCount() {
+                var node = document.getElementById("invitations-badge");
+                var count = parseInt(node.textContent) - 1;
+
+                if (count == 0) {
+                    node.setAttribute("hidden", "hidden");
+                }
+
+                node.textContent = count;
+            }
+
+            function incrementNotifsCount() {
+                var node = document.getElementById("notifs-badge");
+                var count = parseInt(node.textContent) + 1;
+
+                if (count > 0) {
+                    node.removeAttribute("hidden");
+                }
+
+                node.textContent = count;
+            }
+
+            function decrementNotifsCount() {
+                var node = document.getElementById("notifs-badge");
+                var count = parseInt(node.textContent) - 1;
+
+                if (count == 0) {
+                    node.setAttribute("hidden", "hidden");
+                }
+
+                node.textContent = count;
+            }
+        </script>
     }
 </div>
