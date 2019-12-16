@@ -71,6 +71,16 @@
                             }
                             <span class="badge" style="background-color: @rank.Color">@rank.Name</span>
                         </td>
+                        @if (Model.ViewModel.IsGroupMember && Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal && item.ChatUserID != Model.ViewModel.ChatUser.Id) {
+                            <td>
+                                <form method="post">
+                                    <button type="submit" asp-page-handler="BanUser" class="btn btn-sm btn-warning">Ban User</button>
+                                    <input type="hidden" asp-for="BanUserInput.ChatUserID" value="@item.ChatUser.Id" />
+                                    <input type="hidden" asp-for="BanUserInput.GroupID" value="@Model.ViewModel.Group.GroupID" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                </form>
+                            </td>
+                        }
                         <td>
                             <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
                         </td>
@@ -226,27 +236,21 @@
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
                 <hr />
                 <div id="group-member-officer" class="row">
-                    <h4>Ban User by Id</h4>
-                    <div class="col-12">
-                        <form method="post">
-                            <input asp-for="BanUserInput.ChatUserID" class="form-control" />
-                            <button type="submit" asp-page-handler="BanUser" class="btn btn-warning">Ban User</button>
-                            <input type="hidden" asp-for="BanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                            <input type="hidden" name="returnUrl" value="@returnUrl" />
-                        </form>
-                    </div>
+                    
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
                     <div id="group-member-admin" class="row">
                         <div id="change-name" class="col-12">
                             <h4>Change Group Name</h4>
-                            <form method="post">
+                            <form method="post" class="form-inline">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupNameInput.Name"></label>
                                     <input asp-for="ChangeGroupNameInput.Name" class="form-control" />
                                 </div>
-                                <button asp-page-handler="ChangeGroupName" class="btn btn-primary" type="submit">Change Group Name</button>
+                                <div class="form-group">
+                                    <button asp-page-handler="ChangeGroupName" class="btn btn-primary form-control" type="submit">Change Group Name</button>
+                                </div>
                                 <input type="hidden" asp-for="ChangeGroupNameInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                 <input type="hidden" name="returnUrl" value="@returnUrl" />
                             </form>
@@ -256,12 +260,14 @@
 
                         <div id="change-description" class="col-12">
                             <h4>Change Group Description</h4>
-                            <form method="post">
+                            <form method="post" class="form-inline">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupDescriptionInput.Description"></label>
                                     <textarea asp-for="ChangeGroupDescriptionInput.Description" class="form-control"></textarea>
                                 </div>
-                                <button asp-page-handler="ChangeGroupDescription" class="btn btn-primary" type="submit">Change Group Description</button>
+                                <div class="form-group">
+                                    <button asp-page-handler="ChangeGroupDescription" class="btn btn-primary" type="submit">Change Group Description</button>
+                                </div>
                                 <input type="hidden" asp-for="ChangeGroupDescriptionInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                 <input type="hidden" name="returnUrl" value="@returnUrl" />
                             </form>

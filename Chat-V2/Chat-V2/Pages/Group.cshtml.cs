@@ -47,6 +47,7 @@ namespace Chat_V2.Pages {
 		}
 
 		public class InviteToGroupInputModel {
+			[Required]
 			public int GroupID { get; set; }
 			[Required]
 			public int UserID { get; set; }
@@ -66,12 +67,17 @@ namespace Chat_V2.Pages {
 		}
 
 		public class ChangeGroupNameInputModel {
+			[Required]
 			public int GroupID { get; set; }
+			[Required]
+			[MinLength(length: 1)]
 			public string Name { get; set; }
 		}
 
 		public class ChangeGroupDescriptionInputModel {
+			[Required]
 			public int GroupID { get; set; }
+			[Required]
 			public string Description { get; set; }
 		}
 
@@ -340,6 +346,10 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostBanUserAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
+
+			if (_userManager.GetUserId(User).Equals(BanUserInput.ChatUserID + "")) {
+				return LocalRedirect(returnUrl);
+			}
 
 			return LocalRedirect("/ConfirmBanUser?userId=" + BanUserInput.ChatUserID + "&groupId=" + BanUserInput.GroupID + "&returnUrl=" + returnUrl);
 		}

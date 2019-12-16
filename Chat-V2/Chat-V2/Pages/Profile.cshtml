@@ -10,8 +10,8 @@
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
-            <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications</a>
-            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations</a>
+    <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge-primary">@Model.ChatUser.Notifications.Count</span></a>
+            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge-primary">@Model.ChatUser.GroupJoinInvitations.Count</span></a>
         }
     </div>
 </nav>
@@ -44,8 +44,8 @@
                     @Html.DisplayFor(model => model.ChatUser.LastName)
                 </dd>
             </dl>
-            <div class="row">
-
+            <div class="row text-center">
+                <p>@Model.ChatUser.ProfileDescription</p>
             </div>
         </div>
     </div>
@@ -66,30 +66,6 @@
 
                 </div>
             </div>
-
-            <script>
-                "use strict";
-
-                notifConnectionPromise.then(function () {
-                    var getNotifsArgs = {
-                        ChatUserID: @Model.ChatUser.Id
-                    };
-
-                    notifConnection.invoke("GetNotifications", getNotifsArgs).catch(function (err) {
-                        return console.error(err.toString());
-                    });
-                }).catch(function (err) {
-                    return console.error(err.toString());
-                });
-
-                notifConnection.on("ReceiveNotifications", function (list) {
-                    $.each(list, function () {
-                        var args = this;
-
-                        console.log(args.text);
-                    });
-                });
-            </script>
         </div>
         <div class="tab-pane fade" id="nav-invitations" role="tabpanel" aria-labelledby="nav-invitations-tab">
             <h4>Join Invitations</h4>
@@ -123,7 +99,7 @@
                                         @(invitation.Message)
                                     </dh>
                                 </dl>
-                                <form method="post">
+                                <form method="post" onsubmit="decrementInvitationsCount()">
                                     <button type="submit" asp-page-handler="AcceptJoinInvitation" class="btn btn-success">Accept</button>
                                     <button type="submit" asp-page-handler="RejectJoinInvitation" class="btn btn-danger">Reject</button>
                                     <input type="hidden" asp-for="JoinInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
@@ -137,5 +113,68 @@
                 }
             </div>
         </div>
+        <script>
+            "use strict";
+
+            notifConnectionPromise.then(function () {
+                var getNotifsArgs = {
+                    ChatUserID: @Model.ChatUser.Id
+                };
+
+                notifConnection.invoke("GetNotifications", getNotifsArgs).catch(function (err) {
+                    return console.error(err.toString());
+                });
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            notifConnection.on("ReceiveNotifications", function (list) {
+                $.each(list, function () {
+                    var args = this;
+
+                    incrementNotifsCount();
+
+                    console.log(args.text);
+
+                    //var card = document.createElement("div");
+                    //card.setAttribute("class", "card");
+                    //card.setAttribute("id", "notif-" + args.notificationID);
+                    //card.setAttribute("notificationID", args.notificationID);
+                });
+            });
+
+            function decrementInvitationsCount() {
+                var node = document.getElementById("invitations-badge");
+                var count = parseInt(node.textContent) - 1;
+
+                if (count == 0) {
+                    node.setAttribute("hidden", "hidden");
+                }
+
+                node.textContent = count;
+            }
+
+            function incrementNotifsCount() {
+                var node = document.getElementById("notifs-badge");
+                var count = parseInt(node.textContent) + 1;
+
+                if (count > 0) {
+                    node.removeAttribute("hidden");
+                }
+
+                node.textContent = count;
+            }
+
+            function decrementNotifsCount() {
+                var node = document.getElementById("notifs-badge");
+                var count = parseInt(node.textContent) - 1;
+
+                if (count == 0) {
+                    node.setAttribute("hidden", "hidden");
+                }
+
+                node.textContent = count;
+            }
+        </script>
     }
 </div>

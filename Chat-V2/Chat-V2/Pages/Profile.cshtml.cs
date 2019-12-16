@@ -22,6 +22,11 @@ namespace Chat_V2.Pages {
 			public int InvitationID { get; set; }
 		}
 
+		public class DismissNotificationInputModel {
+			public int ChatUserID { get; set; }
+			public int NotificationID { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -42,6 +47,9 @@ namespace Chat_V2.Pages {
 		[BindProperty]
 		public JoinInvitationInputModel JoinInvitationInput { get; set; }
 
+		[BindProperty]
+		public DismissNotificationInputModel DismissNotificationInput { get; set; }
+
 		public async Task<IActionResult> OnGetAsync(int? userId) {
 			if (userId == null) {
 				return BadRequest();
@@ -60,6 +68,7 @@ namespace Chat_V2.Pages {
 			ChatUser = user;
 			IsThisUser = (await _userManager.GetUserAsync(User)).Id == user.Id;
 			JoinInvitationInput = new JoinInvitationInputModel();
+			DismissNotificationInput = new DismissNotificationInputModel();
 
 			return Page();
 		}
@@ -117,6 +126,10 @@ namespace Chat_V2.Pages {
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect(returnUrl);
+		}
+
+		public async Task<IActionResult> OnPostDismissNotificationAsync(string returnUrl = null) {
+			throw new NotImplementedException();
 		}
 	}
 }
