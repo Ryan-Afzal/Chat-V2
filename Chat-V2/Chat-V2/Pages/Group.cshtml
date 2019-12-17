@@ -7,12 +7,11 @@
     var returnUrl = (HttpContext.Request.Path.Value + HttpContext.Request.QueryString.Value);
 }
 
-<h1>Group <span id="group-name-label">@(Model.ViewModel.Group.Name)</span></h1>
-
-<div id="group-data" class="container-fluid">
+<div id="group-data" class="container">
     <div class="row">
         <div class="col-12 text-center">
             <img src="@(FileTools.FileSavePath + Model.ViewModel.Group.GroupImage)" width="256" height="256" class="img-thumbnail" />
+            <h3 class="display-3">@Model.ViewModel.Group.Name</h3>
         </div>
     </div>
     <dl class="row">
@@ -90,10 +89,11 @@
         </dd>
     </dl>
 </div>
+
 <hr />
-<div class="container-fluid">
+
+<div class="container">
     @if (Model.ViewModel.IsGroupMember) {
-        <hr />
         <div id="group-member-user" class="row">
             @if (Model.ViewModel.Membership.Rank == PermissionRank.OWNER.Ordinal) {
                 <button id="leave-group" class="btn disabled btn-danger">Leave Group</button>
@@ -127,9 +127,16 @@
             </div>
         </div>
         @if (Model.ViewModel.Membership.Rank > PermissionRank.USER.Ordinal) {
+            
             <hr />
+            
             <div id="group-member-moderator" class="row">
+                <br />
+
                 <h4>Join Requests</h4>
+                
+                <br />
+
                 <div id="join-requests-list" class="col-12">
                     @if (Model.ViewModel.Group.GroupJoinRequests.Count == 0) {
                         <div id="no-requests" class="card">
@@ -177,6 +184,9 @@
                 <br />
 
                 <h4>Invite Members</h4>
+
+                <br />
+
                 <div id="invite-members" class="col-12">
                     <form method="post">
                         <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
@@ -202,7 +212,12 @@
                     </form>
                 </div>
 
+                <br />
+
                 <h4>Banned Users</h4>
+                
+                <br />
+                
                 <table class="table">
                     <tr>
                         <th>ID</th>
@@ -234,7 +249,9 @@
                 </table>
             </div>
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
+
                 <hr />
+
                 <div id="group-member-officer" class="row">
                     
                 </div>
@@ -242,7 +259,12 @@
                     <hr />
                     <div id="group-member-admin" class="row">
                         <div id="change-name" class="col-12">
+                            <br />
+
                             <h4>Change Group Name</h4>
+                            
+                            <br />
+                            
                             <form method="post" class="form-inline">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupNameInput.Name"></label>
@@ -259,7 +281,12 @@
                         <br />
 
                         <div id="change-description" class="col-12">
+                            <br />
+
                             <h4>Change Group Description</h4>
+                            
+                            <br />
+                            
                             <form method="post" class="form-inline">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupDescriptionInput.Description"></label>
@@ -276,7 +303,12 @@
                         <br />
 
                         <div id="change-image" class="col-12">
+                            <br />
+
                             <h4>Change Image</h4>
+                            
+                            <br />
+                            
                             <form enctype="multipart/form-data" method="post">
                                 <div class="form-group">
                                     <label asp-for="UploadImageInput.GroupImage"></label>
@@ -291,7 +323,12 @@
                         <br />
 
                         <div id="toggle-private-public" class="col-12">
+                            <br />
+                            
                             <h4>Toggle Private Group</h4>
+                            
+                            <br />
+                            
                             @if (Model.ViewModel.Group.IsPrivate) {
                                 <button id="private-public toggle" class="btn btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Group Public</button>
 

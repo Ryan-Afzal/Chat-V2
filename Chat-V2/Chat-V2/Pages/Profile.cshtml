@@ -10,8 +10,8 @@
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
-    <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge-primary" hidden>0</span></a>
-            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge-primary" hidden>@Model.ChatUser.GroupJoinInvitations.Count</span></a>
+    <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge badge-primary" hidden>0</span></a>
+            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge badge-primary" hidden>@Model.ChatUser.GroupJoinInvitations.Count</span></a>
         }
     </div>
 </nav>
