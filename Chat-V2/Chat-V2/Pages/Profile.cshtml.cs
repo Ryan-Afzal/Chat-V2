@@ -55,18 +55,25 @@ namespace Chat_V2.Pages {
 				return BadRequest();
 			}
 
-			var user = await _context.Users
-				.Include(u => u.Memberships)
-				.Include(u => u.GroupJoinInvitations)
-					.ThenInclude(i => i.Group)
-				.FirstOrDefaultAsync(u => u.Id == userId.Value);
+			IsThisUser = (await _userManager.GetUserAsync(User)).Id == userId.Value;
+
+			IQueryable<ChatUser> query = _context.Users;
+
+			if (IsThisUser) {
+				query = query
+					.Include(u => u.Memberships)
+					.Include(u => u.GroupJoinInvitations)
+						.ThenInclude(i => i.Group)
+					.Include(u => u.Notifications);
+			}
+
+			var user = await query.FirstOrDefaultAsync(u => u.Id == userId.Value);
 
 			if (user == null) {
 				return NotFound();
 			}
 
 			ChatUser = user;
-			IsThisUser = (await _userManager.GetUserAsync(User)).Id == user.Id;
 			JoinInvitationInput = new JoinInvitationInputModel();
 			DismissNotificationInput = new DismissNotificationInputModel();
 
