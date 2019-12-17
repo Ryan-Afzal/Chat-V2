@@ -37,7 +37,6 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 		[TempData]
 		public string StatusMessage { get; set; }
 
-		[Required]
 		[Display(Name = "Profile Image")]
 		public IFormFile ProfileImage { get; set; }
 
@@ -93,7 +92,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 			return Page();
 		}
 
-		public async Task<IActionResult> OnPostAsync() {
+		public async Task<IActionResult> OnPostUpdateAsync() {
 			if (!ModelState.IsValid) {
 				return Page();
 			}
@@ -130,6 +129,19 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 				}
 			}
 
+			if (!Input.FirstName.Equals(user.FirstName)) {
+				user.FirstName = Input.FirstName;
+			}
+
+			if (!Input.LastName.Equals(user.LastName)) {
+				user.LastName = Input.LastName;
+			}
+
+			if (!Input.ProfileDescription.Equals(user.ProfileDescription)) {
+				user.ProfileDescription = Input.ProfileDescription;
+			}
+
+			await _context.SaveChangesAsync();
 			await _signInManager.RefreshSignInAsync(user);
 			StatusMessage = "Your profile has been updated";
 			return RedirectToPage();

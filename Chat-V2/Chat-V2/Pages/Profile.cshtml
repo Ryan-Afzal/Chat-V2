@@ -10,13 +10,15 @@
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
-    <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge-primary">@Model.ChatUser.Notifications.Count</span></a>
-            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge-primary">@Model.ChatUser.GroupJoinInvitations.Count</span></a>
+    <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge-primary" hidden>0</span></a>
+            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge-primary" hidden>@Model.ChatUser.GroupJoinInvitations.Count</span></a>
         }
     </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <br />
+
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
@@ -51,10 +53,20 @@
     </div>
     @if (Model.IsThisUser) {
         <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
-            <h1 class="text-center">Notifications are a Work In Progress</h1>
-            <h2 class="text-center">Check back later!</h2>
+            <br />
+
+            <h4>Notifications</h4>
+
+            <br />
 
             <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="no-notifs" class="card">
+                            <div class="card-header">No Notifications</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-12">
                         <div id="notifications-list">
@@ -62,13 +74,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-
-                </div>
             </div>
         </div>
         <div class="tab-pane fade" id="nav-invitations" role="tabpanel" aria-labelledby="nav-invitations-tab">
+            <br />
+
             <h4>Join Invitations</h4>
+
+            <br />
+
             <div id="join-invitations-list" class="col-12">
                 @if (Model.ChatUser.GroupJoinInvitations.Count == 0) {
                     <div id="no-invitations" class="card">
@@ -116,6 +130,10 @@
         <script>
             "use strict";
 
+            if (@Model.ChatUser.GroupJoinInvitations.Count != 0) {
+                document.getElementById("invitations-badge").removeAttribute("hidden");
+            }
+
             notifConnectionPromise.then(function () {
                 var getNotifsArgs = {
                     ChatUserID: @Model.ChatUser.Id
@@ -136,10 +154,62 @@
 
                     console.log(args.text);
 
-                    //var card = document.createElement("div");
-                    //card.setAttribute("class", "card");
-                    //card.setAttribute("id", "notif-" + args.notificationID);
-                    //card.setAttribute("notificationID", args.notificationID);
+                    var card = document.createElement("div");
+                    card.setAttribute("class", "card");
+                    card.setAttribute("id", "notif-" + args.notificationID);
+                    card.setAttribute("notificationID", args.notificationID);
+
+                    var head = document.createElement("div");
+                    head.setAttribute("class", "card-header");
+                    card.append(head);
+
+                    var title = document.createElement("a");
+                    title.setAttribute("class", "card-link");
+                    title.setAttribute("data-toggle", "collapse");
+                    title.setAttribute("href", "#notif-collapse-" + args.notificationID);
+                    title.textContent = args.title;
+                    head.append(title);
+
+                    var close = document.createElement("button");
+                    close.setAttribute("type", "button");
+                    close.setAttribute("class", "close");
+                    close.addEventListener("click", function () {
+                        var id = parseInt(card.getAttribute("notificationID"));
+                        document.getElementById("notifications-list").removeChild(document.getElementById("notif-" + id));
+                        decrementNotifsCount();
+
+                        var args = {
+                            ChatUserID: @Model.ChatUser.Id,
+                            NotificationID: id
+                        };
+
+                        notifConnection.invoke("RemoveNotification", args);
+                    });
+                    close.textContent = "×";
+                    head.append(close);
+
+                    var collapse = document.createElement("div");
+                    collapse.setAttribute("data-parent", "#notifications-list");
+                    collapse.setAttribute("class", "collapse");
+                    collapse.setAttribute("id", "notif-collapse-" + args.notificationID);
+                    card.append(collapse);
+
+                    var body = document.createElement("div");
+                    body.setAttribute("class", "card-body");
+                    collapse.append(body);
+
+                    var text = document.createElement("p");
+                    text.setAttribute("class", "card-text");
+                    text.textContent = args.text;
+                    body.append(text);
+
+                    var link = document.createElement("a");
+                    link.setAttribute("href", args.viewURL);
+                    link.setAttribute("class", "card-link");
+                    link.textContent = "View";
+                    body.append(link);
+
+                    document.getElementById("notifications-list").prepend(card);
                 });
             });
 
@@ -160,6 +230,7 @@
 
                 if (count > 0) {
                     node.removeAttribute("hidden");
+                    document.getElementById("no-notifs").setAttribute("hidden", "hidden");
                 }
 
                 node.textContent = count;
@@ -171,6 +242,7 @@
 
                 if (count == 0) {
                     node.setAttribute("hidden", "hidden");
+                    document.getElementById("no-notifs").removeAttribute("hidden");
                 }
 
                 node.textContent = count;

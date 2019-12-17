@@ -63,8 +63,7 @@ namespace Chat_V2.Pages {
 				query = query
 					.Include(u => u.Memberships)
 					.Include(u => u.GroupJoinInvitations)
-						.ThenInclude(i => i.Group)
-					.Include(u => u.Notifications);
+						.ThenInclude(i => i.Group);
 			}
 
 			var user = await query.FirstOrDefaultAsync(u => u.Id == userId.Value);

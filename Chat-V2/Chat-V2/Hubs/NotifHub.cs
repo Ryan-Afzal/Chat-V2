@@ -61,6 +61,7 @@ namespace Chat_V2.Hubs {
 			Notification notif = new Notification() {
 				ChatUserID = args.ChatUserID,
 				Date = DateTime.Now,
+				Title = args.Title,
 				Text = args.Text,
 				ViewURL = args.ViewURL
 			};
@@ -73,6 +74,16 @@ namespace Chat_V2.Hubs {
 			await proxy.SendAsync("NewNotification", 
 				new NewNotificationArgs() {
 					ChatUserID = args.ChatUserID
+				});
+
+			await proxy.SendAsync("ReceiveNotification",
+				new ReceiveNotificationArgs() {
+					ChatUserID = notif.ChatUserID,
+					NotificationID = notif.NotificationID,
+					Date = notif.Date.ToString(),
+					Title = notif.Title,
+					Text = notif.Text,
+					ViewURL = notif.ViewURL
 				});
 		}
 
@@ -94,7 +105,6 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task GetNotifications(GetNotificationsArgs args) {
-			//GetNotificationsArgs args = x as GetNotificationsArgs;
 			if ((args.ChatUserID + "") != Context.UserIdentifier) {
 				throw new ArgumentException(nameof(args.ChatUserID));
 			}
@@ -111,7 +121,7 @@ namespace Chat_V2.Hubs {
 				"ReceiveNotifications",
 				chatUser.Notifications
 					.AsQueryable()
-					.Select(n => new ReceiveNotificationArgs() { ChatUserID = chatUser.Id, NotificationID = n.NotificationID, Text = n.Text, ViewURL = n.ViewURL })
+					.Select(n => new ReceiveNotificationArgs() { ChatUserID = chatUser.Id, NotificationID = n.NotificationID, Date = n.Date.ToString(), Title = n.Title, Text = n.Text, ViewURL = n.ViewURL })
 					.ToList()
 			);
 		}

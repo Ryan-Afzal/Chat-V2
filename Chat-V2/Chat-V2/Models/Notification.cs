@@ -10,6 +10,7 @@ namespace Chat_V2.Models {
 		public int NotificationID { get; set; }
 		public int ChatUserID { get; set; }
 		public DateTime Date { get; set; }
+		public string Title { get; set; }
 		public string Text { get; set; }
 		public string ViewURL { get; set; }
 	}
