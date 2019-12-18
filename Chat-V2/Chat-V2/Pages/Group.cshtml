@@ -127,17 +127,17 @@
             </div>
         </div>
         @if (Model.ViewModel.Membership.Rank > PermissionRank.USER.Ordinal) {
-            
+
             <hr />
-            
+
+            <br />
+
             <div id="group-member-moderator" class="row">
-                <br />
-
-                <h4>Join Requests</h4>
-                
-                <br />
-
                 <div id="join-requests-list" class="col-12">
+                    <h4>Join Requests</h4>
+
+                    <br />
+
                     @if (Model.ViewModel.Group.GroupJoinRequests.Count == 0) {
                         <div id="no-requests" class="card">
                             <div class="card-header">No Join Requests</div>
@@ -183,11 +183,11 @@
 
                 <br />
 
-                <h4>Invite Members</h4>
-
-                <br />
-
                 <div id="invite-members" class="col-12">
+                    <h4>Invite Members</h4>
+
+                    <br />
+
                     <form method="post">
                         <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
                         <div asp-validation-summary="All" class="text-danger"></div>
@@ -215,9 +215,9 @@
                 <br />
 
                 <h4>Banned Users</h4>
-                
+
                 <br />
-                
+
                 <table class="table">
                     <tr>
                         <th>ID</th>
@@ -253,26 +253,24 @@
                 <hr />
 
                 <div id="group-member-officer" class="row">
-                    
+
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
                     <div id="group-member-admin" class="row">
+                        <br />
+
                         <div id="change-name" class="col-12">
+                            <h4>Change Group Name</h4>
+
                             <br />
 
-                            <h4>Change Group Name</h4>
-                            
-                            <br />
-                            
-                            <form method="post" class="form-inline">
+                            <form class="form-inline" method="post">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupNameInput.Name"></label>
                                     <input asp-for="ChangeGroupNameInput.Name" class="form-control" />
                                 </div>
-                                <div class="form-group">
-                                    <button asp-page-handler="ChangeGroupName" class="btn btn-primary form-control" type="submit">Change Group Name</button>
-                                </div>
+                                <button type="submit" asp-page-handler="ChangeGroupName" class="btn btn-primary">Change Group Name</button>
                                 <input type="hidden" asp-for="ChangeGroupNameInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                 <input type="hidden" name="returnUrl" value="@returnUrl" />
                             </form>
@@ -281,20 +279,16 @@
                         <br />
 
                         <div id="change-description" class="col-12">
+                            <h4>Change Group Description</h4>
+
                             <br />
 
-                            <h4>Change Group Description</h4>
-                            
-                            <br />
-                            
-                            <form method="post" class="form-inline">
+                            <form class="form-inline" method="post">
                                 <div class="form-group">
                                     <label asp-for="ChangeGroupDescriptionInput.Description"></label>
                                     <textarea asp-for="ChangeGroupDescriptionInput.Description" class="form-control"></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <button asp-page-handler="ChangeGroupDescription" class="btn btn-primary" type="submit">Change Group Description</button>
-                                </div>
+                                <button type="submit" asp-page-handler="ChangeGroupDescription" class="btn btn-primary">Change Group Description</button>
                                 <input type="hidden" asp-for="ChangeGroupDescriptionInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
                                 <input type="hidden" name="returnUrl" value="@returnUrl" />
                             </form>
@@ -303,12 +297,10 @@
                         <br />
 
                         <div id="change-image" class="col-12">
+                            <h4>Change Image</h4>
+
                             <br />
 
-                            <h4>Change Image</h4>
-                            
-                            <br />
-                            
                             <form enctype="multipart/form-data" method="post">
                                 <div class="form-group">
                                     <label asp-for="UploadImageInput.GroupImage"></label>
@@ -324,11 +316,11 @@
 
                         <div id="toggle-private-public" class="col-12">
                             <br />
-                            
+
                             <h4>Toggle Private Group</h4>
-                            
+
                             <br />
-                            
+
                             @if (Model.ViewModel.Group.IsPrivate) {
                                 <button id="private-public toggle" class="btn btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Group Public</button>
 
@@ -393,21 +385,21 @@
                                 </div>
                                 <div class="card-body">
                                     <!--<form method="post" class="form-group">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ChangeOwnerInput.UserID"></label>
-                <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
-                <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ChangeOwnerInput.UserName"></label>
-                <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
-                <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
-            </div>
-            <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
-            <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-    <input type="hidden" name="returnUrl" value="@returnUrl" />
-        </form>-->
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            <div class="form-group">
+                                                <label asp-for="ChangeOwnerInput.UserID"></label>
+                                                <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
+                                                <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ChangeOwnerInput.UserName"></label>
+                                                <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
+                                                <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
+                                            </div>
+                                            <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
+                                            <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        </form>-->
                                 </div>
                             </div>
 
