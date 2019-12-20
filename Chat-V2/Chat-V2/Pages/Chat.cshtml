@@ -8,27 +8,26 @@
 <div class="container-fluid">
     <div class="row">&nbsp;</div>
     <div class="row">
-        <div id="left-pane" class="col-3 card">
-            <div class="card-header">
-
-            </div>
-            <div class="card-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <ul id="groups-list" class="list-group">
-                                <!--<li class="group-data-container list-group-item">
-                                    <img src="/DefaultFiles/defaultGroupImage.png" width="32" height="32" class="rounded-circle img" />
-                                    <span class="group-data-name">Sample Group Name </span>
-                                </li>-->
-                            </ul>
+        <div id="left-pane" class="col-2">
+            <div class="card h-100">
+                <div class="card-body h-100" style="padding: 8px;">
+                    <div class="container w-100" style="padding: 8px;">
+                        <div class="row">
+                            <div class="col-12" style="padding: 8px;">
+                                <ul id="groups-list" class="list-group w-100">
+                                    <!--<li class="group-data-container list-group-item">
+                            <img src="/DefaultFiles/defaultGroupImage.png" width="32" height="32" class="rounded-circle img" />
+                            <span class="group-data-name">Sample Group Name </span>
+                        </li>-->
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="center-pane" class="col-6">
+        <div id="center-pane" class="col-7">
             <div class="text-center">
                 <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
             </div>
@@ -195,6 +194,8 @@
 <script type="text/javascript">
     "use strict";
 
+    var isMobile = isMobile();
+
     //Get the sound file
     var sound = new Audio('/media/new-message.mp3');
     var play_sound = false;
@@ -209,6 +210,14 @@
 
     var currentGroupID = -1;
     var membershipID = -1;
+
+    function isMobile() {
+        if (window.innerWidth <= 800 && window.innerHeight <= 600) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     function appendMessage(message) {
         var messagesList = $("#messages-list");
@@ -364,13 +373,21 @@
 
         var img = document.createElement("img");
         img.setAttribute("src", groupImage);
-        img.setAttribute("width", "32");
-        img.setAttribute("height", "32");
+        if (isMobile) {
+            img.setAttribute("width", "16");
+            img.setAttribute("height", "16");
+        } else {
+            img.setAttribute("width", "32");
+            img.setAttribute("height", "32");
+        }
         img.setAttribute("class", "rounded-circle img");
         container.appendChild(img);
 
         var name = document.createElement("span");
         name.setAttribute("class", "group-data-name");
+        if (isMobile) {
+            name.setAttribute("hidden", "hidden");
+        }
         name.textContent = groupName + " ";
         container.appendChild(name);
 
