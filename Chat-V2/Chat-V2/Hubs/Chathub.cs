@@ -142,6 +142,7 @@ namespace Chat_V2.Hubs {
 							GroupID = _m.GroupID,
 							UserID = _m.ChatUserID,
 							UserName = _m.ChatUser.UserName,
+							UserImage = FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
 							UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
 						});
 					if (_m.IsActiveInGroup) {
@@ -149,14 +150,20 @@ namespace Chat_V2.Hubs {
 							"OtherUserActiveInGroup",
 							new OtherUserConnectedToGroupArgs() {
 								GroupID = _m.GroupID,
-								UserID = _m.ChatUserID
+								UserID = _m.ChatUserID,
+								UserName = _m.ChatUser.UserName,
+								UserImage = FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
+								UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
 							});
 					} else {
 						await Clients.Caller.SendAsync(
 							"OtherUserInactiveInGroup",
 							new OtherUserConnectedToGroupArgs() {
 								GroupID = _m.GroupID,
-								UserID = _m.ChatUserID
+								UserID = _m.ChatUserID,
+								UserName = _m.ChatUser.UserName,
+								UserImage = FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
+								UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
 							});
 					}
 				}

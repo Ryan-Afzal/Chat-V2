@@ -74,6 +74,7 @@ namespace Chat_V2.Models {
 		public int GroupID { get; set; }
 		public int UserID { get; set; }
 		public string UserName { get; set; }
+		public string UserImage { get; set; }
 		public string UserRank { get; set; }
 	}
 
