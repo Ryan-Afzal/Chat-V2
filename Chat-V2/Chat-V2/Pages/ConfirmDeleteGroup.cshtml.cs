@@ -66,14 +66,12 @@ namespace Chat_V2.Pages {
 			return Page();
 		}
 
-		public async Task<IActionResult> OnPostCancelAsync(int? groupId, string returnUrl = null) {
-			returnUrl ??= Url.Content("~/");
-
-			if (groupId == null) {
+		public async Task<IActionResult> OnPostCancelAsync(int? groupId) {
+			if (groupId is null) {
 				return BadRequest();
 			}
 
-			return LocalRedirect(returnUrl);
+			return LocalRedirect("/Group?groupId=" + groupId);
 		}
 
 		public async Task<IActionResult> OnPostConfirmAsync(string returnUrl = null) {

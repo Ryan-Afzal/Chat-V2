@@ -44,6 +44,61 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ViewModel.Group.IsPrivate)
+            @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
+                @if (Model.ViewModel.Group.IsPrivate) {
+                    <button id="private-public toggle" class="btn btn-sm btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Public</button>
+
+                    <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group public?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    This will make it discoverable by non-users, and allow them to make join requests.
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="post">
+                                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                                        <button type="submit" asp-page-handler="MakePublic" class="btn btn-info">Make Public</button>
+                                        <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                } else {
+                    <button id="private-public toggle" class="btn btn-sm btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Private</button>
+
+                    <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group private?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    This will make it undiscoverable by non-users, and disallow join requests.
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="post">
+                                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                                        <button type="submit" asp-page-handler="MakePrivate" class="btn btn-danger">Make Private</button>
+                                        <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ViewModel.Group.Memberships)
@@ -70,6 +125,9 @@
                             }
                             <span class="badge" style="background-color: @rank.Color">@rank.Name</span>
                         </td>
+                        <td>
+                            <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
+                        </td>
                         @if (Model.ViewModel.IsGroupMember && Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal && item.ChatUserID != Model.ViewModel.ChatUser.Id) {
                             <td>
                                 <form method="post">
@@ -80,9 +138,6 @@
                                 </form>
                             </td>
                         }
-                        <td>
-                            <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
-                        </td>
                     </tr>
                 }
             </table>
@@ -133,300 +188,245 @@
             <br />
 
             <div id="group-member-moderator" class="row">
-                <div id="join-requests-list" class="col-12">
-                    <h4>Join Requests</h4>
+                <div class="col-12">
+                    <div id="join-requests-list">
+                        <h4>Join Requests</h4>
 
-                    <br />
+                        <br />
 
-                    @if (Model.ViewModel.Group.GroupJoinRequests.Count == 0) {
-                        <div id="no-requests" class="card">
-                            <div class="card-header">No Join Requests</div>
-                        </div>
-                    } else {
-                        @foreach (var request in Model.ViewModel.Group.GroupJoinRequests) {
-                            <div id="request-user-@(request.ChatUserID)" class="card">
-                                <div class="card-header">@(request.ChatUser.UserName)</div>
-                                <div class="card-body">
-                                    <dl>
-                                        <dt>
-                                            ID
-                                        </dt>
-                                        <dh>
-                                            @(request.ChatUserID)
-                                        </dh>
-                                        <dt>
-                                            Username
-                                        </dt>
-                                        <dh>
-                                            @(request.ChatUser.UserName)
-                                        </dh>
-                                        <dt>
-                                            Message
-                                        </dt>
-                                        <dh>
-                                            @(request.Message)
-                                        </dh>
-                                    </dl>
-                                    <form method="post">
-                                        <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
-                                        <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
-                                        <input type="hidden" asp-for="JoinRequestInput.GroupID" value="@(request.GroupID)" />
-                                        <input type="hidden" asp-for="JoinRequestInput.RequestID" value="@(request.GroupJoinRequestID)" />
-                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                    </form>
-                                </div>
-                                <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
+                        @if (Model.ViewModel.Group.GroupJoinRequests.Count == 0) {
+                            <div id="no-requests" class="card">
+                                <div class="card-header">No Join Requests</div>
                             </div>
+                        } else {
+                            @foreach (var request in Model.ViewModel.Group.GroupJoinRequests) {
+                                <div id="request-user-@(request.ChatUserID)" class="card">
+                                    <div class="card-header">@(request.ChatUser.UserName)</div>
+                                    <div class="card-body">
+                                        <dl>
+                                            <dt>
+                                                ID
+                                            </dt>
+                                            <dh>
+                                                @(request.ChatUserID)
+                                            </dh>
+                                            <dt>
+                                                Username
+                                            </dt>
+                                            <dh>
+                                                @(request.ChatUser.UserName)
+                                            </dh>
+                                            <dt>
+                                                Message
+                                            </dt>
+                                            <dh>
+                                                @(request.Message)
+                                            </dh>
+                                        </dl>
+                                        <form method="post">
+                                            <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
+                                            <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
+                                            <input type="hidden" asp-for="JoinRequestInput.GroupID" value="@(request.GroupID)" />
+                                            <input type="hidden" asp-for="JoinRequestInput.RequestID" value="@(request.GroupJoinRequestID)" />
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        </form>
+                                    </div>
+                                    <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
+                                </div>
+                            }
                         }
-                    }
-                </div>
-
-                <br />
-
-                <div id="invite-members" class="col-12">
-                    <h4>Invite Members</h4>
+                    </div>
 
                     <br />
 
-                    <form method="post">
-                        <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
-                        <div asp-validation-summary="All" class="text-danger"></div>
-                        <div class="form-group">
-                            <label asp-for="InviteToGroupInput.UserID"></label>
-                            <input asp-for="InviteToGroupInput.UserID" class="form-control" />
-                            <span asp-validation-for="InviteToGroupInput.UserID" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="InviteToGroupInput.UserName"></label>
-                            <input asp-for="InviteToGroupInput.UserName" class="form-control" />
-                            <span asp-validation-for="InviteToGroupInput.UserName" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="InviteToGroupInput.Message"></label>
-                            <input asp-for="InviteToGroupInput.Message" class="form-control" />
-                            <span asp-validation-for="InviteToGroupInput.Message" class="text-danger"></span>
-                        </div>
-                        <button asp-page-handler="InviteToGroup" type="submit" class="btn btn-primary">Invite</button>
-                        <input type="hidden" asp-for="InviteToGroupInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                    </form>
-                </div>
+                    <div id="invite-members">
+                        <h4>Invite Members</h4>
 
-                <br />
+                        <br />
 
-                <h4>Banned Users</h4>
+                        <form method="post">
+                            <div class="text-danger">Remember that the User ID and the username must match the same User!</div>
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="InviteToGroupInput.UserID"></label>
+                                <input asp-for="InviteToGroupInput.UserID" class="form-control" />
+                                <span asp-validation-for="InviteToGroupInput.UserID" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="InviteToGroupInput.UserName"></label>
+                                <input asp-for="InviteToGroupInput.UserName" class="form-control" />
+                                <span asp-validation-for="InviteToGroupInput.UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="InviteToGroupInput.Message"></label>
+                                <input asp-for="InviteToGroupInput.Message" class="form-control" />
+                                <span asp-validation-for="InviteToGroupInput.Message" class="text-danger"></span>
+                            </div>
+                            <button asp-page-handler="InviteToGroup" type="submit" class="btn btn-primary">Invite</button>
+                            <input type="hidden" asp-for="InviteToGroupInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        </form>
+                    </div>
 
-                <br />
+                    <br />
 
-                <table class="table">
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                    </tr>
-                    @foreach (var item in Model.ViewModel.Group.BannedUsers) {
+                    <h4>Banned Users</h4>
+
+                    <br />
+
+                    <table class="table">
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Id)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.UserName)
-                            </td>
-                            <td>
-                                <a asp-page="/Profile" asp-route-userId="@item.Id">View</a>
-                            </td>
-                            @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
-                                <td>
-                                    <form method="post">
-                                        <button type="submit" asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
-                                        <input type="hidden" asp-for="UnbanUserInput.ChatUserID" value="@item.Id" />
-                                        <input type="hidden" asp-for="UnbanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                    </form>
-                                </td>
-                            }
+                            <th>ID</th>
+                            <th>Username</th>
                         </tr>
-                    }
-                </table>
+                        @foreach (var item in Model.ViewModel.Group.BannedUsers) {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </td>
+                                <td>
+                                    <a asp-page="/Profile" asp-route-userId="@item.Id">View</a>
+                                </td>
+                                @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
+                                    <td>
+                                        <form method="post">
+                                            <button type="submit" asp-page-handler="UnbanUser" class="btn btn-primary">Unban</button>
+                                            <input type="hidden" asp-for="UnbanUserInput.ChatUserID" value="@item.Id" />
+                                            <input type="hidden" asp-for="UnbanUserInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </table>
+                </div>
             </div>
             @if (Model.ViewModel.Membership.Rank > PermissionRank.MODERATOR.Ordinal) {
 
                 <hr />
 
                 <div id="group-member-officer" class="row">
+                    <div class="col-12">
 
+                    </div>
                 </div>
                 @if (Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
                     <hr />
                     <div id="group-member-admin" class="row">
-                        <br />
-
-                        <div id="change-name" class="col-12">
-                            <h4>Change Group Name</h4>
-
+                        <div class="col-12">
                             <br />
 
-                            <form class="form-inline" method="post">
-                                <div class="form-group">
-                                    <label asp-for="ChangeGroupNameInput.Name"></label>
-                                    <input asp-for="ChangeGroupNameInput.Name" class="form-control" />
-                                </div>
-                                <button type="submit" asp-page-handler="ChangeGroupName" class="btn btn-primary">Change Group Name</button>
-                                <input type="hidden" asp-for="ChangeGroupNameInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                <input type="hidden" name="returnUrl" value="@returnUrl" />
-                            </form>
-                        </div>
+                            <div id="change-name">
+                                <h4>Change Group Name</h4>
 
-                        <br />
+                                <br />
 
-                        <div id="change-description" class="col-12">
-                            <h4>Change Group Description</h4>
-
-                            <br />
-
-                            <form class="form-inline" method="post">
-                                <div class="form-group">
-                                    <label asp-for="ChangeGroupDescriptionInput.Description"></label>
-                                    <textarea asp-for="ChangeGroupDescriptionInput.Description" class="form-control"></textarea>
-                                </div>
-                                <button type="submit" asp-page-handler="ChangeGroupDescription" class="btn btn-primary">Change Group Description</button>
-                                <input type="hidden" asp-for="ChangeGroupDescriptionInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                <input type="hidden" name="returnUrl" value="@returnUrl" />
-                            </form>
-                        </div>
-
-                        <br />
-
-                        <div id="change-image" class="col-12">
-                            <h4>Change Image</h4>
-
-                            <br />
-
-                            <form enctype="multipart/form-data" method="post">
-                                <div class="form-group">
-                                    <label asp-for="UploadImageInput.GroupImage"></label>
-                                    <input asp-for="UploadImageInput.GroupImage" type="file" class="form-control" />
-                                </div>
-                                <button asp-page-handler="UploadImage" class="btn btn-primary" type="submit">Upload</button>
-                                <input type="hidden" asp-for="UploadImageInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                <input type="hidden" name="returnUrl" value="@returnUrl" />
-                            </form>
-                        </div>
-
-                        <br />
-
-                        <div id="toggle-private-public" class="col-12">
-                            <br />
-
-                            <h4>Toggle Private Group</h4>
-
-                            <br />
-
-                            @if (Model.ViewModel.Group.IsPrivate) {
-                                <button id="private-public toggle" class="btn btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Group Public</button>
-
-                                <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group public?</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                This will make it discoverable by non-users, and allow them to make join requests.
-                                            </div>
-                                            <div class="modal-footer">
-                                                <form method="post">
-                                                    <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
-                                                    <button type="submit" asp-page-handler="MakePublic" class="btn btn-info">Make Public</button>
-                                                    <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                                </form>
-                                            </div>
+                                <form method="post">
+                                    <div class="input-group">
+                                        <input asp-for="ChangeGroupNameInput.Name" placeholder="New Group Name" value="@Model.ViewModel.Group.Name" class="form-control" />
+                                        <div class="input-group-append">
+                                            <button type="submit" asp-page-handler="ChangeGroupName" class="btn btn-primary">Change</button>
                                         </div>
                                     </div>
-                                </div>
-                            } else {
-                                <button id="private-public toggle" class="btn btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Group Private</button>
+                                    <input type="hidden" asp-for="ChangeGroupNameInput.GroupID" value="@Model.ViewModel.Group.GroupID" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                </form>
+                            </div>
 
-                                <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group private?</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                This will make it undiscoverable by non-users, and disallow join requests.
-                                            </div>
-                                            <div class="modal-footer">
-                                                <form method="post">
-                                                    <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
-                                                    <button type="submit" asp-page-handler="MakePrivate" class="btn btn-danger">Make Private</button>
-                                                    <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                                </form>
-                                            </div>
+                            <br />
+
+                            <div id="change-description">
+                                <h4>Change Group Description</h4>
+
+                                <br />
+
+                                <form method="post">
+                                    <div class="input-group">
+                                        <textarea asp-for="ChangeGroupDescriptionInput.Description" placeholder="New Group Description" value="@Model.ViewModel.Group.Description" class="form-control"></textarea>
+                                        <div class="input-group-append">
+                                            <button type="submit" asp-page-handler="ChangeGroupDescription" class="btn btn-primary">Change</button>
                                         </div>
                                     </div>
-                                </div>
-                            }
+                                    <input type="hidden" asp-for="ChangeGroupDescriptionInput.GroupID" value="@Model.ViewModel.Group.GroupID" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                </form>
+                            </div>
+
+                            <br />
+
+                            <div id="change-image">
+                                <h4>Change Image</h4>
+
+                                <br />
+
+                                <form enctype="multipart/form-data" method="post">
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input asp-for="UploadImageInput.GroupImage" type="file" class="custom-file-input" id="change-image-input" />
+                                            <label class="custom-file-label" for="change-image-input">Choose File</label>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <button asp-page-handler="UploadImage" class="btn btn-primary" type="submit">Upload</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" asp-for="UploadImageInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                </form>
+                            </div>
                         </div>
                     </div>
                     @if (Model.ViewModel.Membership.Rank > PermissionRank.ADMINISTRATOR.Ordinal) {
                         <hr />
-                        <div id="group-member-owner" class="row">
-                            <div class="card border-danger">
-                                <div class="card-header text-danger">
-                                    Change Ownership
-                                </div>
-                                <div class="card-body">
-                                    <!--<form method="post" class="form-group">
-                                            <div asp-validation-summary="All" class="text-danger"></div>
-                                            <div class="form-group">
-                                                <label asp-for="ChangeOwnerInput.UserID"></label>
-                                                <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
-                                                <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
-                                            </div>
-                                            <div class="form-group">
-                                                <label asp-for="ChangeOwnerInput.UserName"></label>
-                                                <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
-                                                <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
-                                            </div>
-                                            <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
-                                            <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                        </form>-->
-                                </div>
-                            </div>
 
-                            <div class="card border-danger">
-                                <div class="card-header text-danger">
-                                    Danger Zone
+                        <div id="group-member-owner" class="row">
+                            <div class="col-12">
+                                <div class="card border-danger">
+                                    <div class="card-header text-danger">
+                                        Change Ownership
+                                    </div>
+                                    <div class="card-body">
+                                        <!--<form method="post" class="form-group">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="ChangeOwnerInput.UserID"></label>
+                        <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
+                        <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ChangeOwnerInput.UserName"></label>
+                        <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
+                        <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
+                    </div>
+                    <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
+                    <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                </form>-->
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <form method="post">
-                                        <div class="form-group">
-                                            <button type="submit" asp-page-handler="ArchiveGroup" class="btn btn-warning disabled">Archive</button>
-                                        </div>
-                                        <div class="form-group">
-                                            <button type="submit" asp-page-handler="DeleteGroup" class="btn btn-danger">Delete</button>
-                                        </div>
-                                        <input type="hidden" asp-for="DangerZoneInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                    </form>
+
+                                <div class="card border-danger">
+                                    <div class="card-header text-danger">
+                                        Danger Zone
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post">
+                                            <div class="form-group">
+                                                <button type="submit" asp-page-handler="ArchiveGroup" class="btn btn-warning disabled">Archive</button>
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="submit" asp-page-handler="DeleteGroup" class="btn btn-danger">Delete</button>
+                                            </div>
+                                            <input type="hidden" asp-for="DangerZoneInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        @if (Model.ViewModel.Membership.Rank > PermissionRank.OWNER.Ordinal) {
-                            <hr />
-                            <div id="group-member-superuser" class="row">
-
-                            </div>
-                        }
                     }
                 }
             }

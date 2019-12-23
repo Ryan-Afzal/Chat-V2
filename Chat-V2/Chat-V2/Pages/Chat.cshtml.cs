@@ -20,6 +20,10 @@ namespace Chat_V2.Pages {
 			public ChatUser ChatUser { get; set; }
 		}
 
+		public class SearchGroupInputModel {
+			public string NameQuery { get; set; }
+		}
+
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
@@ -38,6 +42,9 @@ namespace Chat_V2.Pages {
 		[BindProperty]
 		public ChatViewModel ViewModel { get; private set; }
 
+		[BindProperty]
+		public SearchGroupInputModel SearchGroupInput { get; set; }
+
 		public async Task<IActionResult> OnGetAsync() {
 			var chatUser = await _userManager.GetUserAsync(User);
 
@@ -52,6 +59,13 @@ namespace Chat_V2.Pages {
 			return Page();
 		}
 
+		public async Task<IActionResult> OnPostSearchGroupsAsync() {
+			return LocalRedirect("/Groups?SearchString=" + SearchGroupInput.NameQuery);
+		}
+
+		public async Task<IActionResult> OnPostCreateNewGroupAsync() {
+			return LocalRedirect("/CreateGroup");
+		}
 	}
 
 }

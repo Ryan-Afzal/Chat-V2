@@ -8,11 +8,24 @@
 <div class="container-fluid">
     <div class="row">&nbsp;</div>
     <div class="row">
-        <div id="left-pane" class="col-2">
+        <div id="left-pane" class="col-2 col-sm-2 col-md-3 col-lg-3 col-xl-3">
             <div class="card text-black-50 h-100">
-                <!--<div class="card-header">
-                    
-                </div>-->
+                <div class="card-header" id="left-header-desktop" hidden>
+                    <form method="post">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <button asp-page-handler="CreateNewGroup" type="submit" class="btn btn-dark text-white">+</button>
+                            </div>
+                            <input asp-for="SearchGroupInput.NameQuery" placeholder="Find New Group" class="form-control" />
+                            <div class="input-group-append">
+                                <button asp-page-handler="SearchGroups" class="btn btn-dark text-white" type="submit">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-header p-0" id="left-header-mobile" hidden>
+                    <a asp-page="/Groups" class="btn btn-dark text-white w-100 h-100">+</a>
+                </div>
                 <ul id="groups-list" class="list-group list-group-flush">
                     <!--<li class="group-data-container list-group-item">
                         <img src="/DefaultFiles/defaultGroupImage.png" width="32" height="32" class="rounded-circle img" />
@@ -22,7 +35,7 @@
             </div>
         </div>
 
-        <div id="center-pane" class="col-7">
+        <div id="center-pane" class="col-7 col-sm-7 col-md-6 col-lg-6 col-xl-6">
             <div class="text-center">
                 <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
             </div>
@@ -35,7 +48,7 @@
             <input type="text" id="message-input" class="console-input form-control" placeholder="Enter message here" />
         </div>
 
-        <div id="right-pane" class="col-3">
+        <div id="right-pane" class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
             <div class="card h-100">
                 <div class="card-header bg-dark">
                     <a href="/Chat" id="current-group-name" class="text-white">
@@ -455,6 +468,14 @@
 
     function hide(node) {
         node.setAttribute("hidden", "hidden");
+    }
+
+    if (isMobile) {
+        show(document.getElementById("left-header-mobile"));
+        hide(document.getElementById("left-header-desktop"));
+    } else {
+        hide(document.getElementById("left-header-mobile"));
+        show(document.getElementById("left-header-desktop"));
     }
 
     //Start SignalR connection

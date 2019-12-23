@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Confirm Ban User";
     Layout = "~/Pages/Shared/_Layout.cshtml";
-    var returnUrl = (HttpContext.Request.Path.Value + HttpContext.Request.QueryString.Value);
 }
 
 <div class="container-fluid">
@@ -34,7 +33,7 @@
                 <button type="submit" asp-page-handler="Cancel" class="btn btn-dark">Cancel</button>
                 <button type="submit" asp-page-handler="Confirm" class="btn btn-danger">Confirm</button>
                 <input type="hidden" asp-for="@Model.MembershipIDInput" value="@Model.MembershipID" />
-                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <input type="hidden" name="groupId" value="@Model.Group.GroupID" />
             </form>
         </div>
     </div>

@@ -12,26 +12,32 @@
 </p>
 
 <form asp-page="./Groups" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Find by name:
-            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-            <input type="submit" value="Search" class="btn btn-primary" /> |
-            <a asp-page="./Groups">Back to full List</a>
-        </p>
+    <div class="input-group">
+        <input type="text" name="SearchString" value="@Model.CurrentFilter" placeholder="Find by name" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Find</button>
+        </div>
     </div>
 </form>
 
+<br />
+
 <form asp-page="./Group" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Find by ID:
-            <input type="text" name="groupId" value="" />
-            <input type="submit" value="Find" class="btn btn-primary" /> |
-            <a asp-page="./Groups">Back to full List</a>
-        </p>
+    <div class="input-group">
+        <input type="text" name="groupId" placeholder="Find by ID" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Find</button>
+        </div>
     </div>
 </form>
+
+<br />
+
+@if (!string.IsNullOrEmpty(Model.CurrentFilter)) {
+    <a asp-page="./Groups">Back to full List</a>
+}
+
+<br />
 
 <table class="table">
     <thead>
@@ -54,20 +60,20 @@
     </thead>
     <tbody>
         @foreach (var item in Model.Groups) {
-        <tr>
-            <td>
-                <img src="@(FileTools.FileSavePath + item.GroupImage)" width="64" height="64" class="img-thumbnail" />
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GroupID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-page="/Group" asp-route-groupId="@item.GroupID">View</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    <img src="@(FileTools.FileSavePath + item.GroupImage)" width="64" height="64" class="img-thumbnail" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GroupID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-page="/Group" asp-route-groupId="@item.GroupID">View</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

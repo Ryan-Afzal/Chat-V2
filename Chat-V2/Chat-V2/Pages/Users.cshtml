@@ -8,35 +8,41 @@
 <h1>Users</h1>
 
 <form asp-page="./Users" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Find by name:
-            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-            <input type="submit" value="Search" class="btn btn-primary" /> |
-            <a asp-page="./Users">Back to full List</a>
-        </p>
+    <div class="input-group">
+        <input type="text" name="SearchString" value="@Model.CurrentFilter" placeholder="Find by name" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Find</button>
+        </div>
     </div>
 </form>
 
+<br />
+
 <form asp-page="./Profile" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Find by ID:
-            <input type="text" name="userId" value="" />
-            <input type="submit" value="Find" class="btn btn-primary" /> |
-            <a asp-page="./Users">Back to full List</a>
-        </p>
+    <div class="input-group">
+        <input type="text" name="userId" placeholder="Find by ID" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Find</button>
+        </div>
     </div>
 </form>
+
+<br />
+
+@if (!string.IsNullOrEmpty(Model.CurrentFilter)) {
+    <a asp-page="./Users">Back to full List</a>
+}
+
+<br />
 
 <table class="table">
     <thead>
         <tr>
             <!--<th>
-        <a asp-page="./Users" asp-route-sortOrder="@Model.IdSort" asp-route-currentFilter="@Model.CurrentFilter">
-            @Html.DisplayNameFor(model => model.Users[0].Id)
-        </a>
-    </th>-->
+                <a asp-page="./Users" asp-route-sortOrder="@Model.IdSort" asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.Users[0].Id)
+                </a>
+            </th>-->
             <th>
                 Avatar
             </th>
@@ -50,20 +56,20 @@
     </thead>
     <tbody>
         @foreach (var item in Model.Users) {
-        <tr>
-            <!--<td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>-->
-            <td>
-                <img src="@(FileTools.FileSavePath + item.ProfileImage)" width="64" height="64" class="img-thumbnail" />
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                <a asp-page="/Profile" asp-route-userId="@item.Id">View</a>
-            </td>
-        </tr>
+            <tr>
+                <!--<td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>-->
+                <td>
+                    <img src="@(FileTools.FileSavePath + item.ProfileImage)" width="64" height="64" class="img-thumbnail" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    <a asp-page="/Profile" asp-route-userId="@item.Id">View</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

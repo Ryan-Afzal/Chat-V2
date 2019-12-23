@@ -55,20 +55,12 @@ namespace Chat_V2.Pages {
 					.Where(g => g.UserName.Contains(searchString));
 			}
 
-			switch (sortOrder) {
-				case "name_desc":
-					UsersIQ = UsersIQ.OrderByDescending(g => g.UserName);
-					break;
-				case "Name":
-					UsersIQ = UsersIQ.OrderBy(g => g.UserName);
-					break;
-				case "id_desc":
-					UsersIQ = UsersIQ.OrderByDescending(g => g.Id);
-					break;
-				default:
-					UsersIQ = UsersIQ.OrderBy(g => g.Id);
-					break;
-			}
+			UsersIQ = sortOrder switch {
+				"name_desc" => UsersIQ.OrderByDescending(g => g.UserName),
+				"Name" => UsersIQ.OrderBy(g => g.UserName),
+				"id_desc" => UsersIQ.OrderByDescending(g => g.Id),
+				_ => UsersIQ.OrderBy(g => g.Id),
+			};
 
 			int pageSize = 10;
 			Users = await PaginatedList<ChatUser>.CreateAsync(
