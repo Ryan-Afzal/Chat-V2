@@ -71,5 +71,5 @@ body {
 
 .console-input {
     width: 100%;
-    text-wrap: normal;
+    overflow: visible;
 }

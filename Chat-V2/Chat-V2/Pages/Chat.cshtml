@@ -46,7 +46,7 @@
 
             <br />
 
-            <input type="text" id="message-input" class="console-input form-control" placeholder="Enter message here" />
+            <textarea id="message-input" class="console-input form-control" rows="1" placeholder="Enter message here"></textarea>
         </div>
 
         <div id="right-pane" class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
@@ -589,8 +589,16 @@
             newGroupMessage(args.groupID);
         }
 
-        if ((args.UserID != viewmodel.UserID) && (play_sound == true)) {
-            sound.play();
+        if ((args.UserID != viewmodel.UserID)) {
+            if (play_sound) {
+                sound.play();
+            }
+
+            var node = document.getElementById("group-" + args.groupID);
+            var parent = document.getElementById("groups-list");
+
+            parent.removeChild(node);
+            parent.prepend(node);
         }
 
     });
