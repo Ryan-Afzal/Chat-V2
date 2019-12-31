@@ -3,27 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Hubs;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Chat_V2.Pages {
 	[Authorize]
 	public class ConfirmUnbanUserModel : PageModel {
+		private readonly IHubContext<NotifHub> _hubContext;
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
 		private readonly ILogger<ConfirmUnbanUserModel> _logger;
 
-		public ConfirmUnbanUserModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ConfirmUnbanUserModel> logger) {
+		public ConfirmUnbanUserModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ConfirmUnbanUserModel> logger, IHubContext<NotifHub> hubContext) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
+			_hubContext = hubContext;
 		}
 
 		[BindProperty]
@@ -81,20 +85,49 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
-				.Include(g => g.BannedUsers)
 				.Include(g => g.Memberships)
+				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
+			var chatUser = await _context.Users
+				.Include(u => u.Notifications)
+				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
 			var currentMembership = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
-			if (currentMembership == null || currentMembership.Rank < PermissionRank.OFFICER.Ordinal) {
+			if (currentMembership is null || currentMembership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 
-			group.BannedUsers.Remove(await _context.Users.FirstOrDefaultAsync(u => u.Id == userId));
+			group.BannedUsers.Remove(chatUser);
 
+			Notification notif = new Notification() {
+				ChatUserID = chatUser.Id,
+				Date = DateTime.Now,
+				Title = $"No longer banned from {group.Name}",
+				Text = $"You are no longer banned from {group.Name}.",
+				ViewURL = $"/Group?groupId={group.GroupID}"
+			};
+
+			chatUser.Notifications.Add(notif);
 			await _context.SaveChangesAsync();
+
+			IClientProxy proxy = _hubContext.Clients.User(chatUser.Id + "");
+
+			await proxy.SendAsync("NewNotification",
+				new NewNotificationArgs() {
+					ChatUserID = notif.ChatUserID
+				});
+
+			await proxy.SendAsync("ReceiveNotification",
+				new ReceiveNotificationArgs() {
+					ChatUserID = notif.ChatUserID,
+					NotificationID = notif.NotificationID,
+					Date = notif.Date.ToString(),
+					Title = notif.Title,
+					Text = notif.Text,
+					ViewURL = notif.ViewURL
+				});
 
 			return LocalRedirect("/Group?groupId=" + groupId);
 		}

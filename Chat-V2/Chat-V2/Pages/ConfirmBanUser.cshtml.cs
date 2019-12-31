@@ -3,27 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Hubs;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Chat_V2.Pages {
 	[Authorize]
 	public class ConfirmBanUserModel : PageModel {
+		private readonly IHubContext<NotifHub> _hubContext;
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
 		private readonly ILogger<ConfirmBanUserModel> _logger;
 
-		public ConfirmBanUserModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ConfirmBanUserModel> logger) {
+		public ConfirmBanUserModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<ConfirmBanUserModel> logger, IHubContext<NotifHub> hubContext) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
+			_hubContext = hubContext;
 		}
 
 		[BindProperty]
@@ -102,7 +106,7 @@ namespace Chat_V2.Pages {
 		}
 
 		public async Task<IActionResult> OnPostConfirmAsync(int? userId, int? groupId, int? membershipId) {
-			if (groupId == null || userId == null) {
+			if (groupId is null || userId is null) {
 				return BadRequest();
 			}
 
@@ -111,30 +115,52 @@ namespace Chat_V2.Pages {
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
+			var chatUser = await _context.Users
+				.Include(u => u.Notifications)
+				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
 			var currentMembership = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
-			if (currentMembership == null) {
+			if (currentMembership is null) {
 				return BadRequest();
 			}
 
-			Membership membership = null;
+			Membership membership = await _context.Membership.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
 
-			if (membershipId != null) {
-				membership = await _context.Membership.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
-
-				if (currentMembership.Rank <= membership.Rank) {
-					return BadRequest();
-				}
+			if (membership.ChatUserID != chatUser.Id || membership.GroupID != group.GroupID || currentMembership.Rank <= membership.Rank) {
+				return BadRequest();
 			}
 
-			if (membership != null) {
-				_context.Membership.Remove(membership);
-			}
+			_context.Membership.Remove(membership);
+			group.BannedUsers.Add(chatUser);
 
-			group.BannedUsers.Add(await _context.Users.FirstOrDefaultAsync(u => u.Id == userId));
+			Notification notif = new Notification() {
+				ChatUserID = chatUser.Id,
+				Date = DateTime.Now,
+				Title = $"Banned from {group.Name}",
+				Text = $"You have been banned from {group.Name}.",
+				ViewURL = $"/Group?groupId={group.GroupID}"
+			};
 
+			chatUser.Notifications.Add(notif);
 			await _context.SaveChangesAsync();
+
+			IClientProxy proxy = _hubContext.Clients.User(chatUser.Id + "");
+
+			await proxy.SendAsync("NewNotification",
+				new NewNotificationArgs() {
+					ChatUserID = notif.ChatUserID
+				});
+
+			await proxy.SendAsync("ReceiveNotification",
+				new ReceiveNotificationArgs() {
+					ChatUserID = notif.ChatUserID,
+					NotificationID = notif.NotificationID,
+					Date = notif.Date.ToString(),
+					Title = notif.Title,
+					Text = notif.Text,
+					ViewURL = notif.ViewURL
+				});
 
 			return LocalRedirect("/Group?groupId=" + groupId);
 		}
