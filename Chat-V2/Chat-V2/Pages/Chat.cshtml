@@ -380,11 +380,12 @@
         };
 
         connection.invoke("ConnectedToGroup", args);
+        connection.invoke("ActiveInGroup", args);
 
         removeNewGroupMessage(groupId);
     }
 
-    function addGroup(groupId, groupImage, groupName, membershipId) {
+    function addGroup(groupId, groupImage, hasNew, groupName, membershipId) {
         var container = document.createElement("li");
         container.setAttribute("class", "group-data-container list-group-item");
         container.setAttribute("id", "group-" + groupId);
@@ -427,6 +428,10 @@
 
         var groupsList = document.getElementById("groups-list");
         groupsList.append(container);
+
+        if (hasNew) {
+            newGroupMessage(groupId);
+        }
     }
 
     function removeGroup(groupId) {
@@ -673,7 +678,7 @@
     });
 
     connection.on("AddGroup", function (args) {
-        addGroup(args.groupID, args.groupImage, args.groupName, args.membershipID);
+        addGroup(args.groupID, args.groupImage, args.hasNew, args.groupName, args.membershipID);
     });
 
     connection.on("RemoveGroup", function (args) {

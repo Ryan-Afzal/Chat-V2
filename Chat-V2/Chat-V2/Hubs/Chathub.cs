@@ -81,16 +81,29 @@ namespace Chat_V2.Hubs {
 		public async Task Connected(ConnectedArgs args) {
 			var chatUser = await ChatContext.Users
 				.Include(u => u.Memberships)
-				.ThenInclude(m => m.Group)
+					.ThenInclude(m => m.Group)
+						.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(u => u.Id == args.UserID);
 			//await ChatContext.SaveChangesAsync();
 
 			foreach (var m in chatUser.Memberships) {
+				bool hasNew = false;
+
+				var lastMessage = m.Group.ChatMessages.LastOrDefault();
+
+				if (lastMessage is null || m.LastViewedMessageID is null || lastMessage.ChatMessageID == m.LastViewedMessageID) {
+					hasNew = false;
+				} else {
+					hasNew = true;
+					//hasNew = lastMessage.TimeStamp > (await ChatContext.ChatMessage.FirstOrDefaultAsync(c => c.ChatMessageID == m.LastViewedMessageID)).TimeStamp;
+				}
+
 				await Clients.Caller.SendAsync(
 					"AddGroup", 
 					new AddGroupArgs() {
 						GroupID = m.GroupID,
 						MembershipID = m.MembershipID,
+						HasNew = hasNew,
 						GroupName = m.Group.Name,
 						GroupImage = FileTools.FileSavePath + "/" + m.Group.GroupImage
 					});
@@ -215,9 +228,12 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 					.ThenInclude(g => g.Memberships)
 						.ThenInclude(m => m.ChatUser)
+				.Include(m => m.Group)
+					.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
 			membership.IsActiveInGroup = true;
+			membership.LastViewedMessageID = membership.Group.ChatMessages.LastOrDefault()?.ChatMessageID;
 			await ChatContext.SaveChangesAsync();
 
 			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
@@ -401,7 +417,21 @@ namespace Chat_V2.Hubs {
 			await ChatContext.SaveChangesAsync();
 
 			//Distribute the message
-			await GetClientsInGroup(group, minRank)
+			List<string> list = new List<string>();
+
+			foreach (var m in group.Memberships) {
+				if (m.Rank >= minRank.Ordinal) {
+					if (m.IsActiveInGroup) {
+						m.LastViewedMessageID = chatMessage.ChatMessageID;
+					}
+
+					list.Add(m.ChatUserID + "");
+				}
+			}
+
+			await ChatContext.SaveChangesAsync();
+
+			await Clients.Users(list)
 				.SendAsync(
 					"ReceiveMessage",
 					await GetArgsFromChatMessageAsync(chatMessage, sender, membership));

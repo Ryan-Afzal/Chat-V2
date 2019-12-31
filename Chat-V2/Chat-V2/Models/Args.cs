@@ -62,6 +62,7 @@ namespace Chat_V2.Models {
 	public class AddGroupArgs {
 		public int GroupID { get; set; }
 		public int MembershipID { get; set; }
+		public bool HasNew { get; set; }
 		public string GroupName { get; set; }
 		public string GroupImage { get; set; }
 	}
