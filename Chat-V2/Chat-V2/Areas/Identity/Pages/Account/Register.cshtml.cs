@@ -84,7 +84,8 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 					LastName = Input.LastName,
 					ProfileDescription = "",
 					ProfileImage = FileTools.SaveFileFromDefault(FileTools.DefaultUserProfileImage),
-					IsEnabled = true
+					IsEnabled = true,
+					NumOnline = 0,
 				};
 
 				var result = await _userManager.CreateAsync(user, Input.Password);

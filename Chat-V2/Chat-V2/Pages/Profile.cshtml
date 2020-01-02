@@ -10,13 +10,144 @@
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
-    <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge badge-primary" hidden>0</span></a>
+            <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge badge-primary" hidden>0</span></a>
             <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge badge-primary" hidden>@Model.ChatUser.GroupJoinInvitations.Count</span></a>
         }
     </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+    @if (Model.ChatUser.IsEnabled) {
+        <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <br />
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <img src="@(FileTools.FileSavePath + Model.ChatUser.ProfileImage)" width="256" height="256" class="img-thumbnail" />
+                        <h3 class="display-3">@Model.ChatUser.UserName</h3>
+                    </div>
+                </div>
+                <dl class="row text-center">
+                    <dt class="col-2">
+                        @Html.DisplayNameFor(model => model.ChatUser.Id)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.ChatUser.Id)
+                    </dd>
+                    <dt class="col-2">
+                        @Html.DisplayNameFor(model => model.ChatUser.FirstName)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.ChatUser.FirstName)
+                    </dd>
+                    <dt class="col-2">
+                        @Html.DisplayNameFor(model => model.ChatUser.LastName)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.ChatUser.LastName)
+                    </dd>
+                </dl>
+                <div class="row text-center">
+                    <p>@Model.ChatUser.ProfileDescription</p>
+                </div>
+            </div>
+        </div>
+        @if (Model.IsThisUser) {
+            <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
+                <br />
+
+                <h4>Notifications</h4>
+
+                <br />
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="no-notifs" class="card">
+                                <div class="card-header">No Notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="notifications-list">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="nav-invitations" role="tabpanel" aria-labelledby="nav-invitations-tab">
+                <br />
+
+                <h4>Join Invitations</h4>
+
+                <br />
+
+                <div id="join-invitations-list" class="col-12">
+                    @if (Model.ChatUser.GroupJoinInvitations.Count == 0) {
+                        <div id="no-invitations" class="card">
+                            <div class="card-header">No Join Invitations</div>
+                        </div>
+                    } else {
+                        @foreach (var invitation in Model.ChatUser.GroupJoinInvitations) {
+                            <div id="invitation-group-@(invitation.GroupID)" class="card">
+                                <div class="card-header">@(invitation.Group.Name)</div>
+                                <div class="card-body">
+                                    <dl>
+                                        <dt>
+                                            ID
+                                        </dt>
+                                        <dh>
+                                            @(invitation.GroupID)
+                                        </dh>
+                                        <dt>
+                                            Group Name
+                                        </dt>
+                                        <dh>
+                                            @(invitation.Group.Name)
+                                        </dh>
+                                        <dt>
+                                            Message
+                                        </dt>
+                                        <dh>
+                                            @(invitation.Message)
+                                        </dh>
+                                    </dl>
+                                    <form method="post" onsubmit="decrementInvitationsCount()">
+                                        <button type="submit" asp-page-handler="AcceptJoinInvitation" class="btn btn-success">Accept</button>
+                                        <button type="submit" asp-page-handler="RejectJoinInvitation" class="btn btn-danger">Reject</button>
+                                        <input type="hidden" asp-for="JoinInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
+                                        <input type="hidden" asp-for="JoinInvitationInput.InvitationID" value="@(invitation.GroupJoinInvitationID)" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                    </form>
+                                </div>
+                                <div class="card-footer text-muted">@(invitation.DateSent.ToString())</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <script>
+                "use strict";
+
+                const invitationsCount = @Model.ChatUser.GroupJoinInvitations.Count;
+
+                const viewmodel = {
+                    UserID: @Model.ChatUser.Id,
+                };
+            </script>
+
+            @section Scripts {
+                <environment include="Development">
+                    <script src="~/js/profile.js" asp-append-version="true"></script>
+                </environment>
+                <environment exclude="Development">
+                    <script src="~/js/profile.min.js" asp-append-version="true"></script>
+                </environment>
+            }
+        }
+    } else {
         <br />
 
         <div class="container">
@@ -26,239 +157,10 @@
                     <h3 class="display-3">@Model.ChatUser.UserName</h3>
                 </div>
             </div>
-            <dl class="row text-center">
-                <dt class="col-2">
-                    @Html.DisplayNameFor(model => model.ChatUser.Id)
-                </dt>
-                <dd class="col-10">
-                    @Html.DisplayFor(model => model.ChatUser.Id)
-                </dd>
-                <dt class="col-2">
-                    @Html.DisplayNameFor(model => model.ChatUser.FirstName)
-                </dt>
-                <dd class="col-10">
-                    @Html.DisplayFor(model => model.ChatUser.FirstName)
-                </dd>
-                <dt class="col-2">
-                    @Html.DisplayNameFor(model => model.ChatUser.LastName)
-                </dt>
-                <dd class="col-10">
-                    @Html.DisplayFor(model => model.ChatUser.LastName)
-                </dd>
-            </dl>
-            <div class="row text-center">
-                <p>@Model.ChatUser.ProfileDescription</p>
-            </div>
+
+            <br />
+
+            <h5 class="text-danger text-center">This user has been deleted.</h5>
         </div>
-    </div>
-    @if (Model.IsThisUser) {
-        <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
-            <br />
-
-            <h4>Notifications</h4>
-
-            <br />
-
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div id="no-notifs" class="card">
-                            <div class="card-header">No Notifications</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div id="notifications-list">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="nav-invitations" role="tabpanel" aria-labelledby="nav-invitations-tab">
-            <br />
-
-            <h4>Join Invitations</h4>
-
-            <br />
-
-            <div id="join-invitations-list" class="col-12">
-                @if (Model.ChatUser.GroupJoinInvitations.Count == 0) {
-                    <div id="no-invitations" class="card">
-                        <div class="card-header">No Join Invitations</div>
-                    </div>
-                } else {
-                    @foreach (var invitation in Model.ChatUser.GroupJoinInvitations) {
-                        <div id="invitation-group-@(invitation.GroupID)" class="card">
-                            <div class="card-header">@(invitation.Group.Name)</div>
-                            <div class="card-body">
-                                <dl>
-                                    <dt>
-                                        ID
-                                    </dt>
-                                    <dh>
-                                        @(invitation.GroupID)
-                                    </dh>
-                                    <dt>
-                                        Group Name
-                                    </dt>
-                                    <dh>
-                                        @(invitation.Group.Name)
-                                    </dh>
-                                    <dt>
-                                        Message
-                                    </dt>
-                                    <dh>
-                                        @(invitation.Message)
-                                    </dh>
-                                </dl>
-                                <form method="post" onsubmit="decrementInvitationsCount()">
-                                    <button type="submit" asp-page-handler="AcceptJoinInvitation" class="btn btn-success">Accept</button>
-                                    <button type="submit" asp-page-handler="RejectJoinInvitation" class="btn btn-danger">Reject</button>
-                                    <input type="hidden" asp-for="JoinInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
-                                    <input type="hidden" asp-for="JoinInvitationInput.InvitationID" value="@(invitation.GroupJoinInvitationID)" />
-                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                </form>
-                            </div>
-                            <div class="card-footer text-muted">@(invitation.DateSent.ToString())</div>
-                        </div>
-                    }
-                }
-            </div>
-        </div>
-        <script>
-            "use strict";
-
-            if (@Model.ChatUser.GroupJoinInvitations.Count != 0) {
-                document.getElementById("invitations-badge").removeAttribute("hidden");
-            }
-
-            notifConnectionPromise.then(function () {
-                var getNotifsArgs = {
-                    ChatUserID: @Model.ChatUser.Id
-                };
-
-                notifConnection.invoke("GetNotifications", getNotifsArgs).catch(function (err) {
-                    return console.error(err.toString());
-                });
-            }).catch(function (err) {
-                return console.error(err.toString());
-            });
-
-            notifConnection.on("ReceiveNotifications", function (list) {
-                $.each(list, function () {
-                    var args = this;
-
-                    incrementNotifsCount();
-
-                    console.log(args.text);
-
-                    var card = document.createElement("div");
-                    card.setAttribute("class", "card");
-                    card.setAttribute("id", "notif-" + args.notificationID);
-                    card.setAttribute("notificationID", args.notificationID);
-
-                    var head = document.createElement("div");
-                    head.setAttribute("class", "card-header");
-                    card.append(head);
-
-                    var title = document.createElement("a");
-                    title.setAttribute("class", "card-link");
-                    title.setAttribute("data-toggle", "collapse");
-                    title.setAttribute("href", "#notif-collapse-" + args.notificationID);
-                    title.textContent = args.title;
-                    head.append(title);
-
-                    var close = document.createElement("button");
-                    close.setAttribute("type", "button");
-                    close.setAttribute("class", "close");
-                    close.addEventListener("click", function () {
-                        var id = parseInt(card.getAttribute("notificationID"));
-                        document.getElementById("notifications-list").removeChild(document.getElementById("notif-" + id));
-                        decrementNotifsCount();
-
-                        var args = {
-                            ChatUserID: @Model.ChatUser.Id,
-                            NotificationID: id
-                        };
-
-                        notifConnection.invoke("RemoveNotification", args);
-                    });
-                    close.textContent = "×";
-                    head.append(close);
-
-                    var collapse = document.createElement("div");
-                    collapse.setAttribute("data-parent", "#notifications-list");
-                    collapse.setAttribute("class", "collapse");
-                    collapse.setAttribute("id", "notif-collapse-" + args.notificationID);
-                    card.append(collapse);
-
-                    var body = document.createElement("div");
-                    body.setAttribute("class", "card-body");
-                    collapse.append(body);
-
-                    var text = document.createElement("p");
-                    text.setAttribute("class", "card-text");
-                    text.textContent = args.text;
-                    body.append(text);
-
-                    var link = document.createElement("a");
-                    link.setAttribute("href", args.viewURL);
-                    link.setAttribute("class", "card-link");
-//                    link.addEventListener("click", function () {
-//                        var id = parseInt(card.getAttribute("notificationID"));
-//                        document.getElementById("notifications-list").removeChild(document.getElementById("notif-" + id));
-//                        decrementNotifsCount();
-//
-//                        var args = {
-//                            ChatUserID: @Model.ChatUser.Id,
-//                            NotificationID: id
-//                        };
-//
-//                        notifConnection.invoke("RemoveNotification", args);
-//                    });
-                    link.textContent = "View";
-                    body.append(link);
-
-                    document.getElementById("notifications-list").prepend(card);
-                });
-            });
-
-            function decrementInvitationsCount() {
-                var node = document.getElementById("invitations-badge");
-                var count = parseInt(node.textContent) - 1;
-
-                if (count == 0) {
-                    node.setAttribute("hidden", "hidden");
-                }
-
-                node.textContent = count;
-            }
-
-            function incrementNotifsCount() {
-                var node = document.getElementById("notifs-badge");
-                var count = parseInt(node.textContent) + 1;
-
-                if (count > 0) {
-                    node.removeAttribute("hidden");
-                    document.getElementById("no-notifs").setAttribute("hidden", "hidden");
-                }
-
-                node.textContent = count;
-            }
-
-            function decrementNotifsCount() {
-                var node = document.getElementById("notifs-badge");
-                var count = parseInt(node.textContent) - 1;
-
-                if (count == 0) {
-                    node.setAttribute("hidden", "hidden");
-                    document.getElementById("no-notifs").removeAttribute("hidden");
-                }
-
-                node.textContent = count;
-            }
-        </script>
     }
 </div>

@@ -312,7 +312,6 @@ namespace Chat_V2.Hubs {
 			foreach (var m in membership.Group.ChatMessages.AsQueryable().Reverse().Skip(args.StartIndex)) {
 				var user = await UserManager.FindByIdAsync(m.ChatUserID + "");
 				var rank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
-				var messageRank = PermissionRank.GetPermissionRankByOrdinal(m.ChatUserRank);//rank of user who sent the message
 
 				if (i >= args.Count) {
 					break;
@@ -332,8 +331,7 @@ namespace Chat_V2.Hubs {
 			ChatMessage output = new ChatMessage() {
 				ChatUserID = membership.ChatUserID,
 				GroupID = membership.GroupID,
-				TimeStamp = DateTime.Now,
-				ChatUserRank = membership.Rank
+				TimeStamp = DateTime.Now
 			};
 
 			StringBuilder builder = new StringBuilder();
@@ -351,29 +349,21 @@ namespace Chat_V2.Hubs {
 				GroupID = message.GroupID
 			};
 
-			bool userDeleted = chatUser is null;
-
 			StringBuilder builder = new StringBuilder();
 
 			builder.Append("<div class=\"message container\">");
 				builder.Append("<div class=\"row\">");
 					builder.Append("<div class=\"message-image col-auto\">");
 						builder.Append("<img src=\"");
-
-						if (userDeleted) {
-							builder.Append(FileTools.DefaultImagePath + " / ");
-						} else {
 							builder.Append(FileTools.FileSavePath + "/");
-						}
-
-						builder.Append(chatUser?.ProfileImage ?? "defaultProfileImage.png");
+							builder.Append(chatUser.ProfileImage);
 						builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
 					builder.Append("</div>");
 
 					builder.Append("<div class=\"message-container col\">");
 						builder.Append("<div class=\"message-header text-wrap row\">");
 							builder.Append("<span class=\"message-username\" style=\"color:#");
-							builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
+							builder.Append(PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Color);
 							builder.Append(";\">");
 									builder.Append(chatUser.UserName);
 							builder.Append("</span>");
