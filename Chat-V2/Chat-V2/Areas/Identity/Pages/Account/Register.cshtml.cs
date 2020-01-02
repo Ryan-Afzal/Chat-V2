@@ -83,7 +83,8 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 					FirstName = Input.FirstName,
 					LastName = Input.LastName,
 					ProfileDescription = "",
-					ProfileImage = FileTools.SaveFileFromDefault(FileTools.DefaultUserProfileImage)
+					ProfileImage = FileTools.SaveFileFromDefault(FileTools.DefaultUserProfileImage),
+					IsEnabled = true
 				};
 
 				var result = await _userManager.CreateAsync(user, Input.Password);

@@ -65,7 +65,12 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 			if (ModelState.IsValid) {
 				// This doesn't count login failures towards account lockout
 				// To enable password failures to trigger account lockout, set lockoutOnFailure: true
-				var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+				if (!(await _signInManager.UserManager.FindByNameAsync(Input.Username)).IsEnabled) {
+					ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+					return Page();
+				}
+
+				var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 				if (result.Succeeded) {
 					_logger.LogInformation("User logged in.");
 					return LocalRedirect(returnUrl);

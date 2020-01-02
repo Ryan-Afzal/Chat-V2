@@ -375,7 +375,7 @@ namespace Chat_V2.Hubs {
 							builder.Append("<span class=\"message-username\" style=\"color:#");
 							builder.Append(PermissionRank.GetPermissionRankByOrdinal(userDeleted ? membership.Rank : message.ChatUserRank).Color);
 							builder.Append(";\">");
-									builder.Append(chatUser?.UserName ?? message.ChatUserName);
+									builder.Append(chatUser.UserName);
 							builder.Append("</span>");
 							builder.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 							builder.Append("<span class=\"message-timestamp text-muted\">");

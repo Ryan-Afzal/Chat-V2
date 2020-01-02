@@ -1,0 +1,94 @@
+﻿.message {
+    padding: 4px 4px 4px 4px;
+    word-break: break-word;
+}
+
+.message-image {
+}
+
+.message-container {
+    display: block;
+}
+
+.message-header {
+    display: inline;
+}
+
+.message-username {
+    font-size: 13px;
+}
+
+.message-timestamp {
+    font-size: 11px;
+}
+
+.message-content {
+    font-size: 13px;
+}
+
+.user-data-container {
+}
+
+.user-data-container-inactive {
+}
+
+.user-data-container:hover {
+    border: solid 1px #AAAAAA;
+}
+
+.user-data-name {
+}
+
+.user-data-rank {
+}
+
+.group-data-container {
+}
+
+    .group-data-container:hover {
+        border: solid 1px #AAAAAA;
+    }
+
+.group-data-name {
+}
+
+/* The output area for the message terminal */
+#messages-list {
+    width: 100%;
+    height: 75vh;
+    overflow-x: hidden;
+}
+
+/* The input area for the message terminal */
+#message-input {
+}
+
+#center-pane {
+    height: 100%;
+}
+
+#left-pane {
+    height: 75vh;
+}
+
+#right-pane {
+    height: 75vh;
+}
+
+#current-group-name {
+}
+
+#current-group-members-count {
+}
+
+#current-group-online-count {
+}
+
+/* The list of online group members */
+#online-members-list {
+    overflow: auto;
+}
+
+#groups-list {
+    overflow: auto;
+}
