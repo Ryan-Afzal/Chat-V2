@@ -74,6 +74,9 @@ namespace Chat_V2.Migrations
                     b.Property<int?>("GroupID")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
@@ -143,25 +146,13 @@ namespace Chat_V2.Migrations
                     b.Property<int>("ChatUserID")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ChatUserName")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ChatUserRank")
-                        .HasColumnType("integer");
-
                     b.Property<int>("GroupID")
                         .HasColumnType("integer");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
 
-                    b.Property<int>("MinRank")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StatusType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("TimeStamp")
+                    b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("ChatMessageID");
@@ -197,6 +188,9 @@ namespace Chat_V2.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<int>("NumOnline")
+                        .HasColumnType("integer");
 
                     b.HasKey("GroupID");
 
@@ -278,6 +272,12 @@ namespace Chat_V2.Migrations
                     b.Property<bool>("IsOnlineInGroup")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("LastViewedMessageID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumNew")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Rank")
                         .HasColumnType("integer");
 
@@ -290,23 +290,33 @@ namespace Chat_V2.Migrations
                     b.ToTable("Membership");
                 });
 
-            modelBuilder.Entity("Chat_V2.Models.MembershipStatus", b =>
+            modelBuilder.Entity("Chat_V2.Models.Notification", b =>
                 {
-                    b.Property<int>("MembershipID")
+                    b.Property<int>("NotificationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("ChatUserID")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("DateIssued")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("Expiration")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
 
-                    b.HasKey("MembershipID");
+                    b.Property<string>("ViewURL")
+                        .HasColumnType("text");
 
-                    b.ToTable("MembershipStatus");
+                    b.HasKey("NotificationID");
+
+                    b.HasIndex("ChatUserID");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -481,11 +491,11 @@ namespace Chat_V2.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chat_V2.Models.MembershipStatus", b =>
+            modelBuilder.Entity("Chat_V2.Models.Notification", b =>
                 {
-                    b.HasOne("Chat_V2.Models.Membership", null)
-                        .WithOne("MembershipStatus")
-                        .HasForeignKey("Chat_V2.Models.MembershipStatus", "MembershipID")
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", null)
+                        .WithMany("Notifications")
+                        .HasForeignKey("ChatUserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
