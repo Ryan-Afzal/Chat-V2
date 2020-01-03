@@ -123,6 +123,9 @@ namespace Chat_V2.Models {
 	public class ReceiveMessageArgs {
         public int SenderID { get; set; }
         public int GroupID { get; set; }
+		public string UserName { get; set; }
+		public string UserImage { get; set; }
+		public string Timestamp { get; set; }
 		public string Message { get; set; }
     }
 

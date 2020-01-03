@@ -22,6 +22,10 @@
     font-size: 11px;
 }
 
+.message-timestamp:hover {
+    
+}
+
 .message-content {
     font-size: 13px;
 }

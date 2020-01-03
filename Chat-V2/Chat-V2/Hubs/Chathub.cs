@@ -57,7 +57,7 @@ namespace Chat_V2.Hubs {
 				foreach (Membership membership in chatUser.Memberships) {
 					if (membership.IsOnlineInGroup) {
 						membership.IsOnlineInGroup = false;
-						await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
+						await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 							.SendAsync(
 							"OtherUserDisconnectedFromGroup",
 							new OtherUserDisconnectedFromGroupArgs() {
@@ -182,7 +182,7 @@ namespace Chat_V2.Hubs {
 				}
 			}
 
-			var proxy = await GetClientsInGroup(membership.GroupID, PermissionRank.USER);
+			var proxy = await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER);
 
 			await proxy
 				.SendAsync(
@@ -213,7 +213,7 @@ namespace Chat_V2.Hubs {
 			membership.IsOnlineInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
-			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
+			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserDisconnectedFromGroup",
 				new OtherUserDisconnectedFromGroupArgs() {
@@ -236,7 +236,7 @@ namespace Chat_V2.Hubs {
 			membership.LastViewedMessageID = membership.Group.ChatMessages.LastOrDefault()?.ChatMessageID;
 			await ChatContext.SaveChangesAsync();
 
-			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
+			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserActiveInGroup",
 				new OtherUserActiveInGroupArgs() {
@@ -255,7 +255,7 @@ namespace Chat_V2.Hubs {
 			membership.IsActiveInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
-			await (await GetClientsInGroup(membership.GroupID, PermissionRank.USER))
+			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserInactiveInGroup",
 				new OtherUserInactiveInGroupArgs() {
@@ -263,9 +263,6 @@ namespace Chat_V2.Hubs {
 					GroupID = membership.GroupID
 				});
 		}
-
-		//UserAddedToGroup
-		//UserRemovedFromGroup
 
 		public async Task UserTyping(UserTypingArgs args) {
 			var membership = await ChatContext.Membership
@@ -303,15 +300,13 @@ namespace Chat_V2.Hubs {
 			var membership = await ChatContext.Membership
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
-				.ThenInclude(g => g.ChatMessages)
+					.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 
-			//basic test code that just gets every single previous message regardless of prevStart and prevEnd.
 			LinkedList<ReceiveMessageArgs> list = new LinkedList<ReceiveMessageArgs>();
 			int i = 0;
 			foreach (var m in membership.Group.ChatMessages.AsQueryable().Reverse().Skip(args.StartIndex)) {
 				var user = await UserManager.FindByIdAsync(m.ChatUserID + "");
-				var rank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 
 				if (i >= args.Count) {
 					break;
@@ -327,11 +322,15 @@ namespace Chat_V2.Hubs {
 				list);
 		}
 
+		private string FormatDate(DateTime date) {
+			return date.ToString("yyyy-MM-dd HH:mm:ss");
+		}
+
 		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message) {
 			ChatMessage output = new ChatMessage() {
 				ChatUserID = membership.ChatUserID,
 				GroupID = membership.GroupID,
-				TimeStamp = DateTime.Now
+				Timestamp = DateTime.Now
 			};
 
 			StringBuilder builder = new StringBuilder();
@@ -346,43 +345,12 @@ namespace Chat_V2.Hubs {
 		private async Task<ReceiveMessageArgs> GetArgsFromChatMessageAsync(ChatMessage message, ChatUser chatUser, Membership membership) {
 			ReceiveMessageArgs output = new ReceiveMessageArgs {
 				SenderID = message.ChatUserID,
-				GroupID = message.GroupID
+				GroupID = message.GroupID,
+				Timestamp = FormatDate(message.Timestamp),
+				UserName = chatUser.UserName,
+				UserImage = FileTools.FileSavePath + "/" + chatUser.ProfileImage,
+				Message = message.Message
 			};
-
-			StringBuilder builder = new StringBuilder();
-
-			builder.Append("<div class=\"message container\">");
-				builder.Append("<div class=\"row\">");
-					builder.Append("<div class=\"message-image col-auto\">");
-						builder.Append("<img src=\"");
-							builder.Append(FileTools.FileSavePath + "/");
-							builder.Append(chatUser.ProfileImage);
-						builder.Append("\" width=\"32\" height=\"32\" class=\"rounded-circle img\" />");
-					builder.Append("</div>");
-
-					builder.Append("<div class=\"message-container col\">");
-						builder.Append("<div class=\"message-header text-wrap row\">");
-							builder.Append("<span class=\"message-username\" style=\"color:#");
-							builder.Append(PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Color);
-							builder.Append(";\">");
-									builder.Append(chatUser.UserName);
-							builder.Append("</span>");
-							builder.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-							builder.Append("<span class=\"message-timestamp text-muted\">");
-								builder.Append(message.TimeStamp.ToString());
-							builder.Append("</span>");
-						builder.Append("</div>");
-
-						builder.Append("<div class=\"row\">");
-							builder.Append("<span class=\"message-content\">");
-								builder.Append(message.Message);
-							builder.Append("</span>");
-						builder.Append("</div>");
-					builder.Append("</div>");
-				builder.Append("</div>");
-			builder.Append("</div>");
-
-			output.Message = builder.ToString();
 
 			return output;
 		}
@@ -427,7 +395,7 @@ namespace Chat_V2.Hubs {
 					await GetArgsFromChatMessageAsync(chatMessage, sender, membership));
 		}
 
-		private async Task<Group> GetGroupById(int groupId, bool loadMembers, bool loadMessages, bool tracking) {
+		private async Task<Group> GetGroupByIdAsync(int groupId, bool loadMembers, bool loadMessages, bool tracking) {
 			var query = ChatContext.Group;
 			if (loadMembers) {
 				query.Include(g => g.Memberships);
@@ -450,8 +418,8 @@ namespace Chat_V2.Hubs {
 			return group;
 		}
 
-		private async Task<IReadOnlyList<string>> GetUsersInGroup(int groupId, PermissionRank minRank) {
-			return GetUsersInGroup(await GetGroupById(groupId, true, false, false), minRank);
+		private async Task<IReadOnlyList<string>> GetUsersInGroupAsync(int groupId, PermissionRank minRank) {
+			return GetUsersInGroup(await GetGroupByIdAsync(groupId, true, false, false), minRank);
 		}
 
 		private IReadOnlyList<string> GetUsersInGroup(Group group, PermissionRank minRank) {
@@ -470,8 +438,8 @@ namespace Chat_V2.Hubs {
 			return Clients.Users(GetUsersInGroup(group, minRank));
 		}
 		
-		private async Task<IClientProxy> GetClientsInGroup(int groupId, PermissionRank minRank) {
-			return Clients.Users(await GetUsersInGroup(groupId, minRank));
+		private async Task<IClientProxy> GetClientsInGroupAsync(int groupId, PermissionRank minRank) {
+			return Clients.Users(await GetUsersInGroupAsync(groupId, minRank));
 		}
 
 	}

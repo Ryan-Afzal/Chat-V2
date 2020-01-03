@@ -38,6 +38,59 @@ function prependMessage(message) {
     messagesList.scrollTop(messagesList[0].scrollHeight);
 }
 
+function getMessageFromArgs(args) {
+    var message = document.createElement("div");
+    message.setAttribute("class", "message container");
+
+    var mainRow = document.createElement("div");
+    mainRow.setAttribute("class", "row");
+    message.append(mainRow);
+
+    var col1 = document.createElement("div");
+    col1.setAttribute("class", "message-image col-auto");
+    mainRow.append(col1);
+
+    var image = document.createElement("img");
+    image.setAttribute("src", args.userImage);
+    image.setAttribute("width", 32);
+    image.setAttribute("height", 32);
+    image.setAttribute("class", "rounded-circle img");
+    col1.append(image);
+
+    var col2 = document.createElement("div");
+    col2.setAttribute("class", "message-container col");
+    mainRow.append(col2);
+
+    var header = document.createElement("div");
+    header.setAttribute("class", "message-header text-wrap row");
+    col2.append(header);
+
+    var username = document.createElement("span");
+    username.setAttribute("class", "message-username");
+    username.textContent = args.userName;
+    header.append(username);
+    
+    var _break = document.createElement("span");
+    _break.innerHTML = "&nbsp;&nbsp;&nbsp;";
+    header.append(_break);
+
+    var timestamp = document.createElement("span");
+    timestamp.setAttribute("class", "message-timestamp text-muted");
+    timestamp.textContent = args.timestamp;
+    header.append(timestamp);
+
+    var row1 = document.createElement("div");
+    row1.setAttribute("class", "row");
+    col2.append(row1);
+
+    var content = document.createElement("span");
+    content.setAttribute("class", "message-content");
+    content.textContent = args.message;
+    row1.append(content);
+
+    return message;
+}
+
 function clearMessages() {
     $("#messages-list").empty();
 }
@@ -382,7 +435,7 @@ document.getElementById("load-previous-messages-button").addEventListener("click
 connection.on("ReceivePreviousMessages", function (messages) {
     $.each(messages, function () {
         var args = this;
-        prependMessage(args.message);
+        prependMessage(getMessageFromArgs(args));
         numMessages++;
     });
 });
@@ -390,7 +443,7 @@ connection.on("ReceivePreviousMessages", function (messages) {
 //Receive Message
 connection.on("ReceiveMessage", function (args) {
     if (args.groupID == currentGroupID) {
-        appendMessage(args.message);
+        appendMessage(getMessageFromArgs(args));
         numMessages++;
     } else {
         newGroupMessage(args.groupID);
