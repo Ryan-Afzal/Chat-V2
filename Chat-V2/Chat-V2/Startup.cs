@@ -51,10 +51,10 @@ namespace Chat_V2 {
 			});
 
 			services.AddSignalR(hubOptions => {
-
+				
 			})
 			.AddJsonProtocol(options => {
-
+				
 			});
 
 			services.AddRazorPages();

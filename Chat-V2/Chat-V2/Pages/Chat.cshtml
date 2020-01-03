@@ -2,6 +2,7 @@
 @model Chat_V2.Pages.ChatModel
 @{
     ViewData["Title"] = "Chat";
+    ViewData["IsChat"] = true;
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
@@ -84,6 +85,8 @@
     const viewmodel = {
         UserID: @(Model.ViewModel.ChatUser.Id),
     };
+
+    document.getElementById("message-new").setAttribute("hidden", "hidden");
 </script>
 
 @section Scripts {

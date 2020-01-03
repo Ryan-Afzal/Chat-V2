@@ -101,7 +101,9 @@ namespace Chat_V2.Pages {
 				GroupID = invitation.GroupID,
 				IsActiveInGroup = false,
 				IsOnlineInGroup = false,
-				Rank = PermissionRank.USER.Ordinal
+				Rank = PermissionRank.USER.Ordinal,
+				LastViewedMessageID = null,
+				NumNew = 0
 			};
 
 			await _context.Membership.AddAsync(membership);

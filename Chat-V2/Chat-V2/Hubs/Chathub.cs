@@ -91,19 +91,19 @@ namespace Chat_V2.Hubs {
 
 				var lastMessage = m.Group.ChatMessages.LastOrDefault();
 
-				if (lastMessage is null || m.LastViewedMessageID is null || lastMessage.ChatMessageID == m.LastViewedMessageID) {
-					hasNew = false;
-				} else {
-					hasNew = true;
-					//hasNew = lastMessage.TimeStamp > (await ChatContext.ChatMessage.FirstOrDefaultAsync(c => c.ChatMessageID == m.LastViewedMessageID)).TimeStamp;
-				}
+				//if (lastMessage is null || m.LastViewedMessageID is null || lastMessage.ChatMessageID == m.LastViewedMessageID) {
+				//	hasNew = false;
+				//} else {
+				//	hasNew = true;
+				//	//hasNew = lastMessage.TimeStamp > (await ChatContext.ChatMessage.FirstOrDefaultAsync(c => c.ChatMessageID == m.LastViewedMessageID)).TimeStamp;
+				//}
 
 				await Clients.Caller.SendAsync(
 					"AddGroup", 
 					new AddGroupArgs() {
 						GroupID = m.GroupID,
 						MembershipID = m.MembershipID,
-						HasNew = hasNew,
+						NumNew = m.NumNew,
 						GroupName = m.Group.Name,
 						GroupImage = FileTools.FileSavePath + "/" + m.Group.GroupImage
 					});
@@ -111,7 +111,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		/// <summary>
-		/// Called when the client disconnects from the server (before <c>OnDisconnectedAsync()</c>).
+		/// Called when the client disconnects from the server under normal conditions (before <c>OnDisconnectedAsync()</c>).
 		/// 
 		/// Used to pass any data needed for normal disconnection.
 		/// </summary>
@@ -234,6 +234,7 @@ namespace Chat_V2.Hubs {
 
 			membership.IsActiveInGroup = true;
 			membership.LastViewedMessageID = membership.Group.ChatMessages.LastOrDefault()?.ChatMessageID;
+			membership.NumNew = 0;
 			await ChatContext.SaveChangesAsync();
 
 			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
@@ -326,6 +327,12 @@ namespace Chat_V2.Hubs {
 			return date.ToString("yyyy-MM-dd HH:mm:ss");
 		}
 
+		/// <summary>
+		/// Creates a <c>ChatMessage</c> out of a membership and a message.
+		/// </summary>
+		/// <param name="membership"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message) {
 			ChatMessage output = new ChatMessage() {
 				ChatUserID = membership.ChatUserID,
@@ -379,11 +386,15 @@ namespace Chat_V2.Hubs {
 
 			foreach (var m in group.Memberships) {
 				if (m.Rank >= minRank.Ordinal) {
-					if (m.IsActiveInGroup) {
-						m.LastViewedMessageID = chatMessage.ChatMessageID;
-					}
+					if (m.IsOnlineInGroup) {
+						if (m.IsActiveInGroup) {
+							m.LastViewedMessageID = chatMessage.ChatMessageID;
+						}
 
-					list.Add(m.ChatUserID + "");
+						list.Add(m.ChatUserID + "");
+					} else {
+						m.NumNew++;
+					}
 				}
 			}
 

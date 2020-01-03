@@ -36,9 +36,6 @@ namespace Chat_V2.Pages {
 			_logger = logger;
 		}
 
-		/// <summary>
-		/// Initial data goes here. DATA SHOULD NEVER BE SAVED TO THE VIEWMODEL!!!!!!!!!!
-		/// </summary>
 		[BindProperty]
 		public ChatViewModel ViewModel { get; private set; }
 

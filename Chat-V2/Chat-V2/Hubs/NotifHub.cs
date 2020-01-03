@@ -46,9 +46,9 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task AddNotification(AddNotificationArgs args) {
-			if ((args.ChatUserID + "") != Context.UserIdentifier) {
+			/*if ((args.ChatUserID + "") != Context.UserIdentifier) {
 				throw new ArgumentException(nameof(args.ChatUserID));
-			}
+			}*/
 
 			var chatUser = await ChatContext.Users
 				.Include(u => u.Notifications)
@@ -124,6 +124,22 @@ namespace Chat_V2.Hubs {
 					.Select(n => new ReceiveNotificationArgs() { ChatUserID = chatUser.Id, NotificationID = n.NotificationID, Date = n.Date.ToString(), Title = n.Title, Text = n.Text, ViewURL = n.ViewURL })
 					.ToList()
 			);
+		}
+
+		public async Task GetNumNewMessages() {
+			var id = int.Parse(Context.UserIdentifier);
+			var chatUser = await ChatContext.Users
+				.Include(u => u.Memberships)
+				.FirstOrDefaultAsync(u => u.Id == id);
+
+			var memberships = chatUser.Memberships.Where(m => m.NumNew > 0);
+			int sum = 0;
+
+			foreach (var m in memberships) {
+				sum += m.NumNew;
+			}
+
+			await Clients.Caller.SendAsync("ReceiveNumNewMessages", new ReceiveNumNewMessagesArgs() { ChatUserID = chatUser.Id, Num = sum });
 		}
 
 	}

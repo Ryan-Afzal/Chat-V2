@@ -16,6 +16,7 @@ namespace Chat_V2.Models {
 		public bool IsOnlineInGroup { get; set; }
 		public bool IsActiveInGroup { get; set; }
 		public int? LastViewedMessageID { get; set; }
+		public int NumNew { get; set; }
 
 		public Group Group { get; set; }
 		public ChatUser ChatUser { get; set; }

@@ -7,7 +7,7 @@
 var isMobile = isMobile();
 
 //Get the sound file
-var sound = new Audio('/media/new-message.mp3');
+let sound = new Audio('/media/new-message.mp3');
 var play_sound = false;
 
 //The number of messages currently displayed. Used for getting previous messages.
@@ -215,8 +215,9 @@ function clear() {
     membershipID = -1;
 }
 
-function newGroupMessage(groupId) {
+function newGroupMessage(groupId, numNew) {
     var node = document.getElementById("group-data-new-" + groupId);
+    node.textContent = numNew;
     show(node);
 }
 
@@ -240,7 +241,7 @@ function switchGroupTo(groupId, membershipId) {
     removeNewGroupMessage(groupId);
 }
 
-function addGroup(groupId, groupImage, hasNew, groupName, membershipId) {
+function addGroup(groupId, groupImage, numNew, groupName, membershipId) {
     var container = document.createElement("li");
     container.setAttribute("class", "group-data-container list-group-item");
     container.setAttribute("id", "group-" + groupId);
@@ -284,8 +285,8 @@ function addGroup(groupId, groupImage, hasNew, groupName, membershipId) {
     var groupsList = document.getElementById("groups-list");
     groupsList.append(container);
 
-    if (hasNew) {
-        newGroupMessage(groupId);
+    if (numNew > 0) {
+        newGroupMessage(groupId, numNew);
     }
 }
 
@@ -306,29 +307,6 @@ function loadPreviousMessages(startIndex, count) {
     };
 
     connection.invoke("GetPreviousMessages", args);
-}
-
-function debounce(func, wait, immediate) {
-    var timeout;
-    return function () {
-        var context = this, args = arguments;
-        var later = function () {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-    };
-}
-
-function show(node) {
-    node.removeAttribute("hidden");
-}
-
-function hide(node) {
-    node.setAttribute("hidden", "hidden");
 }
 
 if (isMobile) {
@@ -372,7 +350,7 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
-const isTypingCallback = debounce(
+let isTypingCallback = debounce(
     function () {
         var args = {
             MembershipID: membershipID
@@ -533,7 +511,7 @@ connection.on("OtherUserInactiveInGroup", function (args) {
 });
 
 connection.on("AddGroup", function (args) {
-    addGroup(args.groupID, args.groupImage, args.hasNew, args.groupName, args.membershipID);
+    addGroup(args.groupID, args.groupImage, args.numNew, args.groupName, args.membershipID);
 });
 
 connection.on("RemoveGroup", function (args) {
