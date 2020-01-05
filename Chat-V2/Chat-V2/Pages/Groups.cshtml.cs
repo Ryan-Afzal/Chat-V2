@@ -48,11 +48,11 @@ namespace Chat_V2.Pages {
 
 			CurrentFilter = searchString;
 
-			IQueryable<Group> groupsIQ = _context.Group;
+			IQueryable<Group> groupsIQ = _context.Group
+					.Where(g => !g.IsPrivate);
 
 			if (!string.IsNullOrEmpty(searchString)) {
 				groupsIQ = groupsIQ
-					.Where(g => !g.IsPrivate)
 					.Where(g => g.Name.Contains(searchString));
 			}
 

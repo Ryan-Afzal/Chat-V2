@@ -96,125 +96,195 @@ namespace Chat_V2.Models {
 	//To Client
 
 	public class AddGroupArgs {
+
+		public AddGroupArgs(int groupId, int membershipId, int numNew, string groupName, string groupImage) {
+			GroupID = groupId;
+			MembershipID = membershipId;
+			NumNew = numNew;
+			GroupName = groupName;
+			GroupImage = groupImage;
+		}
+
 		/// <summary>
 		/// The ID of the group
 		/// </summary>
-		public int GroupID { get; set; }
+		public int GroupID { get; }
 		/// <summary>
 		/// The ID of the membership belonging to the group
 		/// </summary>
-		public int MembershipID { get; set; }
+		public int MembershipID { get; }
 		/// <summary>
 		/// Whether the user has unread messages
 		/// </summary>
-		public int NumNew { get; set; }
+		public int NumNew { get; }
 		/// <summary>
 		/// The group name
 		/// </summary>
-		public string GroupName { get; set; }
+		public string GroupName { get; }
 		/// <summary>
 		/// The group image
 		/// </summary>
-		public string GroupImage { get; set; }
+		public string GroupImage { get; }
 	}
 
 	public class RemoveGroupArgs {
+
+		public RemoveGroupArgs(int groupId) {
+			GroupID = groupId;
+		}
+
 		/// <summary>
 		/// The ID of the group to remove
 		/// </summary>
-		public int GroupID { get; set; }
+		public int GroupID { get; }
 	}
 
 	public class OtherUserConnectedToGroupArgs {
+
+		public OtherUserConnectedToGroupArgs(int groupId, int userId, string userName, string userImage, string userRank) {
+			GroupID = groupId;
+			UserID = userId;
+			UserName = userName;
+			UserImage = userImage;
+			UserRank = userRank;
+		}
+
 		/// <summary>
 		/// The ID of the group the user connected to
 		/// </summary>
-		public int GroupID { get; set; }
+		public int GroupID { get; }
 		/// <summary>
 		/// The ID of the user who connected
 		/// </summary>
-		public int UserID { get; set; }
+		public int UserID { get; }
 		/// <summary>
 		/// The username of the user who connected
 		/// </summary>
-		public string UserName { get; set; }
+		public string UserName { get; }
 		/// <summary>
 		/// The image of the user who connected
 		/// </summary>
-		public string UserImage { get; set; }
+		public string UserImage { get; }
 		/// <summary>
 		/// The rank of the user who connected
 		/// </summary>
-		public string UserRank { get; set; }
+		public string UserRank { get; }
 	}
 
 	public class OtherUserDisconnectedFromGroupArgs {
+
+		public OtherUserDisconnectedFromGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
 		/// <summary>
 		/// The ID of the group the user disconnected from
 		/// </summary>
-		public int GroupID { get; set; }
+		public int GroupID { get; }
 		/// <summary>
 		/// The ID of the user who disconnected
 		/// </summary>
-		public int UserID { get; set; }
+		public int UserID { get; }
 	}
 
 	public class OtherUserActiveInGroupArgs {
-		public int GroupID { get; set; }
-		public int UserID { get; set; }
+
+		public OtherUserActiveInGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		public int GroupID { get; }
+		public int UserID { get; }
 	}
 
 	public class OtherUserInactiveInGroupArgs {
-		public int GroupID { get; set; }
-		public int UserID { get; set; }
+
+		public OtherUserInactiveInGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		public int GroupID { get; }
+		public int UserID { get; }
 	}
 
 	public class OtherUserTypingArgs {
-		public int UserID { get; set; }
-		public int GroupID { get; set; }
-		public string UserProfileImage { get; set; }
+
+		public OtherUserTypingArgs(int groupId, int userId, string userImage) {
+			GroupID = groupId;
+			UserID = userId;
+			UserImage = userImage;
+		}
+
+		public int UserID { get; }
+		public int GroupID { get; }
+		public string UserImage { get; }
 	}
 
 	public class OtherUserNotTypingArgs {
-		public int UserID { get; set; }
-		public int GroupID { get; set; }
+
+		public OtherUserNotTypingArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		public int UserID { get; }
+		public int GroupID { get; }
 	}
 
 	public class OtherUserAddedToGroupArgs {
-		public int GroupID { get; set; }
+
+		public OtherUserAddedToGroupArgs(int groupId) {
+			GroupID = groupId;
+		}
+
+		public int GroupID { get; }
 	}
 
 	public class OtherUserRemovedFromGroupArgs {
-		public int UserID { get; set; }
-		public int GroupID { get; set; }
+
+		public OtherUserRemovedFromGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		public int UserID { get; }
+		public int GroupID { get; }
 	}
 
 	public class ReceiveGroupDataArgs {
-		public int GroupID { get; set; }
-		public string GroupName { get; set; }
-		public int NumUsers { get; set; }
+
+		public ReceiveGroupDataArgs(int groupId, string groupName, int numUsers) {
+			GroupID = groupId;
+			GroupName = groupName;
+			NumUsers = numUsers;
+		}
+
+		public int GroupID { get; }
+		public string GroupName { get; }
+		public int NumUsers { get; }
 	}
 
 	public class ReceiveMessageArgs {
-        public int SenderID { get; set; }
-        public int GroupID { get; set; }
-		public string UserName { get; set; }
-		public string UserImage { get; set; }
-		public string Timestamp { get; set; }
-		public string Message { get; set; }
+
+		public ReceiveMessageArgs(int senderId, int groupId, string userName, string userImage, string timestamp, string message) {
+			SenderID = senderId;
+			GroupID = groupId;
+			UserName = userName;
+			UserImage = userImage;
+			Timestamp = timestamp;
+			Message = message;
+		}
+
+		public int SenderID { get; }
+        public int GroupID { get; }
+		public string UserName { get; }
+		public string UserImage { get; }
+		public string Timestamp { get; }
+		public string Message { get; }
     }
-
-	public class ClientBannedFromGroupArgs {
-		public int GroupID { get; set; }
-	}
-
-	public class ClientBlockedFromGroupArgs {
-		public int GroupID { get; set; }
-	}
-
-	public class ClientUnblockedFromGroupArgs {
-		public int GroupID { get; set; }
-	}
 
 	//Notification
 	

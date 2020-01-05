@@ -478,7 +478,7 @@ connection.on("ReceiveGroupData", function (args) {
 connection.on("OtherUserConnectedToGroup", function (args) {
     if (args.userID != parseInt(viewmodel.UserID)) {
         if (args.groupID == currentGroupID) {
-            userConnected(args.userID, args.userName, args.userImage, args.userRankName);
+            userConnected(args.userID, args.userName, args.userImage, args.userRank);
         }
     }
 });

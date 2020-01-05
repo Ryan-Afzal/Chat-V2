@@ -60,10 +60,8 @@ namespace Chat_V2.Hubs {
 						await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 							.SendAsync(
 							"OtherUserDisconnectedFromGroup",
-							new OtherUserDisconnectedFromGroupArgs() {
-								UserID = membership.ChatUserID,
-								GroupID = membership.GroupID
-							});
+							new OtherUserDisconnectedFromGroupArgs(membership.GroupID, membership.ChatUserID)
+							);
 					}
 				}
 			}
@@ -84,10 +82,9 @@ namespace Chat_V2.Hubs {
 					.ThenInclude(m => m.Group)
 						.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(u => u.Id == args.UserID);
-			//await ChatContext.SaveChangesAsync();
 
 			foreach (var m in chatUser.Memberships) {
-				bool hasNew = false;
+				//bool hasNew = false;
 
 				var lastMessage = m.Group.ChatMessages.LastOrDefault();
 
@@ -98,15 +95,11 @@ namespace Chat_V2.Hubs {
 				//	//hasNew = lastMessage.TimeStamp > (await ChatContext.ChatMessage.FirstOrDefaultAsync(c => c.ChatMessageID == m.LastViewedMessageID)).TimeStamp;
 				//}
 
-				await Clients.Caller.SendAsync(
+				await Clients.Caller
+					.SendAsync(
 					"AddGroup", 
-					new AddGroupArgs() {
-						GroupID = m.GroupID,
-						MembershipID = m.MembershipID,
-						NumNew = m.NumNew,
-						GroupName = m.Group.Name,
-						GroupImage = FileTools.FileSavePath + "/" + m.Group.GroupImage
-					});
+					new AddGroupArgs(m.GroupID, m.MembershipID, m.NumNew, m.Group.Name, FileTools.FileSavePath + "/" + m.Group.GroupImage)
+					);
 			}
 		}
 
@@ -141,43 +134,30 @@ namespace Chat_V2.Hubs {
 
 			await Clients.Caller.SendAsync(
 					"ReceiveGroupData",
-					new ReceiveGroupDataArgs() {
-						GroupID = membership.Group.GroupID,
-						GroupName = membership.Group.Name,
-						NumUsers = membership.Group.Memberships.Count
-					});
+					new ReceiveGroupDataArgs(membership.Group.GroupID, membership.Group.Name, membership.Group.Memberships.Count)
+					);
 
 			foreach (var _m in membership.Group.Memberships) {
 				if (_m.IsOnlineInGroup) {
 					await Clients.Caller.SendAsync(
 						"OtherUserConnectedToGroup", 
-						new OtherUserConnectedToGroupArgs() {
-							GroupID = _m.GroupID,
-							UserID = _m.ChatUserID,
-							UserName = _m.ChatUser.UserName,
-							UserImage = FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
-							UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
-						});
+						new OtherUserConnectedToGroupArgs(
+							_m.GroupID, 
+							_m.ChatUserID, 
+							_m.ChatUser.UserName, 
+							FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
+							PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name)
+						);
 					if (_m.IsActiveInGroup) {
 						await Clients.Caller.SendAsync(
 							"OtherUserActiveInGroup",
-							new OtherUserConnectedToGroupArgs() {
-								GroupID = _m.GroupID,
-								UserID = _m.ChatUserID,
-								UserName = _m.ChatUser.UserName,
-								UserImage = FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
-								UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
-							});
+							new OtherUserActiveInGroupArgs(_m.GroupID, _m.ChatUserID)
+							);
 					} else {
 						await Clients.Caller.SendAsync(
 							"OtherUserInactiveInGroup",
-							new OtherUserConnectedToGroupArgs() {
-								GroupID = _m.GroupID,
-								UserID = _m.ChatUserID,
-								UserName = _m.ChatUser.UserName,
-								UserImage = FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
-								UserRank = PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name
-							});
+							new OtherUserInactiveInGroupArgs(_m.GroupID, _m.ChatUserID)
+							);
 					}
 				}
 			}
@@ -187,20 +167,19 @@ namespace Chat_V2.Hubs {
 			await proxy
 				.SendAsync(
 				"OtherUserConnectedToGroup",
-				new OtherUserConnectedToGroupArgs() {
-					GroupID = membership.GroupID,
-					UserID = membership.ChatUserID,
-					UserName = membership.ChatUser.UserName,
-					UserRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name
-				});
+				new OtherUserConnectedToGroupArgs(
+					membership.GroupID,
+					membership.ChatUserID,
+					membership.ChatUser.UserName,
+					FileTools.FileSavePath + "/" + membership.ChatUser.ProfileImage,
+					PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name)
+				);
 
 			await proxy
 				.SendAsync(
 				"OtherUserActiveInGroup", 
-				new OtherUserActiveInGroupArgs() {
-					GroupID = membership.GroupID,
-					UserID = membership.ChatUserID
-				});
+				new OtherUserActiveInGroupArgs(membership.GroupID, membership.ChatUserID)
+				);
 		}
 
 		public async Task DisconnectedFromGroup(DisconnectedFromGroupArgs args) {
@@ -216,10 +195,8 @@ namespace Chat_V2.Hubs {
 			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserDisconnectedFromGroup",
-				new OtherUserDisconnectedFromGroupArgs() {
-					UserID = membership.ChatUserID, 
-					GroupID = membership.GroupID
-				});
+				new OtherUserDisconnectedFromGroupArgs(membership.GroupID, membership.ChatUserID)
+				);
 		}
 
 		public async Task ActiveInGroup(ActiveInGroupArgs args) {
@@ -239,11 +216,9 @@ namespace Chat_V2.Hubs {
 
 			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
-				"OtherUserActiveInGroup",
-				new OtherUserActiveInGroupArgs() {
-					GroupID = membership.GroupID,
-					UserID = membership.ChatUserID
-				});
+				"OtherUserActiveInGroup", 
+				new OtherUserActiveInGroupArgs(membership.GroupID, membership.ChatUserID)
+				);
 		}
 
 		public async Task InactiveInGroup(InactiveInGroupArgs args) {
@@ -259,10 +234,8 @@ namespace Chat_V2.Hubs {
 			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
 				.SendAsync(
 				"OtherUserInactiveInGroup",
-				new OtherUserInactiveInGroupArgs() {
-					UserID = membership.ChatUserID,
-					GroupID = membership.GroupID
-				});
+				new OtherUserInactiveInGroupArgs(membership.GroupID, membership.ChatUserID)
+				);
 		}
 
 		public async Task UserTyping(UserTypingArgs args) {
@@ -275,11 +248,8 @@ namespace Chat_V2.Hubs {
 			await GetClientsInGroup(membership.Group, PermissionRank.USER)
 				.SendAsync(
 					"OtherUserTyping", 
-					new OtherUserTypingArgs() { 
-						UserID = membership.ChatUserID,
-						GroupID = membership.GroupID,
-						UserProfileImage = membership.ChatUser.ProfileImage
-					});
+					new OtherUserTypingArgs(membership.GroupID, membership.ChatUserID, membership.ChatUser.ProfileImage)
+					);
 		}
 
 		public async Task UserNotTyping(UserNotTypingArgs args) {
@@ -291,10 +261,8 @@ namespace Chat_V2.Hubs {
 			await GetClientsInGroup(membership.Group, PermissionRank.USER)
 				.SendAsync(
 					"OtherUserNotTyping",
-					new OtherUserNotTypingArgs() {
-						UserID = membership.ChatUserID,
-						GroupID = membership.GroupID
-					});
+					new OtherUserNotTypingArgs( membership.GroupID, membership.ChatUserID)
+					);
 		}
 
 		public async Task GetPreviousMessages(GetPreviousMessagesArgs args) {
@@ -350,14 +318,14 @@ namespace Chat_V2.Hubs {
 		}
 
 		private async Task<ReceiveMessageArgs> GetArgsFromChatMessageAsync(ChatMessage message, ChatUser chatUser, Membership membership) {
-			ReceiveMessageArgs output = new ReceiveMessageArgs {
-				SenderID = message.ChatUserID,
-				GroupID = message.GroupID,
-				Timestamp = FormatDate(message.Timestamp),
-				UserName = chatUser.UserName,
-				UserImage = FileTools.FileSavePath + "/" + chatUser.ProfileImage,
-				Message = message.Message
-			};
+			ReceiveMessageArgs output = new ReceiveMessageArgs(
+				message.ChatUserID, 
+				message.GroupID,
+				chatUser.UserName,
+				FileTools.FileSavePath + "/" + chatUser.ProfileImage,
+				FormatDate(message.Timestamp),
+				message.Message
+				);
 
 			return output;
 		}
