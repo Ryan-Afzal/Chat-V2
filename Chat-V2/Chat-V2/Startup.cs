@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Hubs;
+using Chat_V2.Interfaces;
 using Chat_V2.Models;
+using Chat_V2.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -52,15 +54,14 @@ namespace Chat_V2 {
 
 			services.AddSignalR(hubOptions => {
 				
-			})
-			.AddJsonProtocol(options => {
+			}).AddJsonProtocol(options => {
 				
 			});
 
 			services.AddRazorPages();
+			services.AddSingleton<IFileOperationProvider, FileOperationProvider>();
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
@@ -78,12 +79,12 @@ namespace Chat_V2 {
 				RequestPath = "/Files"
 			});
 
-			if (env.IsDevelopment()) {
-				app.UseStaticFiles(new StaticFileOptions {
-					FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "DefaultFiles")),
-					RequestPath = "/DefaultFiles"
-				});
-			}
+#if DEBUG
+			app.UseStaticFiles(new StaticFileOptions {
+				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "DefaultFiles")),
+				RequestPath = "/DefaultFiles"
+			});
+#endif
 
 			app.UseRouting();
 			app.UseCors();

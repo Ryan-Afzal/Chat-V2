@@ -1,4 +1,5 @@
 ﻿using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Interfaces;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -17,10 +18,12 @@ namespace Chat_V2.Hubs {
 
 		public UserManager<ChatUser> UserManager { get; }
 		public ChatContext ChatContext { get; }
+		public IFileOperationProvider FileOperationProvider { get; }
 
-		public ChatHub(UserManager<ChatUser> userManager, ChatContext context) {
+		public ChatHub(UserManager<ChatUser> userManager, ChatContext context, IFileOperationProvider fileConfiguration) {
 			UserManager = userManager;
 			ChatContext = context;
+			FileOperationProvider = fileConfiguration;
 		}
 
 		/// <summary>
@@ -98,7 +101,7 @@ namespace Chat_V2.Hubs {
 				await Clients.Caller
 					.SendAsync(
 					"AddGroup", 
-					new AddGroupArgs(m.GroupID, m.MembershipID, m.NumNew, m.Group.Name, FileTools.FileSavePath + "/" + m.Group.GroupImage)
+					new AddGroupArgs(m.GroupID, m.MembershipID, m.NumNew, m.Group.Name, FileOperationProvider.FileSavePath + "/" + m.Group.GroupImage)
 					);
 			}
 		}
@@ -144,8 +147,8 @@ namespace Chat_V2.Hubs {
 						new OtherUserConnectedToGroupArgs(
 							_m.GroupID, 
 							_m.ChatUserID, 
-							_m.ChatUser.UserName, 
-							FileTools.FileSavePath + "/" + _m.ChatUser.ProfileImage,
+							_m.ChatUser.UserName,
+							FileOperationProvider.FileSavePath + "/" + _m.ChatUser.ProfileImage,
 							PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name)
 						);
 					if (_m.IsActiveInGroup) {
@@ -171,7 +174,7 @@ namespace Chat_V2.Hubs {
 					membership.GroupID,
 					membership.ChatUserID,
 					membership.ChatUser.UserName,
-					FileTools.FileSavePath + "/" + membership.ChatUser.ProfileImage,
+					FileOperationProvider.FileSavePath + "/" + membership.ChatUser.ProfileImage,
 					PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name)
 				);
 
@@ -322,7 +325,7 @@ namespace Chat_V2.Hubs {
 				message.ChatUserID, 
 				message.GroupID,
 				chatUser.UserName,
-				FileTools.FileSavePath + "/" + chatUser.ProfileImage,
+				FileOperationProvider.FileSavePath + "/" + chatUser.ProfileImage,
 				FormatDate(message.Timestamp),
 				message.Message
 				);

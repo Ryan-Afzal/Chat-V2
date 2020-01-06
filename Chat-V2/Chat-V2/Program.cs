@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Interfaces;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +22,8 @@ namespace Chat_V2 {
 				try {
 					var context = services.GetRequiredService<ChatContext>();
 					var env = services.GetRequiredService<IWebHostEnvironment>();
-					DbInitializer.Initialize(context, env);
+					var fileConfiguration = services.GetRequiredService<IFileOperationProvider>();
+					DbInitializer.Initialize(context, env, fileConfiguration);
 				} catch (Exception ex) {
 					var logger = services.GetRequiredService<ILogger<Program>>();
 					logger.LogError(ex, "An error occurred creating the DB.");

@@ -1,6 +1,8 @@
 ﻿@page
 @model Chat_V2.Pages.GroupModel
 @using Chat_V2.Models
+@using Chat_V2.Interfaces
+@inject IFileOperationProvider fileOperationProvider
 @{
     ViewData["Title"] = "Group " + Model.ViewModel.Group.Name;
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -10,7 +12,7 @@
 <div id="group-data" class="container">
     <div class="row">
         <div class="col-12 text-center">
-            <img src="@(FileTools.FileSavePath + Model.ViewModel.Group.GroupImage)" width="256" height="256" class="img-thumbnail" />
+            <img src="@(fileOperationProvider.FileLoadURL + "/" + Model.ViewModel.Group.GroupImage)" width="256" height="256" class="img-thumbnail" />
             <h3 class="display-3">@Model.ViewModel.Group.Name</h3>
         </div>
     </div>

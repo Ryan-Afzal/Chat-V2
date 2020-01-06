@@ -1,5 +1,7 @@
 ﻿@page
 @model Chat_V2.Pages.UsersModel
+@using Chat_V2.Interfaces
+@inject IFileOperationProvider fileOperationProvider
 @{
     ViewData["Title"] = "Users";
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -38,11 +40,6 @@
 <table class="table">
     <thead>
         <tr>
-            <!--<th>
-                <a asp-page="./Users" asp-route-sortOrder="@Model.IdSort" asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.Users[0].Id)
-                </a>
-            </th>-->
             <th>
                 Avatar
             </th>
@@ -57,11 +54,8 @@
     <tbody>
         @foreach (var item in Model.Users) {
             <tr>
-                <!--<td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>-->
                 <td>
-                    <img src="@(FileTools.FileSavePath + item.ProfileImage)" width="64" height="64" class="img-thumbnail" />
+                    <img src="@(fileOperationProvider.FileLoadURL + "/" + item.ProfileImage)" width="64" height="64" class="img-thumbnail" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UserName)

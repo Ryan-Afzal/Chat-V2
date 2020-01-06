@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Extensions;
+using Chat_V2.Interfaces;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,12 +26,14 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly SignInManager<ChatUser> _signInManager;
 		private readonly IEmailSender _emailSender;
+		private readonly IFileOperationProvider _fileOperationProvider;
 
-		public IndexModel(ChatContext context, UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, IEmailSender emailSender) {
+		public IndexModel(ChatContext context, UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, IEmailSender emailSender, IFileOperationProvider fileOperationProvider) {
 			_context = context;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_emailSender = emailSender;
+			_fileOperationProvider = fileOperationProvider;
 		}
 
 		public bool IsEmailConfirmed { get; set; }
@@ -157,8 +161,8 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 					using Stream memoryStream = ProfileImage.OpenReadStream();
 					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
 
-					string output = FileTools.SaveImageToFile(image, ProfileImage.Name);
-					FileTools.DeleteFile(chatUser.ProfileImage);
+					string output = _fileOperationProvider.SaveImageToFile(image, ProfileImage.Name);
+					_fileOperationProvider.DeleteFile(chatUser.ProfileImage);
 					chatUser.ProfileImage = output;
 					await _context.SaveChangesAsync();
 				}

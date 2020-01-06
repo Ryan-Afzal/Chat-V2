@@ -1,5 +1,7 @@
 ﻿@page
 @model Chat_V2.Pages.ProfileModel
+@using Chat_V2.Interfaces
+@inject IFileOperationProvider fileOperationProvider
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -23,7 +25,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 text-center">
-                        <img src="@(FileTools.FileSavePath + Model.ChatUser.ProfileImage)" width="256" height="256" class="img-thumbnail" />
+                        <img src="@(fileOperationProvider.FileLoadURL + "/" + Model.ChatUser.ProfileImage)" width="256" height="256" class="img-thumbnail" />
                         <h3 class="display-3">@Model.ChatUser.UserName</h3>
                     </div>
                 </div>
@@ -153,7 +155,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
-                    <img src="@(FileTools.FileSavePath + Model.ChatUser.ProfileImage)" width="256" height="256" class="img-thumbnail" />
+                    <img src="@(fileOperationProvider.FileLoadURL + "/" + Model.ChatUser.ProfileImage)" width="256" height="256" class="img-thumbnail" />
                     <h3 class="display-3">@Model.ChatUser.UserName</h3>
                 </div>
             </div>

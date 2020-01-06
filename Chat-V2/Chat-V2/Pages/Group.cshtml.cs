@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Extensions;
+using Chat_V2.Interfaces;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -98,12 +100,14 @@ namespace Chat_V2.Pages {
 		private readonly UserManager<ChatUser> _userManager;
 		private readonly ChatContext _context;
 		private readonly ILogger<GroupModel> _logger;
+		private readonly IFileOperationProvider _fileOperationProvider;
 
-		public GroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<GroupModel> logger) {
+		public GroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<GroupModel> logger, IFileOperationProvider fileOperationProvider) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
+			_fileOperationProvider = fileOperationProvider;
 		}
 
 		[BindProperty]
@@ -409,8 +413,8 @@ namespace Chat_V2.Pages {
 					using Stream memoryStream = UploadImageInput.GroupImage.OpenReadStream();
 					Image image = Image.FromStream(memoryStream).ResizeImageToFitSquare(512);
 
-					string output = FileTools.SaveImageToFile(image, UploadImageInput.GroupImage.Name);
-					FileTools.DeleteFile(group.GroupImage);
+					string output = _fileOperationProvider.SaveImageToFile(image, UploadImageInput.GroupImage.Name);
+					_fileOperationProvider.DeleteFile(group.GroupImage);
 					group.GroupImage = output;
 					await _context.SaveChangesAsync();
 				}

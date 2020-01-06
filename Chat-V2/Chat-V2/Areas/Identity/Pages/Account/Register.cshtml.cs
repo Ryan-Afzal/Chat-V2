@@ -14,6 +14,7 @@ using Chat_V2.Models;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Chat_V2.Interfaces;
 
 namespace Chat_V2.Areas.Identity.Pages.Account {
 	[AllowAnonymous]
@@ -25,14 +26,16 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		private readonly ILogger<RegisterModel> _logger;
 		private readonly IEmailSender _emailSender;
 		private readonly IWebHostEnvironment _env;
+		private readonly IFileOperationProvider _fileConfiguration;
 
-		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<RegisterModel> logger, IEmailSender emailSender, IWebHostEnvironment env) {
+		public RegisterModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<RegisterModel> logger, IEmailSender emailSender, IWebHostEnvironment env, IFileOperationProvider fileConfiguration) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
 			_emailSender = emailSender;
 			_env = env;
+			_fileConfiguration = fileConfiguration;
 		}
 
 		[BindProperty]
@@ -83,7 +86,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 					FirstName = Input.FirstName,
 					LastName = Input.LastName,
 					ProfileDescription = "",
-					ProfileImage = FileTools.SaveFileFromDefault(FileTools.DefaultUserProfileImage),
+					ProfileImage = _fileConfiguration.SaveFileFromDefault(_fileConfiguration.DefaultUserProfileImage),
 					IsEnabled = true,
 					NumOnline = 0,
 				};

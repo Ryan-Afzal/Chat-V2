@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Interfaces;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -20,13 +21,15 @@ namespace Chat_V2.Pages {
 		private readonly ChatContext _context;
 		private readonly ILogger<CreateGroupModel> _logger;
 		private readonly IWebHostEnvironment _env;
+		private readonly IFileOperationProvider _fileConfiguration;
 
-		public CreateGroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<CreateGroupModel> logger, IWebHostEnvironment env) {
+		public CreateGroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<CreateGroupModel> logger, IWebHostEnvironment env, IFileOperationProvider fileConfiguration) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
 			_env = env;
+			_fileConfiguration = fileConfiguration;
 		}
 
 		[BindProperty]
@@ -60,7 +63,7 @@ namespace Chat_V2.Pages {
 					DateCreated = DateTime.Now,
 					IsArchived = false,
 					IsPrivate = !Input.IsPublic,
-					GroupImage = FileTools.SaveFileFromDefault(FileTools.DefaultGroupImage)
+					GroupImage = _fileConfiguration.SaveFileFromDefault(_fileConfiguration.DefaultGroupImage)
 				};
 
 				await _context.Group.AddAsync(group);
