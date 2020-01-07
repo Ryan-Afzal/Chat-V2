@@ -476,8 +476,14 @@ C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.pdb
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Pages\ConfirmDeleteGroup.cshtml.g.cs
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.Development.json
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.g.cs
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml.g.cs
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.production.json
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.development.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.json
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.production.json
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\libman.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\Properties\launchSettings.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\DefaultFiles\defaultGroupImage.png
@@ -591,6 +597,8 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\staticwebassets\Chat-V2.StaticWebAssets.Manifest.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\staticwebassets\Chat-V2.StaticWebAssets.xml
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.RazorAssemblyInfo.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.RazorAssemblyInfo.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.AssemblyInfoInputs.cache
@@ -600,6 +608,8 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.RazorCoreGenerate.cache
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Login.cshtml.g.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Logout.cshtml.g.cs
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.g.cs
+C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml.g.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\Index.cshtml.g.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\PersonalData.cshtml.g.cs
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\_ManageNav.cshtml.g.cs
@@ -634,12 +644,3 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.g.cs
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml.g.cs
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.g.cs
-C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml.g.cs
-C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.production.json
-C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
