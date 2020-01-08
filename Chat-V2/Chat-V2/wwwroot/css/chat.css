@@ -57,10 +57,30 @@
 }
 
 /* The output area for the message terminal */
+
+.output-container {
+    height: 75vh;
+    display: table-row;
+    background-color: transparent;
+}
+
+.output-container-inside-primary {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.output-container-inside-secondary {
+    position: absolute;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 #messages-list {
     width: 100%;
-    height: 75vh;
-    overflow-x: hidden;
+    display: block;
+    outline: none;
 }
 
 #input-container {

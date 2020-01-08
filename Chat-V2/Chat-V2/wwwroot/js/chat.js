@@ -447,6 +447,8 @@ document.getElementById("message-input").addEventListener("keydown", function (e
     var message = element.textContent;
 
     if (message.trim() == "") {
+        
+    } else {
         if (event.key == "Enter" && !event.shiftKey && currentGroupID != -1) {
             var args = {
                 MembershipID: membershipID,
@@ -461,8 +463,6 @@ document.getElementById("message-input").addEventListener("keydown", function (e
 
             event.preventDefault();
         }
-    } else {
-
     }
 })
 
