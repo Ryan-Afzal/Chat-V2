@@ -1,4 +1,47 @@
-﻿.message {
+﻿#input-container {
+	
+}
+
+.input-container-inside {
+	
+}
+
+#input-popup-container {
+	
+}
+
+#text-input-container {
+	border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.text-input {
+	overflow-x: hidden;
+	overflow-y: auto;
+	margin-left: 28px;
+	padding-top: 9x;
+	padding-bottom: 7px;
+	position: relative;
+}
+
+.text-input-space1 {
+	padding-right: 12px;
+}
+
+#text-console-input {
+	line-height: 16px;
+	cursor: text;
+	min-height: 18px;
+	padding-bottom: 2px;
+	padding-left: 6px;
+	padding-right: 0px;
+	padding-top: 2px;
+	width: 100%;
+	word-wrap: break-word;
+	word-break: break-word;
+	font-family: 'Roboto', 'Arial', sans-serif;
+}
+
+.message {
     padding: 4px 4px 4px 4px;
     word-break: break-word;
 }
@@ -31,9 +74,11 @@
 }
 
 .user-data-container {
+	
 }
 
 .user-data-container-inactive {
+	
 }
 
 .user-data-container:hover {
@@ -41,12 +86,15 @@
 }
 
 .user-data-name {
+	
 }
 
 .user-data-rank {
+	
 }
 
 .group-data-container {
+	
 }
 
     .group-data-container:hover {
