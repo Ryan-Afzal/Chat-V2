@@ -22,12 +22,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace Chat_V2 {
 	public class Startup {
+
 		public Startup(IConfiguration configuration) {
 			Configuration = configuration;
 		}
 
 		public IConfiguration Configuration { get; }
 
+		// Configures Dependency Injection
 		public void ConfigureServices(IServiceCollection services) {
 			services.Configure<CookiePolicyOptions>(options => {
 				options.CheckConsentNeeded = context => true;
@@ -62,6 +64,7 @@ namespace Chat_V2 {
 			services.AddSingleton<IFileOperationProvider, FileOperationProvider>();
 		}
 
+		// Configures the ASP.NET Core Middleware pipeline
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();

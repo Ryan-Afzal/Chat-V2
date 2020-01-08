@@ -1,47 +1,4 @@
-﻿#input-container {
-	
-}
-
-.input-container-inside {
-	
-}
-
-#input-popup-container {
-	
-}
-
-#text-input-container {
-	border-top: 1px solid rgba(0,0,0,0.1);
-}
-
-.text-input {
-	overflow-x: hidden;
-	overflow-y: auto;
-	margin-left: 28px;
-	padding-top: 9x;
-	padding-bottom: 7px;
-	position: relative;
-}
-
-.text-input-space1 {
-	padding-right: 12px;
-}
-
-#text-console-input {
-	line-height: 16px;
-	cursor: text;
-	min-height: 18px;
-	padding-bottom: 2px;
-	padding-left: 6px;
-	padding-right: 0px;
-	padding-top: 2px;
-	width: 100%;
-	word-wrap: break-word;
-	word-break: break-word;
-	font-family: 'Roboto', 'Arial', sans-serif;
-}
-
-.message {
+﻿.message {
     padding: 4px 4px 4px 4px;
     word-break: break-word;
 }
@@ -111,8 +68,49 @@
     overflow-x: hidden;
 }
 
+#input-container {
+
+}
+
+.input-container-inside {
+
+}
+
+#input-popup-container {
+
+}
+
+#text-input-container {
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.text-input {
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-left: 28px;
+    padding-top: 9px;
+    padding-bottom: 7px;
+    position: relative;
+}
+
+.text-input-spacer {
+    padding-right: 12px;
+}
+
 /* The input area for the message terminal */
 #message-input {
+    line-height: 16px;
+    cursor: text;
+    min-height: 18px;
+    padding-bottom: 2px;
+    padding-left: 6px;
+    padding-right: 0px;
+    padding-top: 2px;
+    width: 100%;
+    word-wrap: break-word;
+    word-break: break-word;
+    font-family: 'Roboto', 'Arial', sans-serif;
+    text-align: left;
 }
 
 #center-pane {

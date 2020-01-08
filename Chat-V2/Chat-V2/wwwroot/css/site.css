@@ -65,8 +65,8 @@ body {
     overflow-y: scroll;
     width: 100%;
     text-wrap: normal;
-    overflow-wrap: break-word;
-    word-break: break-all;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 .console-input {

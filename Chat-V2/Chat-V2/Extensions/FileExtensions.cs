@@ -12,7 +12,7 @@ namespace Chat_V2.Extensions {
 	public static class FileExtensions {
 
 		/// <summary>
-		/// Ensures that the provided <c>IFormFile</c> is an image file type.
+		/// Ensures that the provided <see cref="IFormFile"/> is an image file type.
 		/// </summary>
 		/// <param name="formFile"></param>
 		/// <returns></returns>

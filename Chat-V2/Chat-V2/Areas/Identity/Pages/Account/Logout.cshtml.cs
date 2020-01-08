@@ -21,9 +21,10 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 		}
 
 		public void OnGet() {
+
 		}
 
-		public async Task<IActionResult> OnPost(string returnUrl = null) {
+		public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
 			await _signInManager.SignOutAsync();
 			_logger.LogInformation("User logged out.");
 			if (returnUrl != null) {

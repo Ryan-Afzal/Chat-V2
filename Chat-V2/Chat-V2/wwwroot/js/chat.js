@@ -442,11 +442,10 @@ connection.on("ReceiveMessage", function (args) {
 });
 
 //Send Message
-document.getElementById("message-input").addEventListener("keyup", function (event) {
-    var keyCode = (event.keyCode ? event.keyCode : event.which);
-    if (keyCode == 13 && currentGroupID != -1) {
+document.getElementById("message-input").addEventListener("keydown", function (event) {
+    if (event.key == "Enter" && currentGroupID != -1) {
         var element = document.getElementById("message-input");
-        var message = element.value;
+        var message = element.textContent;
 
         if (message.trim() != "") {
             var args = {
@@ -458,7 +457,7 @@ document.getElementById("message-input").addEventListener("keyup", function (eve
                 return console.error(err.toString());
             });
 
-            element.value = "";
+            element.textContent = "";
 
             event.preventDefault();
         }

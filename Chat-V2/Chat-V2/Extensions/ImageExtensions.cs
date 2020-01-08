@@ -9,11 +9,14 @@ namespace Chat_V2.Extensions {
 	public static class ImageExtensions {
 
 		/// <summary>
-		/// Resizes this <c>Image</c> so that the length of its largest side is <c>sideLength</c>.
+		/// Resizes this <see cref="Image"/> so that the length of its largest side is <paramref name="sideLength"/>.
 		/// </summary>
-		/// <param name="image"></param>
-		/// <param name="sideLength"></param>
-		/// <returns></returns>
+		/// <remarks>
+		/// This calls <see cref="ResizeImage(Image, int, int)"/> so it will dispose of the input image.
+		/// </remarks>
+		/// <param name="image">The <see cref="Image"/> to resize.</param>
+		/// <param name="sideLength">The desired maximum side length.</param>
+		/// <returns>Returns the resized <see cref="Image"/>.</returns>
 		public static Image ResizeImageToFitSquare(this Image image, int sideLength) {
 			double aspectRatio = ((double)image.Height) / image.Width;
 
@@ -32,11 +35,14 @@ namespace Chat_V2.Extensions {
 		}
 
 		/// <summary>
-		/// This will dispose of the image being resized
+		/// Resizes this <see cref="Image"/> to the specified height and width.
 		/// </summary>
-		/// <param name="image"></param>
-		/// <param name="newHeight"></param>
-		/// <param name="newWidth"></param>
+		/// <remarks>
+		/// This will dispose of the input <see cref="Image"/>.
+		/// </remarks>
+		/// <param name="image">The <see cref="Image"/> to resize.</param>
+		/// <param name="newHeight">The desired height.</param>
+		/// <param name="newWidth">The desired width.</param>
 		/// <returns></returns>
 		public static Image ResizeImage(this Image image, int newHeight, int newWidth) {
 			Bitmap output = new Bitmap(newWidth, newHeight);
