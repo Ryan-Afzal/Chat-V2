@@ -38,23 +38,29 @@
             <div class="text-center">
                 <button id="load-previous-messages-button" class="btn btn-secondary">Load More Messages</button>
             </div>
-			
+
             <div id="messages-list" class="console-output">
 
             </div>
-
+            
             <div class="input-container">
-				<div id="input-container-inside">
-					<div id="input-popup-container"></div>
-					<div id="text-input-container">
-						<div class="text-input">
-							<div class="text-input-spacer">
-								<div id="message-input" class="console-input" role="textbox" contenteditable="true" placeholder="Enter message here"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+                <div id="input-popup-container"></div>
+                <div id="text-input-container">
+                    <button id="emoji-button" class="text-input-control" type="button">
+                        <div class="button-inside">&#x1F610;</div>
+                    </button>
+                    <div class="multimedia-input">
+                        <button id="multimedia-button" class="text-input-control" type="button">
+                            <div class="button-inside">&#x1F610;</div>
+                        </button>
+                    </div>
+                    <div class="text-input">
+                        <div class="text-input-spacer">
+                            <div id="message-input" class="text-input-control" role="textbox" contenteditable="true" placeholder="Enter message here"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="right-pane" class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">

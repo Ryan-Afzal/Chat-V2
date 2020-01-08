@@ -443,11 +443,11 @@ connection.on("ReceiveMessage", function (args) {
 
 //Send Message
 document.getElementById("message-input").addEventListener("keydown", function (event) {
-    if (event.key == "Enter" && currentGroupID != -1) {
-        var element = document.getElementById("message-input");
-        var message = element.textContent;
+    var element = document.getElementById("message-input");
+    var message = element.textContent;
 
-        if (message.trim() != "") {
+    if (message.trim() == "") {
+        if (event.key == "Enter" && !event.shiftKey && currentGroupID != -1) {
             var args = {
                 MembershipID: membershipID,
                 MinRank: 0,
@@ -461,6 +461,8 @@ document.getElementById("message-input").addEventListener("keydown", function (e
 
             event.preventDefault();
         }
+    } else {
+
     }
 })
 
