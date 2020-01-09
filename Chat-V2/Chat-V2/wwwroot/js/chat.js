@@ -26,50 +26,56 @@ function isMobile() {
 
 function appendMessage(message) {
     var messagesList = $("#messages-list");
+    var messagesListContainer = $("#messages-list-container");
 
     messagesList.append(message);
-    messagesList.scrollTop(messagesList[0].scrollHeight);
+    messagesListContainer.scrollTop(messagesList[0].scrollHeight);
 }
 
 function prependMessage(message) {
     var messagesList = $("#messages-list");
+    var messagesListContainer = $("#messages-list-container");
 
     messagesList.prepend(message);
-    messagesList.scrollTop(messagesList[0].scrollHeight);
+    messagesListContainer.scrollTop(messagesList[0].scrollHeight);
 }
 
 function getMessageFromArgs(args) {
     var message = document.createElement("div");
-    message.setAttribute("class", "message container");
+    message.setAttribute("class", "message");
 
-    var mainRow = document.createElement("div");
-    mainRow.setAttribute("class", "row");
-    message.append(mainRow);
+    var message_image_inner1 = document.createElement("div");
+    message_image_inner1.setAttribute("class", "message-image-inner");
+    message.append(message_image_inner1);
 
-    var col1 = document.createElement("div");
-    col1.setAttribute("class", "message-image col-auto");
-    mainRow.append(col1);
+    var message_image = document.createElement("div");
+    message_image.setAttribute("class", "message-image");
+    message_image_inner1.append(message_image);
+
+    var message_image_inner2 = document.createElement("div");
+    message_image_inner2.setAttribute("class", "message-image-inner");
+    message_image.append(message_image_inner2);
 
     var image = document.createElement("img");
     image.setAttribute("src", args.userImage);
     image.setAttribute("width", 32);
     image.setAttribute("height", 32);
     image.setAttribute("class", "rounded-circle img");
-    col1.append(image);
+    message_image_inner2.append(image);
 
-    var col2 = document.createElement("div");
-    col2.setAttribute("class", "message-container col");
-    mainRow.append(col2);
+    var container = document.createElement("div");
+    container.setAttribute("class", "message-container");
+    message.append(container);
 
     var header = document.createElement("div");
-    header.setAttribute("class", "message-header text-wrap row");
-    col2.append(header);
+    header.setAttribute("class", "message-header");
+    container.append(header);
 
     var username = document.createElement("span");
     username.setAttribute("class", "message-username");
     username.textContent = args.userName;
     header.append(username);
-    
+
     var _break = document.createElement("span");
     _break.innerHTML = "&nbsp;&nbsp;&nbsp;";
     header.append(_break);
@@ -79,14 +85,10 @@ function getMessageFromArgs(args) {
     timestamp.textContent = args.timestamp;
     header.append(timestamp);
 
-    var row1 = document.createElement("div");
-    row1.setAttribute("class", "row");
-    col2.append(row1);
-
     var content = document.createElement("span");
     content.setAttribute("class", "message-content");
     content.textContent = args.message;
-    row1.append(content);
+    container.append(content);
 
     return message;
 }

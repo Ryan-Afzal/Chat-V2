@@ -1,14 +1,21 @@
 ﻿.message {
     padding: 4px 4px 4px 4px;
-    word-wrap: break-word;
-    word-break: break-word;
+    display: block;
 }
 
 .message-image {
+    height: 32px;
+    width: 0px;
+    position: absolute;
+}
+
+.message-image-inner {
+    position: relative;
 }
 
 .message-container {
-    display: block;
+    display: inline;
+    padding-left: 36px;
 }
 
 .message-header {
@@ -16,10 +23,12 @@
 }
 
 .message-username {
-    font-size: 13px;
+    display: inline;
+    font-size: 11px;
 }
 
 .message-timestamp {
+    display: inline;
     font-size: 11px;
 }
 
@@ -27,7 +36,12 @@
     }
 
 .message-content {
+    display: block;
     font-size: 13px;
+    line-height: 16px;
+    word-wrap: break-word;
+    text-align: left;
+    padding-top: 8px;
 }
 
 .user-data-container {
@@ -57,10 +71,14 @@
 }
 
 /* The output area for the message terminal */
-#messages-list {
-    width: 100%;
+#messages-list-container {
     height: 75vh;
+    width: 100%;
     overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#messages-list {
 }
 
 #input-container {

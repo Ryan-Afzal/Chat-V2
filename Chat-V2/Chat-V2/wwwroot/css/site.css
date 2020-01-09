@@ -60,11 +60,3 @@ body {
   background-color: white;
   overflow: hidden;
 }
-
-.console-output {
-    overflow-y: scroll;
-    width: 100%;
-    text-wrap: normal;
-    word-wrap: break-word;
-    word-break: break-word;
-}
