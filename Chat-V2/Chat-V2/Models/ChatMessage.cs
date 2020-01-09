@@ -11,6 +11,7 @@ namespace Chat_V2.Models {
 		public int ChatUserID { get; set; }
 		public DateTime Timestamp { get; set; }
 		public string Message { get; set; }
+		//public bool Multimedia { get; set; }
 		
 		public Group Group { get; set; }
 		public ChatUser ChatUser { get; set; }

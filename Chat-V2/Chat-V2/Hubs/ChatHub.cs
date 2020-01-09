@@ -73,7 +73,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		/// <summary>
-		/// Called when the client connects to the server (after <c>OnConnectedAsync()</c>).
+		/// Called when the client connects to the server (after <see cref="OnConnectedAsync()"/>).
 		/// 
 		/// Used to pass any data needed for connection.
 		/// </summary>
@@ -85,6 +85,10 @@ namespace Chat_V2.Hubs {
 					.ThenInclude(m => m.Group)
 						.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(u => u.Id == args.UserID);
+				
+			if (!ValidateUser(chatUser)) {
+				return;
+			}
 
 			foreach (var m in chatUser.Memberships) {
 				//bool hasNew = false;
@@ -107,7 +111,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		/// <summary>
-		/// Called when the client disconnects from the server under normal conditions (before <c>OnDisconnectedAsync()</c>).
+		/// Called when the client disconnects from the server normally (before <see cref="OnDisconnectedAsync(Exception)"/>).
 		/// 
 		/// Used to pass any data needed for normal disconnection.
 		/// </summary>
@@ -125,6 +129,10 @@ namespace Chat_V2.Hubs {
 					.ThenInclude(g => g.Memberships)
 						.ThenInclude(m => m.ChatUser)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			membership.IsOnlineInGroup = true;
 			await ChatContext.SaveChangesAsync();
@@ -191,6 +199,10 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			membership.IsOnlineInGroup = false;
 			await ChatContext.SaveChangesAsync();
@@ -211,6 +223,10 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 					.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			membership.IsActiveInGroup = true;
 			membership.LastViewedMessageID = membership.Group.ChatMessages.LastOrDefault()?.ChatMessageID;
@@ -230,6 +246,10 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			membership.IsActiveInGroup = false;
 			await ChatContext.SaveChangesAsync();
@@ -247,6 +267,10 @@ namespace Chat_V2.Hubs {
 				.Include(g => g.Group)
 					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			await GetClientsInGroup(membership.Group, PermissionRank.USER)
 				.SendAsync(
@@ -260,6 +284,10 @@ namespace Chat_V2.Hubs {
 				.Include(g => g.Group)
 					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			await GetClientsInGroup(membership.Group, PermissionRank.USER)
 				.SendAsync(
@@ -274,6 +302,10 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 					.ThenInclude(g => g.ChatMessages)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
 
 			LinkedList<ReceiveMessageArgs> list = new LinkedList<ReceiveMessageArgs>();
 			int i = 0;
@@ -342,6 +374,11 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.Group)
 					.ThenInclude(g => g.Memberships)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
+				
+			if (!ValidateUser(membership.ChatUser)) {
+				return;
+			}
+			
 			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
 			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
 			ChatUser sender = membership.ChatUser;
@@ -422,6 +459,10 @@ namespace Chat_V2.Hubs {
 		
 		private async Task<IClientProxy> GetClientsInGroupAsync(int groupId, PermissionRank minRank) {
 			return Clients.Users(await GetUsersInGroupAsync(groupId, minRank));
+		}
+
+		private bool ValidateUser(ChatUser chatUser) {
+			return Context.UserIdentifier.Equals(chatUser.Id + "");
 		}
 
 	}
