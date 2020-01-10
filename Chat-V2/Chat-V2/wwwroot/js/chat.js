@@ -85,10 +85,18 @@ function getMessageFromArgs(args) {
     timestamp.textContent = args.timestamp;
     header.append(timestamp);
 
-    var content = document.createElement("span");
-    content.setAttribute("class", "message-content");
-    content.textContent = args.message;
-    container.append(content);
+    if (args.multimedia != null) {
+        var multimedia = document.createElement("div");
+        multimedia.setAttribute("class", "message-multimedia");
+        container.append(multimedia);
+    }
+
+    if (args.message != null) {
+        var content = document.createElement("span");
+        content.setAttribute("class", "message-content");
+        content.textContent = args.message;
+        container.append(content);
+    }
 
     return message;
 }

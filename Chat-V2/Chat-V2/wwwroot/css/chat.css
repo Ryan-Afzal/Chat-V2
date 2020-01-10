@@ -35,6 +35,10 @@
     .message-timestamp:hover {
     }
 
+.message-multimedia {
+    display: block;
+}
+
 .message-content {
     display: block;
     font-size: 13px;
