@@ -29,7 +29,6 @@ namespace Chat_V2 {
 
 		public IConfiguration Configuration { get; }
 
-		// Configures Dependency Injection
 		public void ConfigureServices(IServiceCollection services) {
 			services.Configure<CookiePolicyOptions>(options => {
 				options.CheckConsentNeeded = context => true;
@@ -54,17 +53,11 @@ namespace Chat_V2 {
 					ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			});
 
-			services.AddSignalR(hubOptions => {
-				
-			}).AddJsonProtocol(options => {
-				
-			});
-
+			services.AddSignalR();
 			services.AddRazorPages();
 			services.AddSingleton<IFileOperationProvider, FileOperationProvider>();
 		}
 
-		// Configures the ASP.NET Core Middleware pipeline
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();

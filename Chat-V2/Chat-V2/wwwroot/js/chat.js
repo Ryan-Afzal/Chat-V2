@@ -455,7 +455,8 @@ document.getElementById("message-input").addEventListener("keydown", function (e
             var args = {
                 MembershipID: membershipID,
                 MinRank: 0,
-                Message: message
+                Message: message,
+                Multimedia: null,
             };
             connection.invoke("SendMessage", args).catch(function (err) {
                 return console.error(err.toString());

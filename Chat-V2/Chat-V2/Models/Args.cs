@@ -73,9 +73,14 @@ namespace Chat_V2.Models {
 		/// </summary>
 		public int MinRank { get; set; }
 		/// <summary>
-		/// The message
+		/// The message.
 		/// </summary>
 		public string Message { get; set; }
+
+		/// <summary>
+		/// Any multimedia information that the message may contain.
+		/// </summary>
+		public string Multimedia { get; set; }
 	}
 
 	public class GetPreviousMessagesArgs {
@@ -269,13 +274,14 @@ namespace Chat_V2.Models {
 
 	public class ReceiveMessageArgs {
 
-		public ReceiveMessageArgs(int senderId, int groupId, string userName, string userImage, string timestamp, string message) {
+		public ReceiveMessageArgs(int senderId, int groupId, string userName, string userImage, string timestamp, string message, string multimedia) {
 			SenderID = senderId;
 			GroupID = groupId;
 			UserName = userName;
 			UserImage = userImage;
 			Timestamp = timestamp;
 			Message = message;
+			Multimedia = multimedia;
 		}
 
 		public int SenderID { get; }
@@ -284,6 +290,7 @@ namespace Chat_V2.Models {
 		public string UserImage { get; }
 		public string Timestamp { get; }
 		public string Message { get; }
+		public string Multimedia { get; }
     }
 
 	//Notification

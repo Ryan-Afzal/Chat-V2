@@ -336,18 +336,14 @@ namespace Chat_V2.Hubs {
 		/// <param name="membership"></param>
 		/// <param name="message"></param>
 		/// <returns></returns>
-		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message) {
+		private async Task<ChatMessage> ProcessMessageAsync(Membership membership, string message, string multimedia) {
 			ChatMessage output = new ChatMessage() {
 				ChatUserID = membership.ChatUserID,
 				GroupID = membership.GroupID,
-				Timestamp = DateTime.Now
+				Timestamp = DateTime.Now,
+				Message = message,
+				Multimedia = multimedia
 			};
-
-			StringBuilder builder = new StringBuilder();
-
-			builder.Append(message);
-
-			output.Message = builder.ToString();
 
 			return output;
 		}
@@ -359,7 +355,8 @@ namespace Chat_V2.Hubs {
 				chatUser.UserName,
 				FileOperationProvider.FileSavePath + "/" + chatUser.ProfileImage,
 				FormatDate(message.Timestamp),
-				message.Message
+				message.Message,
+				message.Multimedia
 				);
 
 			return output;
@@ -385,7 +382,7 @@ namespace Chat_V2.Hubs {
 			Group group = membership.Group;
 
 			//Log the message
-			ChatMessage chatMessage = await ProcessMessageAsync(membership, args.Message);
+			ChatMessage chatMessage = await ProcessMessageAsync(membership, args.Message, args.Multimedia);
 			group.ChatMessages.Add(chatMessage);
 			await ChatContext.SaveChangesAsync();
 
