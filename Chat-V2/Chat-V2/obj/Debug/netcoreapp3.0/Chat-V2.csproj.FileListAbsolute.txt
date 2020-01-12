@@ -481,7 +481,6 @@ C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.development.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.json
-C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.production.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\libman.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\Properties\launchSettings.json

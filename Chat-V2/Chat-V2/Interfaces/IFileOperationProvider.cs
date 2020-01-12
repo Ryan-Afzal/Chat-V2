@@ -52,5 +52,12 @@ namespace Chat_V2.Interfaces {
 		/// <param name="fileName">The name of the file to delete.</param>
 		/// <returns>Returns a boolean indicating successful deletion.</returns>
 		public bool DeleteFile(string fileName);
+
+		/// <summary>
+		/// Gets a rooted file path by combining the specified components.
+		/// </summary>
+		/// <param name="components"></param>
+		/// <returns></returns>
+		public string GetFilePathFromComponents(params string[] components);
 	}
 }

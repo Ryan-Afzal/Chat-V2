@@ -58,7 +58,7 @@ namespace Chat_V2 {
 			services.AddSingleton<IFileOperationProvider, FileOperationProvider>();
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IFileOperationProvider fileOperationProvider) {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			} else {
@@ -71,7 +71,7 @@ namespace Chat_V2 {
 
 			app.UseStaticFiles();
 			app.UseStaticFiles(new StaticFileOptions {
-				FileProvider = new PhysicalFileProvider(Configuration["FileOperations:FileSavePath"]),
+				FileProvider = new PhysicalFileProvider(fileOperationProvider.GetFilePathFromComponents(fileOperationProvider.FileSavePath)),
 				RequestPath = "/Files"
 			});
 

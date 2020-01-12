@@ -27,7 +27,7 @@ namespace Chat_V2.Services {
 
 		public string SaveImageToFile(Image image, string fileName) {
 			string newFileName = Guid.NewGuid().ToString() + "_" + fileName + ".png";
-			string filePath = this.GetFilePathFromComponents(FileSavePath, "/", newFileName);
+			string filePath = GetFilePathFromComponents(FileSavePath, "/", newFileName);
 
 			using FileStream stream = File.Create(filePath);
 			image.Save(stream, ImageFormat.Png);
@@ -36,23 +36,23 @@ namespace Chat_V2.Services {
 		}
 
 		public string SaveFileFromDefault(string defaultName) {
-			string oldPath = this.GetFilePathFromComponents(DefaultFileLoadPath, "/", defaultName);
+			string oldPath = GetFilePathFromComponents(DefaultFileLoadPath, "/", defaultName);
 			string fileName = Guid.NewGuid().ToString() + "_" + defaultName;
-			string filePath = this.GetFilePathFromComponents(FileSavePath, "/", fileName);
+			string filePath = GetFilePathFromComponents(FileSavePath, "/", fileName);
 			File.Copy(oldPath, filePath);
 
 			return fileName;
 		}
 
 		public bool DeleteFile(string fileName) {
-			string filePath = this.GetFilePathFromComponents(FileSavePath, "/", fileName);
+			string filePath = GetFilePathFromComponents(FileSavePath, "/", fileName);
 			
 			File.Delete(filePath);
 
 			return true;
 		}
 
-		private string GetFilePathFromComponents(params string[] input) {
+		public string GetFilePathFromComponents(params string[] input) {
 			string path = Path.Join(input);
 
 			if (Path.IsPathRooted(path)) {
