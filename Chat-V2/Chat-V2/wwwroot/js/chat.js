@@ -135,6 +135,12 @@ function userConnected(userId, userName, userImage, userRankName) {
     count.textContent = parseInt(count.textContent) + 1;
 }
 
+function userConnectedToPersonalGroup(userId) {
+    var node = document.getElementById("current-group-data-personal-online");
+    node.textContent = "Online";
+    node.setAttribute("class", "badge bg-primary");
+}
+
 function userDisconnected(userId) {
     document.getElementById("online-members-list")
         .removeChild(document.getElementById("user-" + userId));
@@ -142,14 +148,32 @@ function userDisconnected(userId) {
     count.textContent = parseInt(count.textContent) - 1;
 }
 
+function userDisconnectedFromPersonalGroup(userId) {
+    var node = document.getElementById("current-group-data-personal-online");
+    node.textContent = "Offline";
+    node.setAttribute("class", "badge bg-danger");
+}
+
 function userActive(userId) {
     document.getElementById("user-" + userId)
         .setAttribute("class", "list-group-item user-data-container");
 }
 
+function userActiveInPersonalGroup(userId) {
+    var node = document.getElementById("current-group-data-personal-online");
+    node.textContent = "Active";
+    node.setAttribute("class", "badge bg-success");
+}
+
 function userInactive(userId) {
     document.getElementById("user-" + userId)
         .setAttribute("class", "list-group-item list-group-item-primary user-data-container user-data-container-inactive");
+}
+
+function userInactiveInPersonalGroup(userId) {
+    var node = document.getElementById("current-group-data-personal-online");
+    node.textContent = "Online";
+    node.setAttribute("class", "badge bg-primary");
 }
 
 function clearUsers() {
@@ -169,13 +193,18 @@ function clearTyping() {
 }
 
 function updateGroupData(groupID, groupName, numUsers) {
+    show(document.getElementById("current-group-data"));
+
     var name = document.getElementById("current-group-name");
     name.textContent = groupName;
     name.setAttribute("href", "/Group?groupID=" + groupID);
+
     var members = document.getElementById("current-group-members-count");
     members.textContent = numUsers;
+
     var online = document.getElementById("current-group-online-count");
     online.textContent = "1";
+
     if (isMobile) {
         hide(document.getElementById("current-group-members"));
         hide(document.getElementById("current-group-online"));
@@ -189,12 +218,36 @@ function updateGroupData(groupID, groupName, numUsers) {
     }
 }
 
+function updatePersonalGroupData(userID, userName, userImage) {
+    show(document.getElementById("current-group-data-personal"));
+
+    var name = document.getElementById("current-group-name");
+    name.textContent = userName;
+    name.setAttribute("href", "/Profile?userID=" + userID);
+
+    var userNameLabel = document.getElementById("current-group-personal-userName");
+    userNameLabel.textContent = userName;
+
+    var image = document.getElementById("current-group-personal-userImage");
+    image.setAttribute("src", userImage);
+
+    if (isMobile) {
+        image.setAttribute("width", 32);
+        image.setAttribute("height", 32);
+    } else {
+        image.setAttribute("width", 128);
+        image.setAttribute("height", 128);
+    }
+}
+
 function clearData() {
     var name = document.getElementById("current-group-name");
     name.textContent = "No Group Selected";
     name.setAttribute("groupID", -1);
     document.getElementById("current-group-members-count").textContent = "N/A";
     document.getElementById("current-group-online-count").textContent = "N/A";
+    hide(document.getElementById("current-group-data"));
+    hide(document.getElementById("current-group-data-personal"));
 }
 
 //Clears messages, clears users, disconnects from the current group, and resets data.
@@ -478,7 +531,12 @@ connection.on("ReceiveGroupData", function (args) {
     }
 });
 
-//On User Connected to system. May not be for the active group!
+connection.on("ReceivePersonalGroupData", function (args) {
+    if (args.groupID == currentGroupID) {
+        updatePersonalGroupData(args.userID, args.userName, args.userImage);
+    }
+});
+
 connection.on("OtherUserConnectedToGroup", function (args) {
     if (args.userID != parseInt(viewmodel.UserID)) {
         if (args.groupID == currentGroupID) {
@@ -487,7 +545,14 @@ connection.on("OtherUserConnectedToGroup", function (args) {
     }
 });
 
-//On User Disconnected from system.
+connection.on("OtherUserConnectedToPersonalGroup", function (args) {
+    if (args.userID != parseInt(viewmodel.UserID)) {
+        if (args.groupID == currentGroupID) {
+            userConnectedToPersonalGroup(args.groupID, args.userID);
+        }
+    }
+});
+
 connection.on("OtherUserDisconnectedFromGroup", function (args) {
     if (args.userID != parseInt(viewmodel.UserID)) {
         if (args.groupID == currentGroupID) {
@@ -496,7 +561,14 @@ connection.on("OtherUserDisconnectedFromGroup", function (args) {
     }
 });
 
-//On User become Active
+connection.on("OtherUserDisconnectedFromPersonalGroup", function (args) {
+    if (args.userID != parseInt(viewmodel.UserID)) {
+        if (args.groupID == currentGroupID) {
+            userDisconnectedFromPersonalGroup(args.userID);
+        }
+    }
+});
+
 connection.on("OtherUserActiveInGroup", function (args) {
     if (args.userID != parseInt(viewmodel.UserID)) {
         if (args.groupID == currentGroupID) {
@@ -505,11 +577,26 @@ connection.on("OtherUserActiveInGroup", function (args) {
     }
 });
 
-//On User become Inactive
 connection.on("OtherUserInactiveInGroup", function (args) {
     if (args.userID != parseInt(viewmodel.UserID)) {
         if (args.groupID == currentGroupID) {
             userInactive(args.userID);
+        }
+    }
+});
+
+connection.on("OtherUserActiveInPersonalGroup", function (args) {
+    if (args.userID != parseInt(viewmodel.UserID)) {
+        if (args.groupID == currentGroupID) {
+            userActiveInPersonalGroup(args.userID);
+        }
+    }
+});
+
+connection.on("OtherUserInactiveInPersonalGroup", function (args) {
+    if (args.userID != parseInt(viewmodel.UserID)) {
+        if (args.groupID == currentGroupID) {
+            userInactiveInPersonalGroup(args.userID);
         }
     }
 });

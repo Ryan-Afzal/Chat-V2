@@ -58,7 +58,9 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			var current = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
+			var current = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
 			if (current == null || current.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
@@ -85,6 +87,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
@@ -93,7 +96,9 @@ namespace Chat_V2.Pages {
 				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
-			var currentMembership = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
+			var currentMembership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
 			if (currentMembership is null || currentMembership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();

@@ -28,8 +28,8 @@ namespace Chat_V2.Pages {
 			public bool IsBanned { get; set; }
 			public bool JoinRequestSent { get; set; }
 			public ChatUser ChatUser { get; set; }
-			public Group Group { get; set; }
-			public Membership Membership { get; set; }
+			public MultiuserGroup Group { get; set; }
+			public MultiuserGroupMembership Membership { get; set; }
 		}
 
 		public class SendJoinRequestInputModel {
@@ -153,6 +153,7 @@ namespace Chat_V2.Pages {
 
 			var chatUser = await _userManager.GetUserAsync(User);
 			var group = await _context.Group
+						.OfType<MultiuserGroup>()
 						.Include(g => g.GroupJoinRequests)
 							.ThenInclude(r => r.ChatUser)
 						.Include(g => g.BannedUsers)
@@ -165,6 +166,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var membership = group.Memberships
+						.OfType<MultiuserGroupMembership>()
 						.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
 			ViewModel = new GroupViewModel() {
@@ -206,6 +208,7 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.GroupJoinRequests)
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == SendJoinRequestInput.GroupID);
@@ -248,6 +251,7 @@ namespace Chat_V2.Pages {
 		public async Task<IActionResult> OnPostAcceptJoinRequestAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.GroupJoinRequests)
 				.FirstOrDefaultAsync(g => g.GroupID == JoinRequestInput.GroupID);
 
@@ -262,7 +266,7 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			Membership membership = new Membership() {
+			var membership = new MultiuserGroupMembership() {
 				ChatUserID = request.ChatUserID,
 				GroupID = group.GroupID,
 				IsActiveInGroup = false,
@@ -282,6 +286,7 @@ namespace Chat_V2.Pages {
 		public async Task<IActionResult> OnPostRejectJoinRequestAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.GroupJoinRequests)
 				.FirstOrDefaultAsync(g => g.GroupID == JoinRequestInput.GroupID);
 
@@ -319,6 +324,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == InviteToGroupInput.GroupID);
 
@@ -364,11 +370,14 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			Group group = await _context.Group
+			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == ChangeGroupNameInput.GroupID);
 
-			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+			var membership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
 			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
 				return BadRequest();
@@ -385,11 +394,14 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			Group group = await _context.Group
+			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == ChangeGroupDescriptionInput.GroupID);
 
-			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+			var membership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
 			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
 				return BadRequest();
@@ -404,7 +416,9 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostUploadImageAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
-			var group = await _context.Group.FirstOrDefaultAsync(g => g.GroupID == UploadImageInput.GroupID);
+			var group = await _context.Group
+				.OfType<MultiuserGroup>()
+				.FirstOrDefaultAsync(g => g.GroupID == UploadImageInput.GroupID);
 
 			if (UploadImageInput.GroupImage.Length < 10485760L) {//10 MB
 				if (!UploadImageInput.GroupImage.ValidateFileTypeAsImage()) {
@@ -429,11 +443,14 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			Group group = await _context.Group
+			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == PublicPrivateInput.GroupID);
 
-			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+			var membership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
 			if (membership == null || membership.Rank < PermissionRank.OWNER.Ordinal) {
 				return BadRequest();
@@ -450,11 +467,14 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var chatUser = await _userManager.GetUserAsync(User);
-			Group group = await _context.Group
+			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == PublicPrivateInput.GroupID);
 
-			Membership membership = group.Memberships.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
+			var membership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
 			if (membership == null || membership.Rank < PermissionRank.OWNER.Ordinal) {
 				return BadRequest();
@@ -483,7 +503,7 @@ namespace Chat_V2.Pages {
 			return LocalRedirect("/ConfirmDeleteGroup?groupId=" + DangerZoneInput.GroupID + "&returnUrl=" + returnUrl);
 		}
 
-		private bool JoinRequestSent(Group group, int userId) {
+		private bool JoinRequestSent(MultiuserGroup group, int userId) {
 			return group.GroupJoinRequests.FirstOrDefault(r => r.ChatUserID == userId) != null;
 		}
 	}

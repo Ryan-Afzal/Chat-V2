@@ -16,6 +16,15 @@ namespace Chat_V2.Models {
 
 		protected override void OnModelCreating(ModelBuilder builder) {
 			base.OnModelCreating(builder);
+			builder.Entity<MultiuserGroup>()
+				.HasBaseType<Group>();
+			builder.Entity<PersonalGroup>()
+				.HasBaseType<Group>();
+
+			builder.Entity<MultiuserGroupMembership>()
+				.HasBaseType<Membership>();
+			builder.Entity<PersonalGroupMembership>()
+				.HasBaseType<Membership>();
 		}
 
 		public DbSet<Group> Group { get; set; }

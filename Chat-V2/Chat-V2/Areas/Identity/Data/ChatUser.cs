@@ -35,6 +35,7 @@ namespace Chat_V2.Areas.Identity.Data {
 
 		public ICollection<Membership> Memberships { get; set; }
 		public ICollection<GroupJoinInvitation> GroupJoinInvitations { get; set; }
+		public ICollection<PersonalChatInvitation> PersonalChatInvitations { get; set; }
 		public ICollection<Notification> Notifications { get; set; }
 
 		/// <summary>
@@ -53,6 +54,10 @@ namespace Chat_V2.Areas.Identity.Data {
 			}
 
 			foreach (GroupJoinInvitation i in GroupJoinInvitations) {
+				chatContext.Remove(i);
+			}
+
+			foreach (PersonalChatInvitation i in PersonalChatInvitations) {
 				chatContext.Remove(i);
 			}
 

@@ -27,7 +27,7 @@ namespace Chat_V2.Pages {
 		}
 
 		[BindProperty]
-		public Group Group { get; set; }
+		public MultiuserGroup Group { get; set; }
 		[BindProperty]
 		public int MembershipID { get; set; }
 
@@ -40,6 +40,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -50,6 +51,7 @@ namespace Chat_V2.Pages {
 			var currentUserId = (await _userManager.GetUserAsync(User)).Id;
 
 			var currentMembership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
 				.FirstOrDefault(m => m.ChatUserID == currentUserId);
 
 			if (currentMembership == null) {
@@ -78,6 +80,7 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var membership = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
 				.Include(m => m.Group)
 				.Include(m => m.ChatUser)
 				.FirstOrDefaultAsync(m => m.MembershipID == MembershipIDInput);

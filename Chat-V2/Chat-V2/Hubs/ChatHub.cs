@@ -60,7 +60,7 @@ namespace Chat_V2.Hubs {
 				foreach (Membership membership in chatUser.Memberships) {
 					if (membership.IsOnlineInGroup) {
 						membership.IsOnlineInGroup = false;
-						await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
+						await (await GetClientsInGroupAsync(membership.GroupID))
 							.SendAsync(
 							"OtherUserDisconnectedFromGroup",
 							new OtherUserDisconnectedFromGroupArgs(membership.GroupID, membership.ChatUserID)
@@ -83,7 +83,8 @@ namespace Chat_V2.Hubs {
 			var chatUser = await ChatContext.Users
 				.Include(u => u.Memberships)
 					.ThenInclude(m => m.Group)
-						.ThenInclude(g => g.ChatMessages)
+						.ThenInclude(g => g.Memberships)
+							.ThenInclude(m => m.ChatUser)
 				.FirstOrDefaultAsync(u => u.Id == args.UserID);
 				
 			if (!ValidateUser(chatUser)) {
@@ -91,22 +92,33 @@ namespace Chat_V2.Hubs {
 			}
 
 			foreach (var m in chatUser.Memberships) {
-				//bool hasNew = false;
-
-				var lastMessage = m.Group.ChatMessages.LastOrDefault();
-
-				//if (lastMessage is null || m.LastViewedMessageID is null || lastMessage.ChatMessageID == m.LastViewedMessageID) {
-				//	hasNew = false;
-				//} else {
-				//	hasNew = true;
-				//	//hasNew = lastMessage.TimeStamp > (await ChatContext.ChatMessage.FirstOrDefaultAsync(c => c.ChatMessageID == m.LastViewedMessageID)).TimeStamp;
-				//}
-
-				await Clients.Caller
-					.SendAsync(
-					"AddGroup", 
-					new AddGroupArgs(m.GroupID, m.MembershipID, m.NumNew, m.Group.Name, FileOperationProvider.FileSavePath + "/" + m.Group.GroupImage)
-					);
+				if (m is PersonalGroupMembership p) {
+					var otherUser = p.PersonalGroup.GetOtherUser(chatUser);
+					await Clients.Caller
+						.SendAsync(
+						"AddGroup",
+						new AddGroupArgs(
+							p.GroupID, 
+							p.MembershipID, 
+							p.NumNew, 
+							otherUser.UserName, 
+							FileOperationProvider.FileSavePath + "/" + otherUser.ProfileImage
+							)
+						);
+				} else if (m is MultiuserGroupMembership g) {
+					await Clients.Caller
+						.SendAsync(
+						"AddGroup",
+						new AddGroupArgs(
+							g.GroupID, 
+							g.MembershipID, 
+							g.NumNew, 
+							g.MultiuserGroup.Name, 
+							FileOperationProvider.FileSavePath + "/" + g.MultiuserGroup.GroupImage)
+						);
+				} else {
+					throw new InvalidOperationException();
+				}
 			}
 		}
 
@@ -143,54 +155,113 @@ namespace Chat_V2.Hubs {
 				Count = 50
 			});
 
-			await Clients.Caller.SendAsync(
-					"ReceiveGroupData",
-					new ReceiveGroupDataArgs(membership.Group.GroupID, membership.Group.Name, membership.Group.Memberships.Count)
+			var proxy = await GetClientsInGroupAsync(membership.GroupID);
+
+			if (membership is PersonalGroupMembership p) {
+				var otherUser = p.PersonalGroup.GetOtherUser(p.ChatUser);
+
+				await Clients.Caller.SendAsync(
+					"ReceivePersonalGroupData",
+					new ReceivePersonalGroupDataArgs(
+						p.Group.GroupID, 
+						otherUser.Id, 
+						otherUser.UserName, 
+						FileOperationProvider.FileSavePath + "/" + otherUser.ProfileImage)
 					);
 
-			foreach (var _m in membership.Group.Memberships) {
-				if (_m.IsOnlineInGroup) {
-					await Clients.Caller.SendAsync(
-						"OtherUserConnectedToGroup", 
-						new OtherUserConnectedToGroupArgs(
-							_m.GroupID, 
-							_m.ChatUserID, 
-							_m.ChatUser.UserName,
-							FileOperationProvider.FileSavePath + "/" + _m.ChatUser.ProfileImage,
-							PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name)
-						);
-					if (_m.IsActiveInGroup) {
+				foreach (var _m in p.PersonalGroup.PersonalGroupMemberships) {
+					if (_m.IsOnlineInGroup) {
 						await Clients.Caller.SendAsync(
-							"OtherUserActiveInGroup",
-							new OtherUserActiveInGroupArgs(_m.GroupID, _m.ChatUserID)
+							"OtherUserConnectedToPersonalGroup",
+							new OtherUserConnectedToPersonalGroupArgs(
+								_m.GroupID,
+								_m.ChatUserID
+								)
 							);
-					} else {
-						await Clients.Caller.SendAsync(
-							"OtherUserInactiveInGroup",
-							new OtherUserInactiveInGroupArgs(_m.GroupID, _m.ChatUserID)
-							);
+						if (_m.IsActiveInGroup) {
+							await Clients.Caller.SendAsync(
+								"OtherUserActiveInPersonalGroup",
+								new OtherUserActiveInPersonalGroupArgs(
+									_m.GroupID, 
+									_m.ChatUserID
+									)
+								);
+						} else {
+							await Clients.Caller.SendAsync(
+								"OtherUserInactiveInPersonalGroup",
+								new OtherUserInactiveInPersonalGroupArgs(
+									_m.GroupID, 
+									_m.ChatUserID
+									)
+								);
+						}
 					}
 				}
+
+				await proxy
+					.SendAsync(
+					"OtherUserConnectedToPersonalGroup",
+					new OtherUserConnectedToPersonalGroupArgs(
+						p.GroupID,
+						p.ChatUserID
+						)
+					);
+
+				await proxy
+					.SendAsync(
+					"OtherUserActiveInPersonalGroup",
+					new OtherUserActiveInPersonalGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else if (membership is MultiuserGroupMembership m) {
+				await Clients.Caller.SendAsync(
+					"ReceiveGroupData",
+					new ReceiveGroupDataArgs(m.Group.GroupID, m.MultiuserGroup.Name, m.Group.Memberships.Count())
+					);
+
+				foreach (var _m in m.MultiuserGroup.MultiuserGroupMemberships) {
+					if (_m.IsOnlineInGroup) {
+						await Clients.Caller.SendAsync(
+							"OtherUserConnectedToGroup",
+							new OtherUserConnectedToGroupArgs(
+								_m.GroupID,
+								_m.ChatUserID,
+								_m.ChatUser.UserName,
+								FileOperationProvider.FileSavePath + "/" + _m.ChatUser.ProfileImage,
+								PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name)
+							);
+						if (_m.IsActiveInGroup) {
+							await Clients.Caller.SendAsync(
+								"OtherUserActiveInGroup",
+								new OtherUserActiveInGroupArgs(_m.GroupID, _m.ChatUserID)
+								);
+						} else {
+							await Clients.Caller.SendAsync(
+								"OtherUserInactiveInGroup",
+								new OtherUserInactiveInGroupArgs(_m.GroupID, _m.ChatUserID)
+								);
+						}
+					}
+				}
+
+				await proxy
+					.SendAsync(
+					"OtherUserConnectedToGroup",
+					new OtherUserConnectedToGroupArgs(
+						m.GroupID,
+						m.ChatUserID,
+						m.ChatUser.UserName,
+						FileOperationProvider.FileSavePath + "/" + m.ChatUser.ProfileImage,
+						PermissionRank.GetPermissionRankByOrdinal(m.Rank).Name)
+					);
+
+				await proxy
+					.SendAsync(
+					"OtherUserActiveInGroup",
+					new OtherUserActiveInGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else {
+				throw new InvalidOperationException();
 			}
-
-			var proxy = await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER);
-
-			await proxy
-				.SendAsync(
-				"OtherUserConnectedToGroup",
-				new OtherUserConnectedToGroupArgs(
-					membership.GroupID,
-					membership.ChatUserID,
-					membership.ChatUser.UserName,
-					FileOperationProvider.FileSavePath + "/" + membership.ChatUser.ProfileImage,
-					PermissionRank.GetPermissionRankByOrdinal(membership.Rank).Name)
-				);
-
-			await proxy
-				.SendAsync(
-				"OtherUserActiveInGroup", 
-				new OtherUserActiveInGroupArgs(membership.GroupID, membership.ChatUserID)
-				);
 		}
 
 		public async Task DisconnectedFromGroup(DisconnectedFromGroupArgs args) {
@@ -198,6 +269,7 @@ namespace Chat_V2.Hubs {
 				.Include(m => m.ChatUser)
 				.Include(m => m.Group)
 					.ThenInclude(g => g.Memberships)
+						.ThenInclude(m => m.ChatUser)
 				.FirstOrDefaultAsync(m => m.MembershipID == args.MembershipID);
 				
 			if (!ValidateUser(membership.ChatUser)) {
@@ -207,11 +279,21 @@ namespace Chat_V2.Hubs {
 			membership.IsOnlineInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
-			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
-				.SendAsync(
-				"OtherUserDisconnectedFromGroup",
-				new OtherUserDisconnectedFromGroupArgs(membership.GroupID, membership.ChatUserID)
-				);
+			if (membership is PersonalGroupMembership) {
+				await (await GetClientsInGroupAsync(membership.GroupID))
+					.SendAsync(
+					"OtherUserDisconnectedFromPersonalGroup",
+					new OtherUserDisconnectedFromPersonalGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else if (membership is MultiuserGroupMembership) {
+				await (await GetClientsInGroupAsync(membership.GroupID))
+					.SendAsync(
+					"OtherUserDisconnectedFromGroup",
+					new OtherUserDisconnectedFromGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else {
+				throw new InvalidOperationException();
+			}
 		}
 
 		public async Task ActiveInGroup(ActiveInGroupArgs args) {
@@ -233,11 +315,21 @@ namespace Chat_V2.Hubs {
 			membership.NumNew = 0;
 			await ChatContext.SaveChangesAsync();
 
-			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
-				.SendAsync(
-				"OtherUserActiveInGroup", 
-				new OtherUserActiveInGroupArgs(membership.GroupID, membership.ChatUserID)
-				);
+			if (membership is PersonalGroupMembership) {
+				await (await GetClientsInGroupAsync(membership.GroupID))
+					.SendAsync(
+					"OtherUserActiveInPersonalGroup",
+					new OtherUserActiveInPersonalGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else if (membership is MultiuserGroupMembership) {
+				await (await GetClientsInGroupAsync(membership.GroupID))
+					.SendAsync(
+					"OtherUserActiveInGroup",
+					new OtherUserActiveInGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else {
+				throw new InvalidOperationException();
+			}
 		}
 
 		public async Task InactiveInGroup(InactiveInGroupArgs args) {
@@ -254,11 +346,21 @@ namespace Chat_V2.Hubs {
 			membership.IsActiveInGroup = false;
 			await ChatContext.SaveChangesAsync();
 
-			await (await GetClientsInGroupAsync(membership.GroupID, PermissionRank.USER))
-				.SendAsync(
-				"OtherUserInactiveInGroup",
-				new OtherUserInactiveInGroupArgs(membership.GroupID, membership.ChatUserID)
-				);
+			if (membership is PersonalGroupMembership) {
+				await (await GetClientsInGroupAsync(membership.GroupID))
+					.SendAsync(
+					"OtherUserInactiveInPersonalGroup",
+					new OtherUserInactiveInPersonalGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else if (membership is MultiuserGroupMembership) {
+				await (await GetClientsInGroupAsync(membership.GroupID))
+					.SendAsync(
+					"OtherUserInactiveInGroup",
+					new OtherUserInactiveInGroupArgs(membership.GroupID, membership.ChatUserID)
+					);
+			} else {
+				throw new InvalidOperationException();
+			}
 		}
 
 		public async Task UserTyping(UserTypingArgs args) {
@@ -272,7 +374,7 @@ namespace Chat_V2.Hubs {
 				return;
 			}
 
-			await GetClientsInGroup(membership.Group, PermissionRank.USER)
+			await GetClientsInGroup(membership.Group)
 				.SendAsync(
 					"OtherUserTyping", 
 					new OtherUserTypingArgs(membership.GroupID, membership.ChatUserID, membership.ChatUser.ProfileImage)
@@ -289,7 +391,7 @@ namespace Chat_V2.Hubs {
 				return;
 			}
 
-			await GetClientsInGroup(membership.Group, PermissionRank.USER)
+			await GetClientsInGroup(membership.Group)
 				.SendAsync(
 					"OtherUserNotTyping",
 					new OtherUserNotTypingArgs( membership.GroupID, membership.ChatUserID)
@@ -376,8 +478,6 @@ namespace Chat_V2.Hubs {
 				return;
 			}
 			
-			PermissionRank senderRank = PermissionRank.GetPermissionRankByOrdinal(membership.Rank);
-			PermissionRank minRank = PermissionRank.GetPermissionRankByOrdinal(args.MinRank);
 			ChatUser sender = membership.ChatUser;
 			Group group = membership.Group;
 
@@ -390,16 +490,14 @@ namespace Chat_V2.Hubs {
 			List<string> list = new List<string>();
 
 			foreach (var m in group.Memberships) {
-				if (m.Rank >= minRank.Ordinal) {
-					if (m.IsOnlineInGroup) {
-						if (m.IsActiveInGroup) {
-							m.LastViewedMessageID = chatMessage.ChatMessageID;
-						}
-
-						list.Add(m.ChatUserID + "");
-					} else {
-						m.NumNew++;
+				if (m.IsOnlineInGroup) {
+					if (m.IsActiveInGroup) {
+						m.LastViewedMessageID = chatMessage.ChatMessageID;
 					}
+
+					list.Add(m.ChatUserID + "");
+				} else {
+					m.NumNew++;
 				}
 			}
 
@@ -434,28 +532,26 @@ namespace Chat_V2.Hubs {
 			return group;
 		}
 
-		private async Task<IReadOnlyList<string>> GetUsersInGroupAsync(int groupId, PermissionRank minRank) {
-			return GetUsersInGroup(await GetGroupByIdAsync(groupId, true, false, false), minRank);
+		private async Task<IReadOnlyList<string>> GetUsersInGroupAsync(int groupId) {
+			return GetUsersInGroup(await GetGroupByIdAsync(groupId, true, false, false));
 		}
 
-		private IReadOnlyList<string> GetUsersInGroup(Group group, PermissionRank minRank) {
+		private IReadOnlyList<string> GetUsersInGroup(Group group) {
 			List<string> list = new List<string>();
 
 			foreach (var m in group.Memberships) {
-				if (m.Rank >= minRank.Ordinal) {
-					list.Add(m.ChatUserID + "");
-				}
+				list.Add(m.ChatUserID + "");
 			}
 
 			return list.AsReadOnly();
 		}
 
-		private IClientProxy GetClientsInGroup(Group group, PermissionRank minRank) {
-			return Clients.Users(GetUsersInGroup(group, minRank));
+		private IClientProxy GetClientsInGroup(Group group) {
+			return Clients.Users(GetUsersInGroup(group));
 		}
 		
-		private async Task<IClientProxy> GetClientsInGroupAsync(int groupId, PermissionRank minRank) {
-			return Clients.Users(await GetUsersInGroupAsync(groupId, minRank));
+		private async Task<IClientProxy> GetClientsInGroupAsync(int groupId) {
+			return Clients.Users(await GetUsersInGroupAsync(groupId));
 		}
 
 		private bool ValidateUser(ChatUser chatUser) {

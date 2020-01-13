@@ -33,7 +33,7 @@ namespace Chat_V2.Pages {
 		public string CurrentFilter { get; set; }
 		public string CurrentSort { get; set; }
 
-		public PaginatedList<Group> Groups { get; set; }
+		public PaginatedList<MultiuserGroup> Groups { get; set; }
 
 		public async Task OnGetAsync(string sortOrder, string currentFilter, string searchString, int? pageIndex) {
 			CurrentSort = sortOrder;
@@ -48,7 +48,8 @@ namespace Chat_V2.Pages {
 
 			CurrentFilter = searchString;
 
-			IQueryable<Group> groupsIQ = _context.Group
+			IQueryable<MultiuserGroup> groupsIQ = _context.Group
+					.OfType<MultiuserGroup>()
 					.Where(g => !g.IsPrivate);
 
 			if (!string.IsNullOrEmpty(searchString)) {
@@ -72,7 +73,7 @@ namespace Chat_V2.Pages {
 			}
 
 			int pageSize = 10;
-			Groups = await PaginatedList<Group>.CreateAsync(
+			Groups = await PaginatedList<MultiuserGroup>.CreateAsync(
 				groupsIQ.AsNoTracking(), pageIndex ?? 1, pageSize);
 		}
 

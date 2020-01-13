@@ -94,7 +94,7 @@ namespace Chat_V2.Areas.Identity.Pages.Account {
 				var result = await _userManager.CreateAsync(user, Input.Password);
 				if (result.Succeeded) {
 					Group group = await _context.Group.FirstAsync();
-					Membership membership = new Membership() {
+					var membership = new MultiuserGroupMembership() {
 						GroupID = group.GroupID,
 						ChatUserID = user.Id,
 						Rank = PermissionRank.USER.Ordinal,

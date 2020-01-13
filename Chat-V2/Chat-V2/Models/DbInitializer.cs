@@ -11,7 +11,7 @@ namespace Chat_V2.Models {
 
 	public static class DbInitializer {
 
-		public static void Initialize(ChatContext context, IWebHostEnvironment env, IFileOperationProvider fileConfiguration) {
+		public static void Initialize(ChatContext context, IFileOperationProvider fileConfiguration) {
 
 			//context.Database.EnsureDeleted();
 			context.Database.EnsureCreated();
@@ -20,7 +20,7 @@ namespace Chat_V2.Models {
 				return;
 			}
 
-			Group globalServerGroup = new Group() {
+			Group globalServerGroup = new MultiuserGroup() {
 				Name = "Global",
 				DateCreated = DateTime.Now,
 				IsPrivate = false,

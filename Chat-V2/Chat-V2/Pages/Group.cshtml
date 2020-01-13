@@ -113,7 +113,7 @@
                     <th>UserName</th>
                     <th>Rank</th>
                 </tr>
-                @foreach (var item in Model.ViewModel.Group.Memberships.OrderByDescending(membership => membership.Rank)) {
+                @foreach (var item in Model.ViewModel.Group.MultiuserGroupMemberships.OrderByDescending(membership => membership.Rank)) {
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.ChatUser.Id)

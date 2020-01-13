@@ -1,7 +1,10 @@
 ﻿@page
 @model Chat_V2.Pages.ProfileModel
+@using Chat_V2.Areas.Identity.Data
 @using Chat_V2.Interfaces
+@using Microsoft.AspNetCore.Identity
 @inject IFileOperationProvider fileOperationProvider
+@inject UserManager<ChatUser> userManager
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -13,7 +16,7 @@
         <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="true">Profile</a>
         @if (Model.IsThisUser) {
             <a class="nav-item nav-link" id="nav-notifications-tab" data-toggle="tab" href="#nav-notifications" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications <span id="notifs-badge" class="badge badge-primary" hidden>0</span></a>
-            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge badge-primary" hidden>@Model.ChatUser.GroupJoinInvitations.Count</span></a>
+            <a class="nav-item nav-link" id="nav-invitations-tab" data-toggle="tab" href="#nav-invitations" role="tab" aria-controls="nav-invitations" aria-selected="false">Invitations <span id="invitations-badge" class="badge badge-primary" hidden>@(Model.ChatUser.GroupJoinInvitations.Count + Model.ChatUser.PersonalChatInvitations.Count)</span></a>
         }
     </div>
 </nav>
@@ -52,6 +55,12 @@
                 <div class="row text-center">
                     <p>@Model.ChatUser.ProfileDescription</p>
                 </div>
+                <div class="row">
+                    <hr />
+                </div>
+                <div class="row text-center">
+
+                </div>
             </div>
         </div>
         @if (Model.IsThisUser) {
@@ -87,11 +96,46 @@
                 <br />
 
                 <div id="join-invitations-list" class="col-12">
-                    @if (Model.ChatUser.GroupJoinInvitations.Count == 0) {
+                    @if (Model.ChatUser.GroupJoinInvitations.Count == 0 && Model.ChatUser.PersonalChatInvitations.Count == 0) {
                         <div id="no-invitations" class="card">
-                            <div class="card-header">No Join Invitations</div>
+                            <div class="card-header">No Invitations</div>
                         </div>
                     } else {
+                        @foreach (var invitation in Model.ChatUser.PersonalChatInvitations) {
+                            <div id="invitation-@(invitation.SenderID)" class="card">
+                                <div class="card-header">@((await userManager.FindByIdAsync(invitation.SenderID + "")).UserName)</div>
+                                <div class="card-body">
+                                    <dl>
+                                        <dt>
+                                            ID
+                                        </dt>
+                                        <dh>
+                                            @(invitation.SenderID)
+                                        </dh>
+                                        <dt>
+                                            Group Name
+                                        </dt>
+                                        <dh>
+                                            @((await userManager.FindByIdAsync(invitation.SenderID + "")).UserName)
+                                        </dh>
+                                        <dt>
+                                            Message
+                                        </dt>
+                                        <dh>
+                                            @(invitation.Message)
+                                        </dh>
+                                    </dl>
+                                    <form method="post" onsubmit="decrementInvitationsCount()">
+                                        <button type="submit" asp-page-handler="AcceptPersonalChatInvitation" class="btn btn-success">Accept</button>
+                                        <button type="submit" asp-page-handler="RejectPersonalChatInvitation" class="btn btn-danger">Reject</button>
+                                        <input type="hidden" asp-for="PersonalChatInvitationInput.ChatUserID" value="@(invitation.ChatUserID)" />
+                                        <input type="hidden" asp-for="PersonalChatInvitationInput.InvitationID" value="@(invitation.PersonalChatInvitationID)" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                    </form>
+                                </div>
+                                <div class="card-footer text-muted">@(invitation.DateSent.ToString())</div>
+                            </div>
+                        }
                         @foreach (var invitation in Model.ChatUser.GroupJoinInvitations) {
                             <div id="invitation-group-@(invitation.GroupID)" class="card">
                                 <div class="card-header">@(invitation.Group.Name)</div>
@@ -133,7 +177,7 @@
             <script>
                 "use strict";
 
-                const invitationsCount = @Model.ChatUser.GroupJoinInvitations.Count;
+                const invitationsCount = @(Model.ChatUser.GroupJoinInvitations.Count + Model.ChatUser.PersonalChatInvitations.Count);
 
                 const viewmodel = {
                     UserID: @Model.ChatUser.Id,
@@ -147,6 +191,25 @@
                 <environment exclude="Development">
                     <script src="~/js/profile.min.js" asp-append-version="true"></script>
                 </environment>
+            }
+        } else {
+            @if (Model.HasChat) {
+                <h4>You are chatting with this user!</h4>
+            } else {
+                @if (Model.InviteSent) {
+                    <h3>You have sent a chat invitation.</h3>
+                } else {
+                    <h3>You are not chatting with this user. To do so, send a chat invitation.</h3>
+                    <form method="post">
+                        <div class="form-group">
+                            <label asp-for="SendChatInvitationInput.Message"></label>
+                            <textarea asp-for="SendChatInvitationInput.Message" class="form-control"></textarea>
+                        </div>
+                        <input type="hidden" asp-for="SendChatInvitationInput.ChatUserID" value="@(Model.ChatUser.Id)" />
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button id="send-chat-invitation" type="submit" asp-page-handler="SendChatInvitation" class="btn btn-primary">Send</button>
+                    </form>
+                }
             }
         }
     } else {

@@ -68,10 +68,7 @@ namespace Chat_V2.Models {
 		/// The ID of the membership used by the calling user
 		/// </summary>
 		public int MembershipID { get; set; }
-		/// <summary>
-		/// The minimum rank needed to view the message
-		/// </summary>
-		public int MinRank { get; set; }
+
 		/// <summary>
 		/// The message.
 		/// </summary>
@@ -176,9 +173,42 @@ namespace Chat_V2.Models {
 		public string UserRank { get; }
 	}
 
+	public class OtherUserConnectedToPersonalGroupArgs {
+		public OtherUserConnectedToPersonalGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		/// <summary>
+		/// The ID of the group the user connected to
+		/// </summary>
+		public int GroupID { get; }
+		/// <summary>
+		/// The ID of the user who connected
+		/// </summary>
+		public int UserID { get; }
+	}
+
 	public class OtherUserDisconnectedFromGroupArgs {
 
 		public OtherUserDisconnectedFromGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		/// <summary>
+		/// The ID of the group the user disconnected from
+		/// </summary>
+		public int GroupID { get; }
+		/// <summary>
+		/// The ID of the user who disconnected
+		/// </summary>
+		public int UserID { get; }
+	}
+
+	public class OtherUserDisconnectedFromPersonalGroupArgs {
+
+		public OtherUserDisconnectedFromPersonalGroupArgs(int groupId, int userId) {
 			GroupID = groupId;
 			UserID = userId;
 		}
@@ -204,9 +234,31 @@ namespace Chat_V2.Models {
 		public int UserID { get; }
 	}
 
+	public class OtherUserActiveInPersonalGroupArgs {
+
+		public OtherUserActiveInPersonalGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		public int GroupID { get; }
+		public int UserID { get; }
+	}
+
 	public class OtherUserInactiveInGroupArgs {
 
 		public OtherUserInactiveInGroupArgs(int groupId, int userId) {
+			GroupID = groupId;
+			UserID = userId;
+		}
+
+		public int GroupID { get; }
+		public int UserID { get; }
+	}
+
+	public class OtherUserInactiveInPersonalGroupArgs {
+
+		public OtherUserInactiveInPersonalGroupArgs(int groupId, int userId) {
 			GroupID = groupId;
 			UserID = userId;
 		}
@@ -270,6 +322,32 @@ namespace Chat_V2.Models {
 		public int GroupID { get; }
 		public string GroupName { get; }
 		public int NumUsers { get; }
+	}
+
+	public class ReceivePersonalGroupDataArgs {
+		public ReceivePersonalGroupDataArgs(int groupId, int userId, string userName, string userImage) {
+			GroupID = groupId;
+			UserID = userId;
+			UserName = userName;
+			UserImage = userImage;
+		}
+
+		/// <summary>
+		/// The ID of the group the user connected to
+		/// </summary>
+		public int GroupID { get; }
+		/// <summary>
+		/// The ID of the user who connected
+		/// </summary>
+		public int UserID { get; }
+		/// <summary>
+		/// The username of the user who connected
+		/// </summary>
+		public string UserName { get; }
+		/// <summary>
+		/// The image of the user who connected
+		/// </summary>
+		public string UserImage { get; }
 	}
 
 	public class ReceiveMessageArgs {

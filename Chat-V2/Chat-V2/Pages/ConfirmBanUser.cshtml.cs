@@ -57,6 +57,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
@@ -65,10 +66,11 @@ namespace Chat_V2.Pages {
 			}
 
 			var memberships = group.Memberships
+				.OfType<MultiuserGroupMembership>()
 				.Where(m => m.ChatUserID == user.Id || m.ChatUserID == currentUser.Id);
 
-			Membership other = null;
-			Membership current = null;
+			MultiuserGroupMembership other = null;
+			MultiuserGroupMembership current = null;
 			
 			foreach (var m in memberships) {
 				if (m.ChatUserID == user.Id) {
@@ -111,6 +113,7 @@ namespace Chat_V2.Pages {
 			}
 
 			var group = await _context.Group
+				.OfType<MultiuserGroup>()
 				.Include(g => g.Memberships)
 				.Include(g => g.BannedUsers)
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
@@ -119,13 +122,17 @@ namespace Chat_V2.Pages {
 				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
-			var currentMembership = group.Memberships.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
+			var currentMembership = group.Memberships
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
 			if (currentMembership is null) {
 				return BadRequest();
 			}
 
-			Membership membership = await _context.Membership.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
+			var membership = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefaultAsync(m => m.MembershipID == membershipId);
 
 			if (membership.ChatUserID != chatUser.Id || membership.GroupID != group.GroupID || currentMembership.Rank <= membership.Rank) {
 				return BadRequest();

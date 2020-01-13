@@ -72,7 +72,7 @@
                         No Group Selected
                     </a>
                 </div>
-                <ul class="list-group list-group-flush">
+                <ul id="current-group-data" class="list-group list-group-flush" hidden>
                     <li class="list-group-item">
                         <div class="container">
                             <div class="row">
@@ -80,9 +80,30 @@
                                 <div id="current-group-members-count" class="col">
                                     N/A
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div id="current-group-online" class="col-auto">Online:&nbsp;</div>
                                 <div id="current-group-online-count" class="col">
                                     N/A
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul id="current-group-data-personal" class="list-group list-group-flush" hidden>
+                    <li class="list-group-item">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <img id="current-group-personal-userImage" width="128" height="128" class="img rounded-circle"  />
+                                </div>
+                                <div class="col">
+                                    <h4 id="current-group-personal-userName"></h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <span id="current-group-personal-online" class="badge bg-danger text-white">Offline</span>
                                 </div>
                             </div>
                         </div>

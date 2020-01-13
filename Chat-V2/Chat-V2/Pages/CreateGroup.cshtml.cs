@@ -57,7 +57,7 @@ namespace Chat_V2.Pages {
 			if (_signInManager.IsSignedIn(User)) {
 				var chatUser = await _userManager.GetUserAsync(User);
 
-				Group group = new Group() {
+				var group = new MultiuserGroup() {
 					Name = Input.Name,
 					Description = Input.Description,
 					DateCreated = DateTime.Now,
@@ -69,7 +69,7 @@ namespace Chat_V2.Pages {
 				await _context.Group.AddAsync(group);
 				await _context.SaveChangesAsync();
 
-				Membership membership = new Membership() {
+				var membership = new MultiuserGroupMembership() {
 					ChatUserID = chatUser.Id,
 					GroupID = group.GroupID,
 					IsActiveInGroup = false,

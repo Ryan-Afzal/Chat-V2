@@ -72,9 +72,6 @@ namespace Chat_V2.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GroupID")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
@@ -86,6 +83,9 @@ namespace Chat_V2.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("MultiuserGroupGroupID")
+                        .HasColumnType("int");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(256)")
@@ -125,7 +125,7 @@ namespace Chat_V2.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupID");
+                    b.HasIndex("MultiuserGroupGroupID");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -179,27 +179,15 @@ namespace Chat_V2.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GroupImage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPrivate")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NumOnline")
-                        .HasColumnType("int");
 
                     b.HasKey("GroupID");
 
                     b.ToTable("Group");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Group");
                 });
 
             modelBuilder.Entity("Chat_V2.Models.GroupJoinInvitation", b =>
@@ -249,11 +237,16 @@ namespace Chat_V2.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("MultiuserGroupGroupID")
+                        .HasColumnType("int");
+
                     b.HasKey("GroupJoinRequestID");
 
                     b.HasIndex("ChatUserID");
 
                     b.HasIndex("GroupID");
+
+                    b.HasIndex("MultiuserGroupGroupID");
 
                     b.ToTable("GroupJoinRequest");
                 });
@@ -267,6 +260,10 @@ namespace Chat_V2.Migrations
 
                     b.Property<int>("ChatUserID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("GroupID")
                         .HasColumnType("int");
@@ -283,9 +280,6 @@ namespace Chat_V2.Migrations
                     b.Property<int>("NumNew")
                         .HasColumnType("int");
 
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
-
                     b.HasKey("MembershipID");
 
                     b.HasIndex("ChatUserID");
@@ -293,6 +287,8 @@ namespace Chat_V2.Migrations
                     b.HasIndex("GroupID");
 
                     b.ToTable("Membership");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Membership");
                 });
 
             modelBuilder.Entity("Chat_V2.Models.Notification", b =>
@@ -322,6 +318,32 @@ namespace Chat_V2.Migrations
                     b.HasIndex("ChatUserID");
 
                     b.ToTable("Notification");
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.PersonalChatInvitation", b =>
+                {
+                    b.Property<int>("PersonalChatInvitationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ChatUserID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.HasKey("PersonalChatInvitationID");
+
+                    b.HasIndex("ChatUserID");
+
+                    b.ToTable("PersonalChatInvitation");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -429,11 +451,60 @@ namespace Chat_V2.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Chat_V2.Models.MultiuserGroup", b =>
+                {
+                    b.HasBaseType("Chat_V2.Models.Group");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GroupImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumOnline")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("MultiuserGroup");
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.PersonalGroup", b =>
+                {
+                    b.HasBaseType("Chat_V2.Models.Group");
+
+                    b.HasDiscriminator().HasValue("PersonalGroup");
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.MultiuserGroupMembership", b =>
+                {
+                    b.HasBaseType("Chat_V2.Models.Membership");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("MultiuserGroupMembership");
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.PersonalGroupMembership", b =>
+                {
+                    b.HasBaseType("Chat_V2.Models.Membership");
+
+                    b.HasDiscriminator().HasValue("PersonalGroupMembership");
+                });
+
             modelBuilder.Entity("Chat_V2.Areas.Identity.Data.ChatUser", b =>
                 {
-                    b.HasOne("Chat_V2.Models.Group", null)
+                    b.HasOne("Chat_V2.Models.MultiuserGroup", null)
                         .WithMany("BannedUsers")
-                        .HasForeignKey("GroupID");
+                        .HasForeignKey("MultiuserGroupGroupID");
                 });
 
             modelBuilder.Entity("Chat_V2.Models.ChatMessage", b =>
@@ -459,7 +530,7 @@ namespace Chat_V2.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Chat_V2.Models.Group", "Group")
+                    b.HasOne("Chat_V2.Models.MultiuserGroup", "Group")
                         .WithMany()
                         .HasForeignKey("GroupID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -475,10 +546,14 @@ namespace Chat_V2.Migrations
                         .IsRequired();
 
                     b.HasOne("Chat_V2.Models.Group", "Group")
-                        .WithMany("GroupJoinRequests")
+                        .WithMany()
                         .HasForeignKey("GroupID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Chat_V2.Models.MultiuserGroup", null)
+                        .WithMany("GroupJoinRequests")
+                        .HasForeignKey("MultiuserGroupGroupID");
                 });
 
             modelBuilder.Entity("Chat_V2.Models.Membership", b =>
@@ -500,6 +575,15 @@ namespace Chat_V2.Migrations
                 {
                     b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", null)
                         .WithMany("Notifications")
+                        .HasForeignKey("ChatUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chat_V2.Models.PersonalChatInvitation", b =>
+                {
+                    b.HasOne("Chat_V2.Areas.Identity.Data.ChatUser", "ChatUser")
+                        .WithMany("PersonalChatInvitations")
                         .HasForeignKey("ChatUserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

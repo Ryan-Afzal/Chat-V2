@@ -55,7 +55,7 @@ namespace Chat_V2 {
 
 			services.AddSignalR();
 			services.AddRazorPages();
-			services.AddSingleton<IFileOperationProvider, FileOperationProvider>();
+			services.AddTransient<IFileOperationProvider, FileOperationProvider>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IFileOperationProvider fileOperationProvider) {
