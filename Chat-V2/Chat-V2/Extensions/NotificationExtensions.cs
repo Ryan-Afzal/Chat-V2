@@ -27,5 +27,12 @@ namespace Chat_V2.Extensions {
 				new ReceiveNotificationArgs(notif));
 		}
 
+		public static async Task SendNewNotificationAsync(this IHubContext<NotifHub> context, int chatUserID) {
+			await context.Clients.User(chatUserID.ToString()).SendAsync("NewNotification",
+				new NewNotificationArgs() {
+					ChatUserID = chatUserID
+				});
+		}
+
 	}
 }

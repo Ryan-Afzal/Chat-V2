@@ -125,6 +125,9 @@ function decrementNotifsCount() {
     if (count == 0) {
         node.setAttribute("hidden", "hidden");
         document.getElementById("no-notifs").removeAttribute("hidden");
+        for (var item in document.getElementsByClassName("notif-new")) {
+            item.setAttribute("hidden", "hidden");
+        }
     }
 
     node.textContent = count;

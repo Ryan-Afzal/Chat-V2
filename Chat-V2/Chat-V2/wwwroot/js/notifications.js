@@ -35,13 +35,8 @@ notifConnection.on("ReceiveNumNewMessages", function (args) {
 });
 
 function addBadge() {
-    var newBadge = document.createElement("span");
-    newBadge.setAttribute("class", "badge badge-primary");
-    newBadge.textContent = "NEW";
-
-    var node = document.getElementById("notif-new");
-
-    if (!node.hasChildNodes()) {
-        node.appendChild(newBadge);
+    var nodes = document.getElementsByClassName("notif-new");
+    for (var item of nodes) {
+        item.removeAttribute("hidden");
     }
 }

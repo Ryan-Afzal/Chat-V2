@@ -14,7 +14,7 @@ namespace Chat_V2.Models {
 		public string Message { get; set; }
 		public DateTime DateSent { get; set; }
 
-		public Group Group { get; set; }
+		public MultiuserGroup Group { get; set; }
 		public ChatUser ChatUser { get; set; }
 	}
 }

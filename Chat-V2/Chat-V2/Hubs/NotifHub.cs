@@ -32,16 +32,20 @@ namespace Chat_V2.Hubs {
 			await base.OnConnectedAsync();
 
 			int id = int.Parse(Context.UserIdentifier);
-			var chatUser = await ChatContext.Users
-				.Include(u => u.Notifications)
-				.FirstOrDefaultAsync(u => u.Id == id);
+			var user = await UserManager.GetUserAsync(Context.User);
+			bool hasNew = await ChatContext.Notification
+				.AnyAsync(n => n.ChatUserID == user.Id)
+				|| await ChatContext.PersonalChatInvitation
+				.AnyAsync(i => i.ChatUserID == user.Id)
+				|| await ChatContext.GroupJoinInvitation
+				.AnyAsync(i => i.ChatUserID == user.Id);
 
-			if (chatUser.Notifications.Any()) {
+			if (hasNew) {
 				IClientProxy proxy = Clients.User(Context.UserIdentifier);
 
 				await proxy.SendAsync("NewNotification",
 					new NewNotificationArgs() {
-						ChatUserID = chatUser.Id
+						ChatUserID = user.Id
 					});
 			}
 		}

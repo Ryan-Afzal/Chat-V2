@@ -17,7 +17,5 @@ namespace Chat_V2.Models {
 
 		public ICollection<ChatUser> BannedUsers { get; set; }
 		public ICollection<GroupJoinRequest> GroupJoinRequests { get; set; }
-		[NotMapped]
-		public IQueryable<MultiuserGroupMembership> MultiuserGroupMemberships { get => Memberships.AsQueryable().OfType<MultiuserGroupMembership>(); }
 	}
 }

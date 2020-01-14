@@ -98,8 +98,9 @@ namespace Chat_V2.Pages {
 				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
-			var currentMembership = await group.MultiuserGroupMemberships
-				.FirstOrDefaultAsync(m => m.ChatUserID == currentUser.Id);
+			var currentMembership = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefaultAsync(m => m.GroupID == group.GroupID && m.ChatUserID == currentUser.Id);
 
 			if (currentMembership is null || currentMembership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();

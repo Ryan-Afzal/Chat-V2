@@ -218,7 +218,7 @@ namespace Chat_V2.Hubs {
 					new ReceiveGroupDataArgs(m.Group.GroupID, m.MultiuserGroup.Name, m.Group.Memberships.Count())
 					);
 
-				foreach (var _m in m.MultiuserGroup.MultiuserGroupMemberships) {
+				foreach (var _m in m.MultiuserGroup.Memberships.OfType<MultiuserGroupMembership>()) {
 					if (_m.IsOnlineInGroup) {
 						await Clients.Caller.SendAsync(
 							"OtherUserConnectedToGroup",

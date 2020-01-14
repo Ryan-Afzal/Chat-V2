@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Extensions;
+using Chat_V2.Hubs;
 using Chat_V2.Interfaces;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -101,13 +103,15 @@ namespace Chat_V2.Pages {
 		private readonly ChatContext _context;
 		private readonly ILogger<GroupModel> _logger;
 		private readonly IFileOperationProvider _fileOperationProvider;
+		private readonly IHubContext<NotifHub> _hubContext;
 
-		public GroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<GroupModel> logger, IFileOperationProvider fileOperationProvider) {
+		public GroupModel(UserManager<ChatUser> userManager, SignInManager<ChatUser> signInManager, ChatContext context, ILogger<GroupModel> logger, IFileOperationProvider fileOperationProvider, IHubContext<NotifHub> hubContext) {
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_context = context;
 			_logger = logger;
 			_fileOperationProvider = fileOperationProvider;
+			_hubContext = hubContext;
 		}
 
 		[BindProperty]
@@ -165,8 +169,9 @@ namespace Chat_V2.Pages {
 				return NotFound();
 			}
 
-			var membership = await group.MultiuserGroupMemberships
-						.FirstOrDefaultAsync(m => m.ChatUserID == chatUser.Id);
+			var membership = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefaultAsync(m => m.GroupID == group.GroupID && m.ChatUserID == chatUser.Id);
 
 			ViewModel = new GroupViewModel() {
 				Group = group,
@@ -266,7 +271,23 @@ namespace Chat_V2.Pages {
 
 			await _context.Membership.AddAsync(membership);
 			_context.GroupJoinRequest.Remove(request);
+
+			var group = await _context.Group
+				.OfType<MultiuserGroup>()
+				.FirstOrDefaultAsync(g => g.GroupID == request.GroupID);
+
+			var notif = new Notification() {
+				ChatUserID = request.ChatUserID,
+				Date = DateTime.Now,
+				Title = "Join request accepted",
+				Text = $"Your join request for {group.Name} was accepted.",
+				ViewURL = $"/Group?groupId={group.GroupID}"
+			};
+
+			await _context.Notification.AddAsync(notif);
 			await _context.SaveChangesAsync();
+
+			await _hubContext.SendNotificationAsync(notif);
 
 			return LocalRedirect(returnUrl);
 		}
@@ -324,8 +345,10 @@ namespace Chat_V2.Pages {
 			};
 
 			chatUser.GroupJoinInvitations.Add(invitation);
-
 			await _context.SaveChangesAsync();
+
+			await _hubContext.SendNewNotificationAsync(chatUser.Id);
+
 			return LocalRedirect(returnUrl);
 		}
 
@@ -354,8 +377,9 @@ namespace Chat_V2.Pages {
 				.Include(g => g.Memberships)
 				.FirstOrDefaultAsync(g => g.GroupID == ChangeGroupNameInput.GroupID);
 			
-			var membership = await group.MultiuserGroupMemberships
-				.FirstOrDefaultAsync(m => m.ChatUserID == chatUser.Id);
+			var membership = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefaultAsync(m => m.GroupID == group.GroupID && m.ChatUserID == chatUser.Id);
 
 			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
 				return BadRequest();

@@ -330,6 +330,8 @@ namespace Chat_V2.Pages {
 			await _context.PersonalChatInvitation.AddAsync(invitation);
 			await _context.SaveChangesAsync();
 
+			await _hubContext.SendNewNotificationAsync(chatUser.Id);
+
 			return LocalRedirect(returnUrl);
 		}
 	}

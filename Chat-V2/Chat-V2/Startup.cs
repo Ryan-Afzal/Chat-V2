@@ -77,7 +77,7 @@ namespace Chat_V2 {
 
 #if DEBUG
 			app.UseStaticFiles(new StaticFileOptions {
-				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "DefaultFiles")),
+				FileProvider = new PhysicalFileProvider(fileOperationProvider.GetFilePathFromComponents(fileOperationProvider.DefaultFileLoadPath)),
 				RequestPath = "/DefaultFiles"
 			});
 #endif

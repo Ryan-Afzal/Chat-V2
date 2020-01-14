@@ -81,11 +81,11 @@ namespace Chat_V2.Pages {
 				}
 			}
 
-			if (current == null || current.Rank < PermissionRank.OFFICER.Ordinal) {
+			if (current is null || current.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 
-			if (other == null) {
+			if (other is null) {
 				MembershipID = null;
 			} else if (other.Rank >= current.Rank) {
 				return BadRequest();
@@ -122,8 +122,9 @@ namespace Chat_V2.Pages {
 			var chatUser = await _context.Users
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
-			var currentMembership = group.MultiuserGroupMemberships
-				.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
+			var currentMembership = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
+				.FirstOrDefaultAsync(m => m.GroupID == group.GroupID && m.ChatUserID == currentUser.Id);
 
 			if (currentMembership is null) {
 				return BadRequest();
