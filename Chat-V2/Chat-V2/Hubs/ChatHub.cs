@@ -102,7 +102,7 @@ namespace Chat_V2.Hubs {
 							p.MembershipID, 
 							p.NumNew, 
 							otherUser.UserName, 
-							FileOperationProvider.FileSavePath + "/" + otherUser.ProfileImage
+							FileOperationProvider.FileLoadURL + "/" + otherUser.ProfileImage
 							)
 						);
 				} else if (m is MultiuserGroupMembership g) {
@@ -114,7 +114,7 @@ namespace Chat_V2.Hubs {
 							g.MembershipID, 
 							g.NumNew, 
 							g.MultiuserGroup.Name, 
-							FileOperationProvider.FileSavePath + "/" + g.MultiuserGroup.GroupImage)
+							FileOperationProvider.FileLoadURL + "/" + g.MultiuserGroup.GroupImage)
 						);
 				} else {
 					throw new InvalidOperationException();
@@ -166,7 +166,7 @@ namespace Chat_V2.Hubs {
 						p.Group.GroupID, 
 						otherUser.Id, 
 						otherUser.UserName, 
-						FileOperationProvider.FileSavePath + "/" + otherUser.ProfileImage)
+						FileOperationProvider.FileLoadURL + "/" + otherUser.ProfileImage)
 					);
 
 				foreach (var _m in p.PersonalGroup.PersonalGroupMemberships) {
@@ -226,7 +226,7 @@ namespace Chat_V2.Hubs {
 								_m.GroupID,
 								_m.ChatUserID,
 								_m.ChatUser.UserName,
-								FileOperationProvider.FileSavePath + "/" + _m.ChatUser.ProfileImage,
+								FileOperationProvider.FileLoadURL + "/" + _m.ChatUser.ProfileImage,
 								PermissionRank.GetPermissionRankByOrdinal(_m.Rank).Name)
 							);
 						if (_m.IsActiveInGroup) {
@@ -250,7 +250,7 @@ namespace Chat_V2.Hubs {
 						m.GroupID,
 						m.ChatUserID,
 						m.ChatUser.UserName,
-						FileOperationProvider.FileSavePath + "/" + m.ChatUser.ProfileImage,
+						FileOperationProvider.FileLoadURL + "/" + m.ChatUser.ProfileImage,
 						PermissionRank.GetPermissionRankByOrdinal(m.Rank).Name)
 					);
 
@@ -455,7 +455,7 @@ namespace Chat_V2.Hubs {
 				message.ChatUserID, 
 				message.GroupID,
 				chatUser.UserName,
-				FileOperationProvider.FileSavePath + "/" + chatUser.ProfileImage,
+				FileOperationProvider.FileLoadURL + "/" + chatUser.ProfileImage,
 				FormatDate(message.Timestamp),
 				message.Message,
 				message.Multimedia
