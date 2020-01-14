@@ -237,7 +237,10 @@ namespace Chat_V2.Pages {
 				ViewURL = "/Chat"
 			};
 
-			(await _context.Users.FirstOrDefaultAsync(u => u.Id == invitation.SenderID)).Notifications.Add(notif);
+			(await _context.Users
+				.Include(u => u.Notifications)
+				.FirstOrDefaultAsync(u => u.Id == invitation.SenderID))
+				.Notifications.Add(notif);
 			await _context.SaveChangesAsync();
 
 			IClientProxy proxy = _hubContext.Clients.User(invitation.SenderID + "");

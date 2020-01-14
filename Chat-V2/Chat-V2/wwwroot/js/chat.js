@@ -136,7 +136,7 @@ function userConnected(userId, userName, userImage, userRankName) {
 }
 
 function userConnectedToPersonalGroup(userId) {
-    var node = document.getElementById("current-group-data-personal-online");
+    var node = document.getElementById("current-group-personal-online");
     node.textContent = "Online";
     node.setAttribute("class", "badge bg-primary");
 }
@@ -149,7 +149,7 @@ function userDisconnected(userId) {
 }
 
 function userDisconnectedFromPersonalGroup(userId) {
-    var node = document.getElementById("current-group-data-personal-online");
+    var node = document.getElementById("current-group-personal-online");
     node.textContent = "Offline";
     node.setAttribute("class", "badge bg-danger");
 }
@@ -160,7 +160,7 @@ function userActive(userId) {
 }
 
 function userActiveInPersonalGroup(userId) {
-    var node = document.getElementById("current-group-data-personal-online");
+    var node = document.getElementById("current-group-personal-online");
     node.textContent = "Active";
     node.setAttribute("class", "badge bg-success");
 }
@@ -171,7 +171,7 @@ function userInactive(userId) {
 }
 
 function userInactiveInPersonalGroup(userId) {
-    var node = document.getElementById("current-group-data-personal-online");
+    var node = document.getElementById("current-group-personal-online");
     node.textContent = "Online";
     node.setAttribute("class", "badge bg-primary");
 }
