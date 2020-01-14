@@ -10,7 +10,6 @@ namespace Chat_V2.Models {
 	public class MultiuserGroup : Group {
 		public string Name { get; set; }
 		public string Description { get; set; }
-		[Display(Name = "Private?")]
 		public bool IsPrivate { get; set; }
 		public bool IsArchived { get; set; }
 		public string GroupImage { get; set; }

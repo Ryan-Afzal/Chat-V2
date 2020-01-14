@@ -420,6 +420,25 @@ namespace Chat_V2.Models {
 	}
 
 	public class ReceiveNotificationArgs {
+
+		public ReceiveNotificationArgs(Notification notif) {
+			ChatUserID = notif.ChatUserID;
+			NotificationID = notif.NotificationID;
+			Date = notif.Date.ToString();
+			Title = notif.Title;
+			Text = notif.Text;
+			ViewURL = notif.ViewURL;
+		}
+
+		public ReceiveNotificationArgs(int chatUserID, int notificationID, string date, string title, string text, string viewURL) {
+			ChatUserID = chatUserID;
+			NotificationID = notificationID;
+			Date = date;
+			Title = title;
+			Text = text;
+			ViewURL = viewURL;
+		}
+
 		public int ChatUserID { get; set; }
 		public int NotificationID { get; set; }
 		public string Date { get; set; }

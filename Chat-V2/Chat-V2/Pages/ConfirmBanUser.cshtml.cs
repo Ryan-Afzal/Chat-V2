@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Extensions;
 using Chat_V2.Hubs;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -119,11 +120,9 @@ namespace Chat_V2.Pages {
 				.FirstOrDefaultAsync(g => g.GroupID == groupId);
 
 			var chatUser = await _context.Users
-				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == userId.Value);
 			var currentUser = await _userManager.GetUserAsync(User);
-			var currentMembership = group.Memberships
-				.OfType<MultiuserGroupMembership>()
+			var currentMembership = group.MultiuserGroupMemberships
 				.FirstOrDefault(m => m.ChatUserID == currentUser.Id);
 
 			if (currentMembership is null) {
@@ -149,25 +148,10 @@ namespace Chat_V2.Pages {
 				ViewURL = $"/Group?groupId={group.GroupID}"
 			};
 
-			chatUser.Notifications.Add(notif);
+			await _context.Notification.AddAsync(notif);
 			await _context.SaveChangesAsync();
 
-			IClientProxy proxy = _hubContext.Clients.User(chatUser.Id + "");
-
-			await proxy.SendAsync("NewNotification",
-				new NewNotificationArgs() {
-					ChatUserID = notif.ChatUserID
-				});
-
-			await proxy.SendAsync("ReceiveNotification",
-				new ReceiveNotificationArgs() {
-					ChatUserID = notif.ChatUserID,
-					NotificationID = notif.NotificationID,
-					Date = notif.Date.ToString(),
-					Title = notif.Title,
-					Text = notif.Text,
-					ViewURL = notif.ViewURL
-				});
+			await _hubContext.SendNotificationAsync(notif);
 
 			return LocalRedirect("/Group?groupId=" + groupId);
 		}

@@ -1,4 +1,5 @@
 ﻿using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Extensions;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -46,12 +47,7 @@ namespace Chat_V2.Hubs {
 		}
 
 		public async Task AddNotification(AddNotificationArgs args) {
-			/*if ((args.ChatUserID + "") != Context.UserIdentifier) {
-				throw new ArgumentException(nameof(args.ChatUserID));
-			}*/
-
 			var chatUser = await ChatContext.Users
-				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == args.ChatUserID);
 
 			if (chatUser == null) {
@@ -66,25 +62,10 @@ namespace Chat_V2.Hubs {
 				ViewURL = args.ViewURL
 			};
 
-			chatUser.Notifications.Add(notif);
+			await ChatContext.Notification.AddAsync(notif);
 			await ChatContext.SaveChangesAsync();
 
-			IClientProxy proxy = Clients.User(args.ChatUserID + "");
-
-			await proxy.SendAsync("NewNotification", 
-				new NewNotificationArgs() {
-					ChatUserID = args.ChatUserID
-				});
-
-			await proxy.SendAsync("ReceiveNotification",
-				new ReceiveNotificationArgs() {
-					ChatUserID = notif.ChatUserID,
-					NotificationID = notif.NotificationID,
-					Date = notif.Date.ToString(),
-					Title = notif.Title,
-					Text = notif.Text,
-					ViewURL = notif.ViewURL
-				});
+			await this.SendNotificationAsync(notif);
 		}
 
 		public async Task RemoveNotification(RemoveNotificationArgs args) {
@@ -93,14 +74,16 @@ namespace Chat_V2.Hubs {
 			}
 
 			var chatUser = await ChatContext.Users
-				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == args.ChatUserID);
 
 			if (chatUser == null) {
 				throw new ArgumentException(nameof(args.ChatUserID));
 			}
 
-			chatUser.Notifications.Remove(chatUser.Notifications.FirstOrDefault(n => n.NotificationID == args.NotificationID));
+			var notification = await ChatContext.Notification
+				.FirstOrDefaultAsync(n => n.NotificationID == args.NotificationID);
+
+			ChatContext.Notification.Remove(notification);
 			await ChatContext.SaveChangesAsync();
 		}
 
@@ -110,7 +93,6 @@ namespace Chat_V2.Hubs {
 			}
 
 			var chatUser = await ChatContext.Users
-				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == args.ChatUserID);
 
 			if (chatUser == null) {
@@ -119,10 +101,10 @@ namespace Chat_V2.Hubs {
 
 			await Clients.Caller.SendAsync(
 				"ReceiveNotifications",
-				chatUser.Notifications
-					.AsQueryable()
-					.Select(n => new ReceiveNotificationArgs() { ChatUserID = chatUser.Id, NotificationID = n.NotificationID, Date = n.Date.ToString(), Title = n.Title, Text = n.Text, ViewURL = n.ViewURL })
-					.ToList()
+				await ChatContext.Notification
+					.Where(n => n.ChatUserID == chatUser.Id)
+					.Select(n => new ReceiveNotificationArgs(n))
+					.ToListAsync()
 			);
 		}
 

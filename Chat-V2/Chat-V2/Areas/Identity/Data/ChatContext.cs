@@ -30,5 +30,9 @@ namespace Chat_V2.Models {
 		public DbSet<Group> Group { get; set; }
 		public DbSet<Membership> Membership { get; set; }
 		public DbSet<ChatMessage> ChatMessage { get; set; }
+		public DbSet<PersonalChatInvitation> PersonalChatInvitation { get; set; }
+		public DbSet<GroupJoinInvitation> GroupJoinInvitation { get; set; }
+		public DbSet<GroupJoinRequest> GroupJoinRequest { get; set; }
+		public DbSet<Notification> Notification { get; set; }
 	}
 }

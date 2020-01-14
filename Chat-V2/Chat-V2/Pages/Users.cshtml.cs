@@ -39,7 +39,7 @@ namespace Chat_V2.Pages {
 			CurrentSort = sortOrder;
 			IdSort = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
 			NameSort = sortOrder == "Name" ? "name_desc" : "Name";
-
+			
 			if (searchString != null) {
 				pageIndex = 1;
 			} else {

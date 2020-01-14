@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
+using Chat_V2.Extensions;
 using Chat_V2.Hubs;
 using Chat_V2.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -54,14 +55,11 @@ namespace Chat_V2.Pages {
 			_hubContext = hubContext;
 		}
 
-		[BindProperty]
 		public ChatUser ChatUser { get; set; }
-		[BindProperty]
 		public bool IsThisUser { get; set; }
-		[BindProperty]
 		public bool HasChat { get; set; }
-		[BindProperty]
 		public bool InviteSent { get; set; }
+		public bool OtherUserSentInvite { get; set; }
 
 		[BindProperty]
 		public JoinInvitationInputModel JoinInvitationInput { get; set; }
@@ -76,7 +74,7 @@ namespace Chat_V2.Pages {
 		public DismissNotificationInputModel DismissNotificationInput { get; set; }
 
 		public async Task<IActionResult> OnGetAsync(int? userId) {
-			if (userId == null) {
+			if (userId is null) {
 				return BadRequest();
 			}
 
@@ -88,6 +86,9 @@ namespace Chat_V2.Pages {
 
 			if (IsThisUser) {
 				HasChat = false;
+				InviteSent = false;
+				OtherUserSentInvite = false;
+
 				query = query
 					.Include(u => u.Memberships)
 					.Include(u => u.GroupJoinInvitations)
@@ -95,9 +96,9 @@ namespace Chat_V2.Pages {
 					.Include(u => u.PersonalChatInvitations);
 			}
 
-			var user = await query.FirstOrDefaultAsync(u => u.Id == userId.Value);
+			var chatUser = await query.FirstOrDefaultAsync(u => u.Id == userId.Value);
 
-			if (user == null) {
+			if (chatUser is null) {
 				return NotFound();
 			}
 
@@ -107,16 +108,22 @@ namespace Chat_V2.Pages {
 					.Include(m => m.Group)
 						.ThenInclude(g => g.Memberships)
 					.Where(m => m.ChatUserID == currentUserId)
-					.AnyAsync(m => m.Group.Memberships.FirstOrDefault(_m => _m.ChatUserID != currentUserId).ChatUserID == user.Id);
+					.AnyAsync(m => m.Group.Memberships.FirstOrDefault(_m => _m.ChatUserID != currentUserId).ChatUserID == chatUser.Id);
 
 				if (!HasChat) {
-					InviteSent = await _context.Users
-						.Include(u => u.PersonalChatInvitations)
-						.AnyAsync(u => u.PersonalChatInvitations.Any(i => i.ChatUserID == user.Id));
+					InviteSent = await _context.PersonalChatInvitation
+						.AnyAsync(i => i.ChatUserID == chatUser.Id && i.SenderID == currentUserId);
+
+					if (InviteSent) {
+						OtherUserSentInvite = false;
+					} else {
+						OtherUserSentInvite = await _context.PersonalChatInvitation
+							.AnyAsync(i => i.ChatUserID == currentUserId && i.SenderID == chatUser.Id);
+					}
 				}
 			}
 
-			ChatUser = user;
+			ChatUser = chatUser;
 			JoinInvitationInput = new JoinInvitationInputModel();
 			SendChatInvitationInput = new SendChatInvitationInputModel();
 			PersonalChatInvitationInput = new PersonalChatInvitationInputModel();
@@ -127,19 +134,23 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostAcceptJoinInvitationAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
+			var currentUser = await _userManager.GetUserAsync(User);
 			var chatUser = await _context.Users
-				.Include(u => u.GroupJoinInvitations)
 				.FirstOrDefaultAsync(g => g.Id == JoinInvitationInput.ChatUserID);
 
-			if (chatUser == null) {
-				return NotFound();
+			if (chatUser is null) {
+				return BadRequest();
 			}
 
-			var invitation = chatUser.GroupJoinInvitations
-				.FirstOrDefault(i => i.GroupJoinInvitationID == JoinInvitationInput.InvitationID);
+			if (currentUser.Id != chatUser.Id) {
+				return BadRequest();
+			}
 
-			if (invitation == null) {
-				return NotFound();
+			var invitation = await _context.GroupJoinInvitation
+				.FirstOrDefaultAsync(i => i.GroupJoinInvitationID == JoinInvitationInput.InvitationID);
+
+			if (invitation is null) {
+				return BadRequest();
 			}
 
 			var membership = new MultiuserGroupMembership() {
@@ -153,7 +164,7 @@ namespace Chat_V2.Pages {
 			};
 
 			await _context.Membership.AddAsync(membership);
-			chatUser.GroupJoinInvitations.Remove(invitation);
+			_context.GroupJoinInvitation.Remove(invitation);
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect(returnUrl);
@@ -161,22 +172,26 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostRejectJoinInvitationAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
+			var currentUser = await _userManager.GetUserAsync(User);
 			var chatUser = await _context.Users
-				.Include(u => u.GroupJoinInvitations)
 				.FirstOrDefaultAsync(g => g.Id == JoinInvitationInput.ChatUserID);
 
-			if (chatUser == null) {
-				return NotFound();
+			if (chatUser is null) {
+				return BadRequest();
 			}
 
-			var invitation = chatUser.GroupJoinInvitations
-				.FirstOrDefault(i => i.GroupJoinInvitationID == JoinInvitationInput.InvitationID);
-
-			if (invitation == null) {
-				return NotFound();
+			if (currentUser.Id != chatUser.Id) {
+				return BadRequest();
 			}
 
-			chatUser.GroupJoinInvitations.Remove(invitation);
+			var invitation = await _context.GroupJoinInvitation
+				.FirstOrDefaultAsync(i => i.GroupJoinInvitationID == JoinInvitationInput.InvitationID);
+
+			if (invitation is null) {
+				return BadRequest();
+			}
+
+			_context.GroupJoinInvitation.Remove(invitation);
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect(returnUrl);
@@ -184,18 +199,22 @@ namespace Chat_V2.Pages {
 
 		public async Task<IActionResult> OnPostAcceptPersonalChatInvitationAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
+			var currentUser = await _userManager.GetUserAsync(User);
 			var chatUser = await _context.Users
-				.Include(u => u.PersonalChatInvitations)
 				.FirstOrDefaultAsync(g => g.Id == PersonalChatInvitationInput.ChatUserID);
 
-			if (chatUser == null) {
-				return NotFound();
+			if (chatUser is null) {
+				return BadRequest();
 			}
 
-			var invitation = chatUser.PersonalChatInvitations
-				.FirstOrDefault(i => i.PersonalChatInvitationID == PersonalChatInvitationInput.InvitationID);
+			if (currentUser.Id != chatUser.Id) {
+				return BadRequest();
+			}
 
-			if (invitation == null) {
+			var invitation = await _context.PersonalChatInvitation
+				.FirstOrDefaultAsync(i => i.PersonalChatInvitationID == PersonalChatInvitationInput.InvitationID);
+
+			if (invitation is null) {
 				return NotFound();
 			}
 
@@ -226,8 +245,7 @@ namespace Chat_V2.Pages {
 
 			await _context.Membership.AddAsync(membership1);
 			await _context.Membership.AddAsync(membership2);
-			chatUser.PersonalChatInvitations.Remove(invitation);
-			await _context.SaveChangesAsync();
+			_context.PersonalChatInvitation.Remove(invitation);
 
 			Notification notif = new Notification() {
 				ChatUserID = invitation.SenderID,
@@ -237,50 +255,36 @@ namespace Chat_V2.Pages {
 				ViewURL = "/Chat"
 			};
 
-			(await _context.Users
-				.Include(u => u.Notifications)
-				.FirstOrDefaultAsync(u => u.Id == invitation.SenderID))
-				.Notifications.Add(notif);
+			await _context.Notification.AddAsync(notif);
 			await _context.SaveChangesAsync();
 
-			IClientProxy proxy = _hubContext.Clients.User(invitation.SenderID + "");
-
-			await proxy.SendAsync("NewNotification",
-				new NewNotificationArgs() {
-					ChatUserID = notif.ChatUserID
-				});
-
-			await proxy.SendAsync("ReceiveNotification",
-				new ReceiveNotificationArgs() {
-					ChatUserID = notif.ChatUserID,
-					NotificationID = notif.NotificationID,
-					Date = notif.Date.ToString(),
-					Title = notif.Title,
-					Text = notif.Text,
-					ViewURL = notif.ViewURL
-				});
+			await _hubContext.SendNotificationAsync(notif);
 
 			return LocalRedirect(returnUrl);
 		}
 
 		public async Task<IActionResult> OnPostRejectPersonalChatInvitationAsync(string returnUrl = null) {
 			returnUrl ??= Url.Content("~/");
+			var currentUser = await _userManager.GetUserAsync(User);
 			var chatUser = await _context.Users
-				.Include(u => u.PersonalChatInvitations)
 				.FirstOrDefaultAsync(g => g.Id == PersonalChatInvitationInput.ChatUserID);
 
-			if (chatUser == null) {
+			if (chatUser is null) {
+				return BadRequest();
+			}
+
+			if (currentUser.Id != chatUser.Id) {
+				return BadRequest();
+			}
+
+			var invitation = await _context.PersonalChatInvitation
+				.FirstOrDefaultAsync(i => i.PersonalChatInvitationID == PersonalChatInvitationInput.InvitationID);
+
+			if (invitation is null) {
 				return NotFound();
 			}
 
-			var invitation = chatUser.PersonalChatInvitations
-				.FirstOrDefault(i => i.PersonalChatInvitationID == PersonalChatInvitationInput.InvitationID);
-
-			if (invitation == null) {
-				return NotFound();
-			}
-
-			chatUser.PersonalChatInvitations.Remove(invitation);
+			_context.PersonalChatInvitation.Remove(invitation);
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect(returnUrl);
@@ -290,18 +294,40 @@ namespace Chat_V2.Pages {
 			returnUrl ??= Url.Content("~/");
 
 			var currentUser = await _userManager.GetUserAsync(User);
-			var user = await _context.Users
-				.Include(u => u.PersonalChatInvitations)
+			var chatUser = await _context.Users
 				.FirstOrDefaultAsync(u => u.Id == SendChatInvitationInput.ChatUserID);
 
+			if (currentUser.Id == chatUser.Id) {
+				return BadRequest();
+			}
+
+			bool hasChat = await _context.Membership
+					.OfType<PersonalGroupMembership>()
+					.Include(m => m.Group)
+						.ThenInclude(g => g.Memberships)
+					.Where(m => m.ChatUserID == currentUser.Id)
+					.AnyAsync(m => m.Group.Memberships.FirstOrDefault(_m => _m.ChatUserID != currentUser.Id).ChatUserID == chatUser.Id);
+
+			if (hasChat) {
+				return BadRequest();
+			}
+
+			bool eitherInviteSent = await _context.PersonalChatInvitation
+				.AnyAsync(i => (i.ChatUserID == chatUser.Id && i.SenderID == currentUser.Id)
+							|| (i.ChatUserID == currentUser.Id && i.SenderID == chatUser.Id));
+
+			if (eitherInviteSent) {
+				return BadRequest();
+			}
+
 			var invitation = new PersonalChatInvitation() {
-				ChatUserID = user.Id,
+				ChatUserID = chatUser.Id,
 				SenderID = currentUser.Id,
 				DateSent = DateTime.Now,
 				Message = SendChatInvitationInput.Message
 			};
 
-			user.PersonalChatInvitations.Add(invitation);
+			await _context.PersonalChatInvitation.AddAsync(invitation);
 			await _context.SaveChangesAsync();
 
 			return LocalRedirect(returnUrl);

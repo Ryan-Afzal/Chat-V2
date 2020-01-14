@@ -4,34 +4,10 @@
 // Declare 'viewmodel' constant elsewhere
 // **************************************
 
-let isTypingCallback = debounce(
-    function () {
-        var args = {
-            MembershipID: membershipID
-        };
-        connection.invoke("UserTyping", args);
-    },
-    600,
-    true);
-
-if (isMobile) {
-    show(document.getElementById("left-header-mobile"));
-    hide(document.getElementById("left-header-desktop"));
-} else {
-    hide(document.getElementById("left-header-mobile"));
-    show(document.getElementById("left-header-desktop"));
-}
-
-//Start SignalR connection
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/chatHub")
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
-
 var isMobile = isMobile();
 
 //Get the sound file
-var sound = new Audio('/media/new-message.mp3');
+let sound = new Audio('/media/new-message.mp3');
 var play_sound = false;
 
 //The number of messages currently displayed. Used for getting previous messages.
@@ -388,6 +364,20 @@ function loadPreviousMessages(startIndex, count) {
     connection.invoke("GetPreviousMessages", args);
 }
 
+if (isMobile) {
+    show(document.getElementById("left-header-mobile"));
+    hide(document.getElementById("left-header-desktop"));
+} else {
+    hide(document.getElementById("left-header-mobile"));
+    show(document.getElementById("left-header-desktop"));
+}
+
+//Start SignalR connection
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/chatHub")
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
+
 connection.onclose(function (e) {
     var head = document.getElementById("head-row");
 
@@ -414,6 +404,16 @@ connection.start().then(function () {
 }).catch(function (err) {
     return console.error(err.toString());
 });
+
+let isTypingCallback = debounce(
+    function () {
+        var args = {
+            MembershipID: membershipID
+        };
+        connection.invoke("UserTyping", args);
+    },
+    600,
+    true);
 
 //On Disconnect
 window.addEventListener('unload', function (event) {

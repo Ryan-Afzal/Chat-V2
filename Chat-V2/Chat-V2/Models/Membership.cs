@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Chat_V2.Models {
 	/// <summary>
-	/// Stores data about a <code>User</code>'s relationship to a <code>Group</code>.
+	/// Stores data about a <see cref="Chat_V2.Areas.Identity.Data.ChatUser"/>'s relationship to a <see cref="Chat_V2.Models.Group"/>.
 	/// </summary>
 	public abstract class Membership {
 		[Key]
