@@ -9,145 +9,150 @@
     var returnUrl = (HttpContext.Request.Path.Value + HttpContext.Request.QueryString.Value);
 }
 
-<div id="group-data" class="container">
-    <div class="row">
-        <div class="col-12 text-center">
-            <img src="@(fileOperationProvider.FileLoadURL + "/" + Model.ViewModel.Group.GroupImage)" width="256" height="256" class="img-thumbnail" />
-            <h3 class="display-3">@Model.ViewModel.Group.Name</h3>
+<nav class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-view-tab" data-toggle="tab" href="#nav-view" role="tab" aria-controls="nav-view" aria-selected="true">View</a>
+    @if (Model.ViewModel.IsGroupMember) {
+        <a class="nav-item nav-link" id="nav-manage-tab" data-toggle="tab" href="#nav-manage" role="tab" aria-controls="nav-manage" aria-selected="false">Manage</a>
+    }
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-view" role="tabpanel" aria-labelledby="nav-view-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col-auto">
+                    <img class="img rounded-circle m-1" src="@(fileOperationProvider.FileLoadURL + "/" + Model.ViewModel.Group.GroupImage)" width="256" height="256" />
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col-12">
+                            <span class="display-3">
+                                @(Model.ViewModel.Group.Name)
+                                <span class="badge badge-dark text-white">#@(Model.ViewModel.Group.GroupID)</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Date Created -->
+                            <h6 class="text-muted m-1">@("Created " + Model.ViewModel.Group.DateCreated.ToLongDateString())</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p>@(Model.ViewModel.Group.Description)</p>
+                        </div>
+                    </div>
+
+                    <!-- Temporary until I find a better place for the Private/Public control -->
+                    <div class="row">
+                        @if (Model.ViewModel.IsGroupMember && Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
+                            @if (Model.ViewModel.Group.IsPrivate) {
+                                <button id="private-public toggle" class="btn btn-sm btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Public</button>
+
+                                <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group public?</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                This will make it discoverable by non-users, and allow them to make join requests.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="post">
+                                                    <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" asp-page-handler="MakePublic" class="btn btn-info">Make Public</button>
+                                                    <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            } else {
+                                <button id="private-public toggle" class="btn btn-sm btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Private</button>
+
+                                <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group private?</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                This will make it undiscoverable by non-users, and disallow join requests.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="post">
+                                                    <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" asp-page-handler="MakePrivate" class="btn btn-danger">Make Private</button>
+                                                    <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <table class="table">
+                    <tr>
+                        <th><span class="badge badge-dark text-white">ID</span></th>
+                        <th>Username</th>
+                        <th>Rank</th>
+                    </tr>
+                    @foreach (var item in Model.ViewModel.Group.Memberships.OfType<MultiuserGroupMembership>().OrderByDescending(membership => membership.Rank)) {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ChatUser.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ChatUser.UserName)
+                            </td>
+                            <td>
+                                @{
+                                    PermissionRank rank = PermissionRank.GetPermissionRankByOrdinal(item.Rank);
+                                }
+                                <span class="badge" style="background-color: @rank.Color">@rank.Name</span>
+                            </td>
+                            <td>
+                                <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
+                            </td>
+                            @if (Model.ViewModel.IsGroupMember && Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal && item.ChatUserID != Model.ViewModel.ChatUser.Id) {
+                                <td>
+                                    <form method="post">
+                                        <button type="submit" asp-page-handler="BanUser" class="btn btn-sm btn-warning text-white">Ban User</button>
+                                        <input type="hidden" asp-for="BanUserInput.ChatUserID" value="@item.ChatUser.Id" />
+                                        <input type="hidden" asp-for="BanUserInput.GroupID" value="@Model.ViewModel.Group.GroupID" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                    </form>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
     </div>
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ViewModel.Group.GroupID)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ViewModel.Group.GroupID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ViewModel.Group.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ViewModel.Group.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ViewModel.Group.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ViewModel.Group.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ViewModel.Group.DateCreated)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ViewModel.Group.DateCreated)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ViewModel.Group.IsPrivate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ViewModel.Group.IsPrivate)
-            @if (Model.ViewModel.IsGroupMember && Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal) {
-                @if (Model.ViewModel.Group.IsPrivate) {
-                    <button id="private-public toggle" class="btn btn-sm btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Public</button>
+    @if (Model.ViewModel.IsGroupMember) {
+        <div class="tab-pane fade" id="nav-manage" role="tabpanel" aria-labelledby="nav-manage-tab">
 
-                    <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group public?</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    This will make it discoverable by non-users, and allow them to make join requests.
-                                </div>
-                                <div class="modal-footer">
-                                    <form method="post">
-                                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" asp-page-handler="MakePublic" class="btn btn-info">Make Public</button>
-                                        <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                } else {
-                    <button id="private-public toggle" class="btn btn-sm btn-info" data-toggle="modal" data-target="#privatepublicConfirmModal">Make Private</button>
-
-                    <div class="modal fade" id="privatepublicConfirmModal" tabindex="-1" role="dialog" aria-labelledby="privatepublicConfirmModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="privatepublicConfirmModalLabel">Are you sure you want to make this group private?</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    This will make it undiscoverable by non-users, and disallow join requests.
-                                </div>
-                                <div class="modal-footer">
-                                    <form method="post">
-                                        <button type="button" class="btn btn-dark" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" asp-page-handler="MakePrivate" class="btn btn-danger">Make Private</button>
-                                        <input type="hidden" asp-for="PublicPrivateInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ViewModel.Group.Memberships)
-        </dt>
-
-        <dd class="col-sm-10" id="group-member-list">
-            <table class="table">
-                <tr>
-                    <th>ID</th>
-                    <th>UserName</th>
-                    <th>Rank</th>
-                </tr>
-                @foreach (var item in Model.ViewModel.Group.Memberships.OfType<MultiuserGroupMembership>().OrderByDescending(membership => membership.Rank)) {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ChatUser.Id)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ChatUser.UserName)
-                        </td>
-                        <td>
-                            @{
-                                PermissionRank rank = PermissionRank.GetPermissionRankByOrdinal(item.Rank);
-                            }
-                            <span class="badge" style="background-color: @rank.Color">@rank.Name</span>
-                        </td>
-                        <td>
-                            <a asp-page="/Profile" asp-route-userId="@item.ChatUserID">View</a>
-                        </td>
-                        @if (Model.ViewModel.IsGroupMember && Model.ViewModel.Membership.Rank > PermissionRank.OFFICER.Ordinal && item.ChatUserID != Model.ViewModel.ChatUser.Id) {
-                            <td>
-                                <form method="post">
-                                    <button type="submit" asp-page-handler="BanUser" class="btn btn-sm btn-warning">Ban User</button>
-                                    <input type="hidden" asp-for="BanUserInput.ChatUserID" value="@item.ChatUser.Id" />
-                                    <input type="hidden" asp-for="BanUserInput.GroupID" value="@Model.ViewModel.Group.GroupID" />
-                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                </form>
-                            </td>
-                        }
-                    </tr>
-                }
-            </table>
-        </dd>
-    </dl>
+        </div>
+    }
 </div>
-
-<hr />
 
 <div class="container">
     @if (Model.ViewModel.IsGroupMember) {
@@ -392,21 +397,21 @@
                                     </div>
                                     <div class="card-body">
                                         <!--<form method="post" class="form-group">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="form-group">
-                        <label asp-for="ChangeOwnerInput.UserID"></label>
-                        <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
-                        <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="ChangeOwnerInput.UserName"></label>
-                        <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
-                        <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
-                    </div>
-                    <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
-                    <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-            <input type="hidden" name="returnUrl" value="@returnUrl" />
-                </form>-->
+                                                <div asp-validation-summary="All" class="text-danger"></div>
+                                                <div class="form-group">
+                                                    <label asp-for="ChangeOwnerInput.UserID"></label>
+                                                    <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
+                                                    <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label asp-for="ChangeOwnerInput.UserName"></label>
+                                                    <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
+                                                    <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
+                                                </div>
+                                                <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
+                                                <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            </form>-->
                                     </div>
                                 </div>
 
@@ -466,7 +471,6 @@
 <style>
 
     #group-member-list {
-
     }
 
     #group-member-owner {
