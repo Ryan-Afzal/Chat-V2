@@ -477,7 +477,6 @@ C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Pages\ConfirmDeleteGroup.cshtml.g.cs
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.g.cs
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Razor\Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml.g.cs
-C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.production.json
 C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\bundleConfig.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.Development.json
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\bin\Debug\netcoreapp3.0\appsettings.json
@@ -642,3 +641,4 @@ C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.dll
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.pdb
 C:\Users\ryana\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache
+C:\Users\s-afzalr\Documents\GitHub\Chat-V2\Chat-V2\Chat-V2\obj\Debug\netcoreapp3.0\Chat-V2.csprojAssemblyReference.cache

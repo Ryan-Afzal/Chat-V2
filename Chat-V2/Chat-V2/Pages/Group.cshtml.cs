@@ -381,7 +381,7 @@ namespace Chat_V2.Pages {
 				.OfType<MultiuserGroupMembership>()
 				.FirstOrDefaultAsync(m => m.GroupID == group.GroupID && m.ChatUserID == chatUser.Id);
 
-			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
+			if (membership == null || membership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 
@@ -405,7 +405,7 @@ namespace Chat_V2.Pages {
 				.OfType<MultiuserGroupMembership>()
 				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
-			if (membership == null || membership.Rank < PermissionRank.ADMINISTRATOR.Ordinal) {
+			if (membership == null || membership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 
@@ -454,7 +454,7 @@ namespace Chat_V2.Pages {
 				.OfType<MultiuserGroupMembership>()
 				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
-			if (membership == null || membership.Rank < PermissionRank.OWNER.Ordinal) {
+			if (membership == null || membership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 
@@ -478,7 +478,7 @@ namespace Chat_V2.Pages {
 				.OfType<MultiuserGroupMembership>()
 				.FirstOrDefault(m => m.ChatUserID == chatUser.Id);
 
-			if (membership == null || membership.Rank < PermissionRank.OWNER.Ordinal) {
+			if (membership == null || membership.Rank < PermissionRank.OFFICER.Ordinal) {
 				return BadRequest();
 			}
 

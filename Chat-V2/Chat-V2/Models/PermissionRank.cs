@@ -12,12 +12,9 @@ namespace Chat_V2.Models {
 		private static readonly Dictionary<string, PermissionRank> ranksByName = new Dictionary<string, PermissionRank>();
 		private static readonly List<PermissionRank> ranksByOrdinal = new List<PermissionRank>();
 
-		public static readonly PermissionRank USER = new PermissionRank("user", "000000");//Regular user (default)
-		public static readonly PermissionRank MODERATOR = new PermissionRank("moderator", "CC30A0");//Moderator of a group
+		public static readonly PermissionRank USER = new PermissionRank("user", "AAAAAA");//Regular user (default)
 		public static readonly PermissionRank OFFICER = new PermissionRank("officer", "00DDDD");//Officer of a group (Improved Moderator)
-		public static readonly PermissionRank ADMINISTRATOR = new PermissionRank("administrator", "FFAA00");//Administrator of a group.
 		public static readonly PermissionRank OWNER = new PermissionRank("owner", "00CC00");//Owner of a group
-		public static readonly PermissionRank SUPERUSER = new PermissionRank("superuser", "FF0000");//Superuser
 
 		private PermissionRank(string name, string color) {
 			Ordinal = ranksByOrdinal.Count;
