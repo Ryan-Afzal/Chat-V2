@@ -33,8 +33,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <!-- Date Created -->
-                            <h6 class="text-muted m-1">@("Created " + Model.ViewModel.Group.DateCreated.ToLongDateString())</h6>
+                            <h6 class="text-muted text-left m-1">@("Created " + Model.ViewModel.Group.DateCreated.ToLongDateString())</h6>
                         </div>
                     </div>
                     <div class="row">
@@ -42,7 +41,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <p>@(Model.ViewModel.Group.Description)</p>
+                            <p class="text-left">@(Model.ViewModel.Group.Description)</p>
                         </div>
                     </div>
 
@@ -110,17 +109,18 @@
             <div class="row">
                 <table class="table">
                     <tr>
-                        <th><span class="badge badge-dark text-white">ID</span></th>
+                        <th><!-- Image --></th>
                         <th>Username</th>
                         <th>Rank</th>
+                        <th><!-- Ban --></th>
                     </tr>
                     @foreach (var item in Model.ViewModel.Group.Memberships.OfType<MultiuserGroupMembership>().OrderByDescending(membership => membership.Rank)) {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.ChatUser.Id)
+                                <!-- Image -->
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.ChatUser.UserName)
+                                @(item.ChatUser.UserName)
                             </td>
                             <td>
                                 @{
@@ -153,6 +153,10 @@
         </div>
     }
 </div>
+
+<hr />
+<h6>Unupdated Stuff</h6>
+<br />
 
 <div class="container">
     @if (Model.ViewModel.IsGroupMember) {
