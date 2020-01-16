@@ -29,6 +29,7 @@ namespace Chat_V2.Pages {
 			public bool IsGroupMember { get; set; }
 			public bool IsBanned { get; set; }
 			public bool JoinRequestSent { get; set; }
+			public bool JoinInvitationSent { get; set; }
 			public ChatUser ChatUser { get; set; }
 			public MultiuserGroup Group { get; set; }
 			public MultiuserGroupMembership Membership { get; set; }
@@ -176,6 +177,7 @@ namespace Chat_V2.Pages {
 			ViewModel = new GroupViewModel() {
 				Group = group,
 				JoinRequestSent = JoinRequestSent(group, chatUser.Id),
+				JoinInvitationSent = await _context.GroupJoinInvitation.AnyAsync(i => i.GroupID == group.GroupID && i.ChatUserID == chatUser.Id),
 				ChatUser = chatUser
 			};
 
@@ -188,7 +190,7 @@ namespace Chat_V2.Pages {
 			UploadImageInput = new UploadImageInputModel();
 			PublicPrivateInput = new PublicPrivateInputModel();
 
-			if (membership == null) {
+			if (membership is null) {
 				if (group.IsPrivate) {
 					return LocalRedirect("/Groups");
 				} else {

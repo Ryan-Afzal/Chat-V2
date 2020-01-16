@@ -7,13 +7,17 @@
     ViewData["Title"] = "Group " + Model.ViewModel.Group.Name;
     Layout = "~/Pages/Shared/_Layout.cshtml";
     var returnUrl = (HttpContext.Request.Path.Value + HttpContext.Request.QueryString.Value);
-    var canSend = !(Model.ViewModel.IsGroupMember || Model.ViewModel.IsBanned || Model.ViewModel.JoinRequestSent);
+    var canSend = !(Model.ViewModel.IsGroupMember || Model.ViewModel.IsBanned || Model.ViewModel.JoinRequestSent || Model.ViewModel.JoinInvitationSent);
 }
 
 @if (!(Model.ViewModel.IsGroupMember || canSend)) {
     @if (Model.ViewModel.IsBanned) {
         <div class="alert alert-danger">
             You are banned from this group.
+        </div>
+    } else if (Model.ViewModel.JoinInvitationSent) {
+        <div class="alert alert-warning">
+            This group has sent you a join invitation!
         </div>
     } else {
         <div class="alert alert-warning">
@@ -22,11 +26,18 @@
     }
 }
 
-<nav class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link active" id="nav-view-tab" data-toggle="tab" href="#nav-view" role="tab" aria-controls="nav-view" aria-selected="true">View</a>
-    @if (Model.ViewModel.IsGroupMember) {
-        <a class="nav-item nav-link" id="nav-manage-tab" data-toggle="tab" href="#nav-manage" role="tab" aria-controls="nav-manage" aria-selected="false">Manage</a>
-    }
+<nav>
+    <div class="nav nav-tabs" role="tablist">
+        <a class="nav-item nav-link active" id="nav-view-tab" data-toggle="tab" href="#nav-view" role="tab" aria-controls="nav-view" aria-selected="true">View</a>
+        @if (Model.ViewModel.IsGroupMember) {
+            <a class="nav-item nav-link" id="nav-manage-tab" data-toggle="tab" href="#nav-manage" role="tab" aria-controls="nav-manage" aria-selected="false">
+                Manage
+                @if (Model.ViewModel.Group.GroupJoinRequests.Count > 0) {
+                    <span class="badge badge-primary text-white">@(Model.ViewModel.Group.GroupJoinRequests.Count)</span>
+                }
+            </a>
+        }
+    </div>
 </nav>
 
 <br />
@@ -40,9 +51,13 @@
                 </div>
                 <div class="col">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col">
                             <span class="display-3">
                                 @(Model.ViewModel.Group.Name)
+                            </span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="display-3">
                                 <span class="badge badge-dark text-white">#@(Model.ViewModel.Group.GroupID)</span>
                             </span>
                         </div>
@@ -190,33 +205,42 @@
                                     <div id="request-user-@(request.ChatUserID)" class="card">
                                         <div class="card-header">@(request.ChatUser.UserName)</div>
                                         <div class="card-body">
-                                            <dl>
-                                                <dt>
-                                                    ID
-                                                </dt>
-                                                <dh>
-                                                    @(request.ChatUserID)
-                                                </dh>
-                                                <dt>
-                                                    Username
-                                                </dt>
-                                                <dh>
-                                                    @(request.ChatUser.UserName)
-                                                </dh>
-                                                <dt>
-                                                    Message
-                                                </dt>
-                                                <dh>
-                                                    @(request.Message)
-                                                </dh>
-                                            </dl>
-                                            <form method="post">
-                                                <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
-                                                <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
-                                                <input type="hidden" asp-for="JoinRequestInput.GroupID" value="@(request.GroupID)" />
-                                                <input type="hidden" asp-for="JoinRequestInput.RequestID" value="@(request.GroupJoinRequestID)" />
-                                                <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                            </form>
+                                            <div class="row">
+                                                <div class="col-auto">
+                                                    <img class="img rounded-circle m-1" src="@(fileOperationProvider.FileLoadURL + "/" + request.ChatUser.ProfileImage)" width="64" height="64" />
+                                                </div>
+                                                <div class="col">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <h6>
+                                                                @(request.ChatUser.UserName)
+                                                                <span class="badge badge-dark text-white">#@(request.ChatUser.Id)</span>
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <br />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <p class="text-left">@(request.Message)</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <form method="post">
+                                                        <button type="submit" asp-page-handler="AcceptJoinRequest" class="btn btn-success">Accept</button>
+                                                        <button type="submit" asp-page-handler="RejectJoinRequest" class="btn btn-danger">Reject</button>
+                                                        <input type="hidden" asp-for="JoinRequestInput.GroupID" value="@(request.GroupID)" />
+                                                        <input type="hidden" asp-for="JoinRequestInput.RequestID" value="@(request.GroupJoinRequestID)" />
+                                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="card-footer text-muted">@(request.DateSent.ToString())</div>
                                     </div>
@@ -392,21 +416,21 @@
                                     </div>
                                     <div class="card-body">
                                         <!--<form method="post" class="form-group">
-                                    <div asp-validation-summary="All" class="text-danger"></div>
-                                    <div class="form-group">
-                                        <label asp-for="ChangeOwnerInput.UserID"></label>
-                                        <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
-                                        <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label asp-for="ChangeOwnerInput.UserName"></label>
-                                        <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
-                                        <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
-                                    </div>
-                                    <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
-                                    <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
-                            <input type="hidden" name="returnUrl" value="@returnUrl" />
-                                </form>-->
+                                                <div asp-validation-summary="All" class="text-danger"></div>
+                                                <div class="form-group">
+                                                    <label asp-for="ChangeOwnerInput.UserID"></label>
+                                                    <input asp-for="ChangeOwnerInput.UserID" class="form-control" />
+                                                    <span asp-validation-for="ChangeOwnerInput.UserID" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label asp-for="ChangeOwnerInput.UserName"></label>
+                                                    <input asp-for="ChangeOwnerInput.UserName" class="form-control" />
+                                                    <span asp-validation-for="ChangeOwnerInput.UserName" class="text-danger"></span>
+                                                </div>
+                                                <button asp-page-handler="ChangeOwner" type="submit" class="btn btn-danger">Change Owner</button>
+                                                <input asp-for="ChangeOwnerInput.GroupID" value="@(Model.ViewModel.Group.GroupID)" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            </form>-->
                                     </div>
                                 </div>
 
@@ -471,6 +495,8 @@
 </div>
 
 @if (canSend) {
+    <hr />
+
     <h3>You are not a group member. To become a group member, send a join request.</h3>
     <form method="post">
         <div class="form-group">

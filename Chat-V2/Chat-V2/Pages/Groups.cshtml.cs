@@ -36,6 +36,11 @@ namespace Chat_V2.Pages {
 		public PaginatedList<MultiuserGroup> Groups { get; set; }
 
 		public async Task OnGetAsync(string sortOrder, string currentFilter, string searchString, int? pageIndex) {
+			var currentUser = await _userManager.GetUserAsync(User);
+			var chatUser = await _context.Users
+				.Include(u => u.Memberships)
+				.FirstOrDefaultAsync(u => u.Id == currentUser.Id);
+
 			CurrentSort = sortOrder;
 			IdSort = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
 			NameSort = sortOrder == "Name" ? "name_desc" : "Name";
