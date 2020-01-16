@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Chat_V2.Areas.Identity.Data;
 using Chat_V2.Models;
@@ -52,11 +53,23 @@ namespace Chat_V2.Areas.Identity.Pages.Account.Manage {
 
 		public async Task<IActionResult> OnPostAsync() {
 			var userId = (await _userManager.GetUserAsync(User)).Id;
+
+			var isOwner = await _context.Membership
+				.OfType<MultiuserGroupMembership>()
+				.AnyAsync(m => m.ChatUserID == userId && m.Rank == PermissionRank.OWNER.Ordinal);
+
+			if (isOwner) {
+				ModelState.AddModelError(string.Empty, "You are still the owner of one or more groups.");
+				return Page();
+			}
+
 			var user = await _context.Users
 				.Include(u => u.Memberships)
 				.Include(u => u.GroupJoinInvitations)
+				.Include(u => u.PersonalChatInvitations)
 				.Include(u => u.Notifications)
 				.FirstOrDefaultAsync(u => u.Id == userId);
+
 			if (user is null) {
 				return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 			}
